@@ -1,0 +1,29 @@
+.idea/
+.vscode/
+.vs/
+
+# Local AI / agent tooling
+.atl/
+.gga*
+
+# .NET build output
+bin/
+obj/
+
+# Frontend dependencies and build output
+node_modules/
+dist/
+.angular/
+
+# Test and coverage output
+coverage/
+TestResults/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# OS noise
+.DS_Store
+Thumbs.db
