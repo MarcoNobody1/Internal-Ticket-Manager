@@ -1,5 +1,6 @@
 html {
   box-sizing: border-box;
+  height: 100%;
 }
 
 *,
@@ -9,5 +10,9 @@ html {
 }
 
 body {
+  background: #f3f4f6;
+  color: #1f2937;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   margin: 0;
+  min-height: 100%;
 }
