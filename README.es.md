@@ -19,6 +19,7 @@ Este repositorio está planteado intencionalmente como un **monolito modular peq
 Lo que ya existe:
 - base de autenticación JWT con usuarios demo
 - endpoint de salud y endpoint protegido de identidad
+- base real de persistencia con EF Core y primera migración ya creada
 - shell Angular standalone
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
@@ -26,7 +27,6 @@ Lo que ya existe:
 
 Lo que sigue diferido a propósito:
 - CRUD de tickets y workflows de negocio
-- `DbContext`, entidades y migraciones reales con EF Core
 - login visual en frontend, guards y pantallas funcionales
 - CI/CD y despliegue
 
@@ -74,6 +74,7 @@ Esa guía explica:
 - el **orden exacto de comandos**
 - cómo levantar Docker y SQL Server
 - cómo crear `TicketingDb`
+- cómo aplicar la migración de EF Core existente y crear las tablas actuales
 - cómo configurar la connection string de la API
 - cómo correr backend y frontend
 - cómo desmontar todo al terminar

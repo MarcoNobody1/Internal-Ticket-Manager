@@ -19,6 +19,7 @@ This repository is intentionally built as a **small modular monolith**.
 Current baseline includes:
 - JWT auth foundation with demo users
 - backend health endpoint and protected identity probe
+- real EF Core persistence foundation with the first migration already created
 - Angular standalone shell
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
@@ -26,7 +27,6 @@ Current baseline includes:
 
 Deferred on purpose:
 - ticket CRUD and business workflows
-- EF Core `DbContext`, entities, and real migrations
 - frontend login UI, guards, and ticket screens
 - CI/CD and deployment automation
 
@@ -74,6 +74,7 @@ That guide explains:
 - the **exact command order**
 - how to start Docker and SQL Server
 - how to create `TicketingDb`
+- how to apply the existing EF Core migration and create the current tables
 - how to configure the API connection string
 - how to run backend and frontend locally
 - how to tear everything down when finished
@@ -113,6 +114,10 @@ Expected baseline endpoints:
 - `GET /api/health`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `GET /api/projects`
+- `GET /api/projects/{id}`
+- `POST /api/projects`
+- `PUT /api/projects/{id}`
 
 #### Frontend
 

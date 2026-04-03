@@ -214,7 +214,27 @@ dotnet user-secrets list --project src/backend/Api/InternalTicketManager.Api.csp
 
 ---
 
-## 9. Verificar la baseline actual
+## 9. Aplicar la migración existente de EF Core
+
+El proyecto ya incluye la primera migración de persistencia:
+
+- nombre de la migración: `InitialTicketingPersistence`
+
+Desde la **raíz del repositorio**, ejecuta:
+
+```powershell
+dotnet tool restore
+dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
+```
+
+Tablas actuales esperadas:
+- `Projects`
+- `Tickets`
+- `Comments`
+
+---
+
+## 10. Verificar la baseline actual
 
 ### Backend
 
@@ -240,7 +260,7 @@ ng serve
 
 ---
 
-## 10. Flujo futuro de EF Core migrations
+## 11. Flujo futuro de EF Core migrations
 
 Desde la **raíz del repositorio**:
 
@@ -250,11 +270,11 @@ dotnet ef migrations add InitialCreate --project src/backend/Infrastructure/Inte
 dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
 ```
 
-Ese es el camino correcto cuando exista el `DbContext` real.
+El `DbContext` real ya existe. Utiliza este flujo cuando el modelo cambie y necesites crear una nueva migración.
 
 ---
 
-## 11. Desmontaje / limpieza
+## 12. Desmontaje / limpieza
 
 ### Parar contenedores pero conservar datos
 

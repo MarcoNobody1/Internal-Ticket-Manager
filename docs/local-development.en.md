@@ -214,7 +214,27 @@ dotnet user-secrets list --project src/backend/Api/InternalTicketManager.Api.csp
 
 ---
 
-## 9. Verify the Current Baseline
+## 9. Apply the Existing EF Core Migration
+
+The project already contains the first persistence migration:
+
+- migration name: `InitialTicketingPersistence`
+
+From the **repository root**, run:
+
+```powershell
+dotnet tool restore
+dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
+```
+
+Expected current tables:
+- `Projects`
+- `Tickets`
+- `Comments`
+
+---
+
+## 10. Verify the Current Baseline
 
 ### Backend
 
@@ -240,7 +260,7 @@ ng serve
 
 ---
 
-## 10. Future EF Core Migrations Workflow
+## 11. Future EF Core Migrations Workflow
 
 From the **repository root**:
 
@@ -250,11 +270,11 @@ dotnet ef migrations add InitialCreate --project src/backend/Infrastructure/Inte
 dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
 ```
 
-This is the intended professional path once the real `DbContext` exists.
+The real `DbContext` already exists. Use this flow whenever the model changes and a new migration is needed.
 
 ---
 
-## 11. Tear Down / Clean Up
+## 12. Tear Down / Clean Up
 
 ### Stop containers but keep database data
 
