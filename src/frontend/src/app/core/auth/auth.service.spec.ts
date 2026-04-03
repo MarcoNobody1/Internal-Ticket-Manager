@@ -1,7 +1,8 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { AUTH_SESSION_STORAGE_KEY, AuthService } from './auth.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -11,8 +12,9 @@ describe('AuthService', () => {
     sessionStorage.clear();
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
 
     authService = TestBed.inject(AuthService);
     httpTestingController = TestBed.inject(HttpTestingController);

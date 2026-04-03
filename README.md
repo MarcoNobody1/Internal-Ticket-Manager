@@ -1,7 +1,7 @@
 # Internal Ticket Manager
 
 [![.NET](https://img.shields.io/badge/.NET-8-512BD4)](#)
-[![Angular](https://img.shields.io/badge/Angular-16-DD0031)](#)
+[![Angular](https://img.shields.io/badge/Angular-18-DD0031)](#)
 [![Bun](https://img.shields.io/badge/Bun-1.3.11-black)](#)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927)](#)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](#)

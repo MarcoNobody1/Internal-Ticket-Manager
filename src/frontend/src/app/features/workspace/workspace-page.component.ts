@@ -3,6 +3,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatChipListbox, MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { AuthService } from '../../core/auth/auth.service';
@@ -10,7 +14,7 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'itm-workspace-page',
   standalone: true,
-  imports: [AsyncPipe, NgIf, MatButtonModule, MatCardModule, MatToolbarModule],
+  imports: [AsyncPipe, NgIf, MatButtonModule, MatCardModule, MatChipsModule, MatDividerModule, MatIconModule, MatListModule, MatToolbarModule],
   templateUrl: './workspace-page.component.html',
   styleUrls: ['./workspace-page.component.css']
 })

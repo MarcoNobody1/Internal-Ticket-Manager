@@ -1,7 +1,7 @@
 # Internal Ticket Manager
 
 [![.NET](https://img.shields.io/badge/.NET-8-512BD4)](#)
-[![Angular](https://img.shields.io/badge/Angular-16-DD0031)](#)
+[![Angular](https://img.shields.io/badge/Angular-18-DD0031)](#)
 [![Bun](https://img.shields.io/badge/Bun-1.3.11-black)](#)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927)](#)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](#)
@@ -22,14 +22,14 @@ Lo que ya existe:
 - base real de persistencia con EF Core y primera migración ya creada
 - CRUD de proyectos
 - CRUD base de tickets para listar, ver detalle, crear y actualizar
-- shell Angular standalone
+- shell Angular standalone con login funcional y espacio protegido
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
 - documentación para reproducir el entorno local
 
 Lo que sigue diferido a propósito:
 - delete de tickets, filtros, paginación, comentarios y endpoints dedicados de workflow
-- login visual en frontend, guards y pantallas funcionales
+- pantallas funcionales de tickets más allá del workspace protegido actual
 - CI/CD y despliegue
 
 ---
