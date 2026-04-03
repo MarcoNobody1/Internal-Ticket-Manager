@@ -1,39 +1,47 @@
 # Internal Ticket Manager
 
-Internal Ticket Manager is a defendable interview demo for a small internal support/development ticket platform built with **.NET 8 Web API** and **Angular**.
+[![.NET](https://img.shields.io/badge/.NET-8-512BD4)](#)
+[![Angular](https://img.shields.io/badge/Angular-16-DD0031)](#)
+[![Bun](https://img.shields.io/badge/Bun-1.3.11-black)](#)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927)](#)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)](#)
 
-The repository now includes the real runtime baseline: a .NET solution with modular backend projects and an Angular workspace with a standalone shell. It is intentionally thin on purpose.
+> A clean, interview-defendable ticket management demo built with **.NET 8 Web API**, **Angular**, **Bun**, and **SQL Server 2022**.
 
-## Current Status
+**Languages:** [English](./README.md) | [Español](./README.es.md)
 
-What exists today:
-- `InternalTicketManager.sln` with `Api`, `Application`, `Domain`, and `Infrastructure` projects
-- a minimal API host with Swagger in development and `GET /api/health`
-- an Angular workspace in `src/frontend` with a standalone shell and router baseline
-- updated documentation that reflects the runnable bootstrap stage
+---
 
-What is still intentionally deferred:
-- JWT authentication and authorization
-- EF Core setup, database models, and migrations
-- ticket modules, business workflows, and frontend feature screens
-- CI/CD, containers, and deployment automation
+## Overview
 
-## Project Goal
+This repository is intentionally built as a **small modular monolith**.
 
-Build a small but solid modular monolith that demonstrates strong fundamentals without fake enterprise complexity.
+Current baseline includes:
+- JWT auth foundation with demo users
+- backend health endpoint and protected identity probe
+- Angular standalone shell
+- Bun-based frontend dependency management
+- Docker Compose local SQL Server 2022 infrastructure
+- reproducible local setup documentation
 
-The intended MVP will eventually cover:
-- JWT auth with a minimal role model (`Admin`, `Developer`)
-- ticket creation, listing, filtering, and status updates
-- explicit DTOs, validation, and service-layer logic
-- practical Angular screens built with router, forms, and HTTP services
+Deferred on purpose:
+- ticket CRUD and business workflows
+- EF Core `DbContext`, entities, and real migrations
+- frontend login UI, guards, and ticket screens
+- CI/CD and deployment automation
 
-## Runtime Baseline Structure
+---
+
+## Repository Structure
 
 ```text
 .
 ├── InternalTicketManager.sln
+├── docker-compose.yml
 ├── docs/
+│   ├── local-development.md
+│   ├── local-development.en.md
+│   └── local-development.es.md
 ├── src/
 │   ├── backend/
 │   │   ├── Api/
@@ -42,55 +50,147 @@ The intended MVP will eventually cover:
 │   │   ├── Infrastructure/
 │   │   └── README.md
 │   └── frontend/
-│       ├── src/app/
-│       │   ├── core/
-│       │   ├── features/
-│       │   └── shared/
-│       └── README.md
-├── tests/
-└── README.md
+│       ├── bun.lock
+│       ├── package.json
+│       ├── angular.json
+│       └── src/
+└── tests/
 ```
 
-## Run Commands
+---
 
-### Backend API
+## Want to Reproduce This Project Locally?
 
-```bash
-dotnet restore InternalTicketManager.sln
+If your goal is to clone the repository and reproduce the same local environment, **do not rely only on this README**.
+
+Go to the dedicated setup guide:
+
+- **English:** [`docs/local-development.en.md`](./docs/local-development.en.md)
+- **Español:** [`docs/local-development.es.md`](./docs/local-development.es.md)
+
+That guide explains:
+- which tools must be installed first
+- exactly **which folder** to open the terminal in
+- the **exact command order**
+- how to start Docker and SQL Server
+- how to create `TicketingDb`
+- how to configure the API connection string
+- how to run backend and frontend locally
+- how to tear everything down when finished
+
+---
+
+## Quick Start Summary
+
+### 1. Clone the repository
+
+Open a terminal in the folder where you want the project to live, then run:
+
+```powershell
+git clone <repo-url>
+cd Internal-Ticket-Manager
+```
+
+### 2. Read the full local setup guide
+
+Choose your language:
+
+- [`docs/local-development.en.md`](./docs/local-development.en.md)
+- [`docs/local-development.es.md`](./docs/local-development.es.md)
+
+### 3. Main runtime commands after setup
+
+#### Backend API
+
+Open a terminal in the **repository root**:
+
+```powershell
+cd <path>\Internal-Ticket-Manager
 dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
 
-Expected baseline behavior:
-- Swagger UI available in development
-- `GET /api/health` returns `{ "status": "ok" }`
+Expected baseline endpoints:
+- `GET /api/health`
+- `POST /api/auth/login`
+- `GET /api/auth/me`
 
-### Frontend Angular Shell
+#### Frontend
 
-```bash
-npm install --prefix src/frontend
-npm start --prefix src/frontend
+Open a terminal in the **frontend workspace**:
+
+```powershell
+cd <path>\Internal-Ticket-Manager\src\frontend
+ng serve
 ```
 
-Expected baseline behavior:
-- Angular dev server starts from `src/frontend`
-- the root route renders a neutral home page through the router outlet
+---
 
-## Tooling Notes
+## Tooling Rules
 
-- The backend projects are normalized to **.NET 8** targets, but the local machine used for bootstrap only exposed **.NET 9 template defaults**. The templates were generated with the available SDK and then aligned back to the required `net8.0` target framework.
-- The local machine also has **Angular CLI 16.2.1** with **Node 22**, and the CLI warns that this Node version is unsupported. The workspace was generated successfully, but a supported Node LTS version should be used for normal day-to-day frontend install/run work.
-- Per project rules, this increment did **not** run a build after the normalization changes.
+### Use Bun for frontend package management
 
-## Deferred Scope
+Run these from:
 
-This bootstrap increment does **not** add:
-- auth wiring
-- ticket endpoints or business logic
-- EF Core models or persistence setup
-- test projects or CI/CD
+```text
+src/frontend
+```
 
-That boundary is deliberate. The current goal is a clean runnable baseline, not a half-built product.
+Examples:
 
-## Why This Shape
+```powershell
+bun install
+bun run build
+bun run test -- --watch=false --browsers=ChromeHeadless
+```
 
-The project stays close to framework defaults where that helps clarity, then trims template noise that would be awkward to defend in an interview. That gives the repo a real starting point without pretending sample code is product functionality.
+### Use Angular CLI for Angular-specific operations
+
+Also run these from:
+
+```text
+src/frontend
+```
+
+Examples:
+
+```powershell
+ng serve
+ng generate component features/example/example-page
+ng test --watch=false --browsers=ChromeHeadless
+```
+
+---
+
+## Local Infrastructure
+
+Local SQL Server is provided through Docker Compose:
+
+- image: `mcr.microsoft.com/mssql/server:2022-latest`
+- database name: `TicketingDb`
+- exposed port: `1433`
+- persistent volume enabled
+
+Connection strings for local development are intended to live in:
+- `.env` for Docker variables
+- `.NET user-secrets` for the API connection string
+
+---
+
+## Why This Setup Fits the Project
+
+This setup is intentionally simple and defendable:
+
+- one local SQL Server container
+- one reproducible Docker Compose file
+- Bun for consistent frontend package management
+- Angular CLI for Angular operations only
+- .NET user-secrets to avoid committing real local credentials
+- future-ready EF Core migration workflow without inventing fake persistence too early
+
+---
+
+## Documentation Index
+
+- [README in Spanish](./README.es.md)
+- [Local setup guide (English)](./docs/local-development.en.md)
+- [Guía de entorno local (Español)](./docs/local-development.es.md)

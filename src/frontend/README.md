@@ -24,3 +24,22 @@ The frontend is intentionally thin:
 ## Tooling Note
 
 This workspace was generated with Angular CLI 16.2.1. The local bootstrap environment warned that Node 22 is unsupported for that CLI version, so use a supported Node LTS version for normal install/run work.
+
+## Package Management and Angular Commands
+
+- Use **Bun** for dependency management inside `src/frontend`.
+- Use **Angular CLI (`ng`)** for Angular-specific operations.
+
+Examples:
+
+```powershell
+bun install
+bun run build
+bun run test -- --watch=false --browsers=ChromeHeadless
+```
+
+```powershell
+ng serve
+ng generate component features/example/example-page
+ng test --watch=false --browsers=ChromeHeadless
+```
