@@ -27,7 +27,7 @@ The frontend is intentionally modest:
 
 ## Tooling Note
 
-This workspace was generated with Angular CLI 16.2.1. The local bootstrap environment warned that Node 22 is unsupported for that CLI version, so use a supported Node LTS version for normal install/run work.
+This workspace now runs on Angular 18 + Angular Material 18, which is compatible with the current Node 22 development environment used in this repository.
 
 ## Local Auth Demo Notes
 

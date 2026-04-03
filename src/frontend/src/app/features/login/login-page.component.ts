@@ -4,7 +4,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
@@ -19,7 +21,9 @@ import { AuthService } from '../../core/auth/auth.service';
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
+    MatDividerModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatSnackBarModule
   ],
