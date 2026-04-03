@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+  <span>Internal Ticket Manager</span>
+  <span class="workspace-toolbar__spacer"></span>
+  <button mat-button type="button" (click)="logout()">Logout</button>
+</mat-toolbar>
+
+<section class="workspace-page" *ngIf="session$ | async as session">
+  <mat-card>
+    <p class="workspace-page__eyebrow">Protected Workspace</p>
+    <h1>Welcome, {{ session.username }}</h1>
+    <p>
+      You are authenticated as <strong>{{ session.role }}</strong>. This screen is intentionally small: it proves route protection,
+      token attachment, and logout without inventing ticket UI too early.
+    </p>
+  </mat-card>
+
+  <mat-card>
+    <h2>What this slice covers</h2>
+    <ul>
+      <li>Login against <code>POST /api/auth/login</code></li>
+      <li>Bearer token attachment through an HTTP interceptor</li>
+      <li>Session-based token persistence for the current browser tab</li>
+      <li>Guarded navigation for authenticated routes</li>
+    </ul>
+  </mat-card>
+</section>

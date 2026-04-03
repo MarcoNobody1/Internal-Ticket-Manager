@@ -1,0 +1,49 @@
+.login-page {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.login-page__card {
+  max-width: 28rem;
+  width: 100%;
+}
+
+.login-page__eyebrow {
+  color: #4f46e5;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.75rem;
+  text-transform: uppercase;
+}
+
+.login-page h1 {
+  margin: 0 0 0.75rem;
+}
+
+.login-page__intro {
+  color: #4b5563;
+  margin: 0 0 1.5rem;
+}
+
+.login-page__form {
+  display: grid;
+  gap: 1rem;
+}
+
+.login-page__form mat-form-field,
+.login-page__form button {
+  width: 100%;
+}
+
+.login-page__hint {
+  border-top: 1px solid #e5e7eb;
+  color: #4b5563;
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}

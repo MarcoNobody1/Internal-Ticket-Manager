@@ -22,14 +22,14 @@ Current baseline includes:
 - real EF Core persistence foundation with the first migration already created
 - project CRUD endpoints
 - base ticket CRUD endpoints for list/detail/create/update
-- Angular standalone shell
+- Angular standalone shell with a first login/workspace auth slice
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
 
 Deferred on purpose:
 - ticket delete, filtering, pagination, comments, and dedicated workflow endpoints
-- frontend login UI, guards, and ticket screens
+- ticket screens beyond the protected workspace placeholder
 - CI/CD and deployment automation
 
 ---
@@ -133,6 +133,16 @@ Open a terminal in the **frontend workspace**:
 cd <path>\Internal-Ticket-Manager\src\frontend
 ng serve
 ```
+
+Frontend auth notes:
+- Angular Material is already wired with the standard prebuilt theme.
+- `ng serve` now proxies `/api/*` requests to the backend at `http://localhost:5215`.
+- Demo login credentials from backend development settings:
+  - `admin.demo / AdminDemo123!`
+  - `developer.demo / DeveloperDemo123!`
+- Routes:
+  - `/login` — public login page
+  - `/workspace` — protected demo area after login
 
 ---
 

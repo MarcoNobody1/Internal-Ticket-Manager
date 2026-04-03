@@ -1,46 +1,4 @@
 :host {
-  color: #1f2937;
   display: block;
-  font-family: Inter, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
-}
-
-.shell {
-  background: #f3f4f6;
-  min-height: 100vh;
-}
-
-.shell__header {
-  background: #111827;
-  color: #f9fafb;
-  padding: 3rem 1.5rem 2rem;
-}
-
-.shell__header > div,
-.shell__content {
-  margin: 0 auto;
-  max-width: 960px;
-}
-
-.shell__eyebrow {
-  color: #93c5fd;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  margin: 0 0 0.75rem;
-  text-transform: uppercase;
-}
-
-.shell__header h1 {
-  margin: 0;
-}
-
-.shell__subtitle {
-  color: #d1d5db;
-  margin: 0.75rem 0 0;
-  max-width: 42rem;
-}
-
-.shell__content {
-  padding: 1.5rem;
 }
