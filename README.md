@@ -20,13 +20,15 @@ Current baseline includes:
 - JWT auth foundation with demo users
 - backend health endpoint and protected identity probe
 - real EF Core persistence foundation with the first migration already created
+- project CRUD endpoints
+- base ticket CRUD endpoints for list/detail/create/update
 - Angular standalone shell
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
 
 Deferred on purpose:
-- ticket CRUD and business workflows
+- ticket delete, filtering, pagination, comments, and dedicated workflow endpoints
 - frontend login UI, guards, and ticket screens
 - CI/CD and deployment automation
 
@@ -118,6 +120,10 @@ Expected baseline endpoints:
 - `GET /api/projects/{id}`
 - `POST /api/projects`
 - `PUT /api/projects/{id}`
+- `GET /api/tickets`
+- `GET /api/tickets/{id}`
+- `POST /api/tickets`
+- `PUT /api/tickets/{id}`
 
 #### Frontend
 

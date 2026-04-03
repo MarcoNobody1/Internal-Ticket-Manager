@@ -1,0 +1,58 @@
+using System.ComponentModel.DataAnnotations;
+using InternalTicketManager.Domain.Tickets;
+
+namespace InternalTicketManager.Application.Tickets;
+
+public sealed record CreateTicketRequest : IValidatableObject
+{
+    public const int TitleMaxLength = 200;
+    public const int DescriptionMaxLength = 4000;
+    public const int UserNameMaxLength = 100;
+    public const int AssignedUserIdMaxLength = 100;
+
+    [MaxLength(TitleMaxLength)]
+    public string Title { get; init; } = string.Empty;
+
+    [MaxLength(DescriptionMaxLength)]
+    public string? Description { get; init; }
+
+    public TicketStatus Status { get; init; } = TicketStatus.Open;
+
+    public TicketPriority Priority { get; init; } = TicketPriority.Medium;
+
+    public Guid ProjectId { get; init; }
+
+    [MaxLength(AssignedUserIdMaxLength)]
+    public string? AssignedUserId { get; init; }
+
+    [MaxLength(UserNameMaxLength)]
+    public string CreatedByUsername { get; init; } = string.Empty;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            yield return new ValidationResult("Title is required.", [nameof(Title)]);
+        }
+
+        if (ProjectId == Guid.Empty)
+        {
+            yield return new ValidationResult("ProjectId is required.", [nameof(ProjectId)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(CreatedByUsername))
+        {
+            yield return new ValidationResult("CreatedByUsername is required.", [nameof(CreatedByUsername)]);
+        }
+
+        if (!Enum.IsDefined(Status))
+        {
+            yield return new ValidationResult("Status is invalid.", [nameof(Status)]);
+        }
+
+        if (!Enum.IsDefined(Priority))
+        {
+            yield return new ValidationResult("Priority is invalid.", [nameof(Priority)]);
+        }
+    }
+}

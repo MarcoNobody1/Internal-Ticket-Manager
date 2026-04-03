@@ -1,4 +1,5 @@
 using System.Data.Common;
+using InternalTicketManager.Domain.Tickets;
 using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -74,6 +75,38 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
             Name = name,
             Description = description,
             CreatedAtUtc = DateTime.UtcNow
+        });
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    public async Task SeedTicketAsync(
+        Guid id,
+        Guid projectId,
+        string title,
+        string createdByUsername,
+        TicketStatus status = TicketStatus.Open,
+        TicketPriority priority = TicketPriority.Medium,
+        string? description = null,
+        string? assignedUserId = null,
+        DateTime? createdAtUtc = null,
+        DateTime? updatedAtUtc = null)
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+
+        dbContext.Tickets.Add(new Ticket
+        {
+            Id = id,
+            ProjectId = projectId,
+            Title = title,
+            Description = description,
+            Status = status,
+            Priority = priority,
+            AssignedUserId = assignedUserId,
+            CreatedByUsername = createdByUsername,
+            CreatedAtUtc = createdAtUtc ?? DateTime.UtcNow,
+            UpdatedAtUtc = updatedAtUtc ?? createdAtUtc ?? DateTime.UtcNow
         });
 
         await dbContext.SaveChangesAsync();

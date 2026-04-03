@@ -1,6 +1,8 @@
 using InternalTicketManager.Application.Projects;
+using InternalTicketManager.Application.Tickets;
 using InternalTicketManager.Infrastructure.Projects;
 using InternalTicketManager.Infrastructure.Persistence;
+using InternalTicketManager.Infrastructure.Tickets;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString));
 
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<ITicketService, TicketService>();
 
         return services;
     }

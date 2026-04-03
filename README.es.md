@@ -20,13 +20,15 @@ Lo que ya existe:
 - base de autenticación JWT con usuarios demo
 - endpoint de salud y endpoint protegido de identidad
 - base real de persistencia con EF Core y primera migración ya creada
+- CRUD de proyectos
+- CRUD base de tickets para listar, ver detalle, crear y actualizar
 - shell Angular standalone
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
 - documentación para reproducir el entorno local
 
 Lo que sigue diferido a propósito:
-- CRUD de tickets y workflows de negocio
+- delete de tickets, filtros, paginación, comentarios y endpoints dedicados de workflow
 - login visual en frontend, guards y pantallas funcionales
 - CI/CD y despliegue
 
@@ -114,6 +116,14 @@ Endpoints base esperados:
 - `GET /api/health`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `GET /api/projects`
+- `GET /api/projects/{id}`
+- `POST /api/projects`
+- `PUT /api/projects/{id}`
+- `GET /api/tickets`
+- `GET /api/tickets/{id}`
+- `POST /api/tickets`
+- `PUT /api/tickets/{id}`
 
 #### Frontend
 
