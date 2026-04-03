@@ -1,158 +1,96 @@
 # Internal Ticket Manager
 
-Internal Ticket Manager is a technical interview project for managing internal support and development tickets.
+Internal Ticket Manager is a defendable interview demo for a small internal support/development ticket platform built with **.NET 8 Web API** and **Angular**.
 
-The goal is to demonstrate strong fundamentals with a clean, explainable architecture using **.NET 8 Web API** on the backend and **Angular** on the frontend, without pretending the platform is further along than it really is.
+The repository now includes the real runtime baseline: a .NET solution with modular backend projects and an Angular workspace with a standalone shell. It is intentionally thin on purpose.
 
 ## Current Status
 
-This repository is currently in its **foundation/bootstrap stage**.
-
 What exists today:
-- a realistic project README
-- an intentional repository scaffold for backend, frontend, tests, and docs
-- project standards and SDD artifacts that define how the work will be delivered
+- `InternalTicketManager.sln` with `Api`, `Application`, `Domain`, and `Infrastructure` projects
+- a minimal API host with Swagger in development and `GET /api/health`
+- an Angular workspace in `src/frontend` with a standalone shell and router baseline
+- updated documentation that reflects the runnable bootstrap stage
 
-What is intentionally **not** generated yet:
-- `.NET` solution or project files
-- Angular workspace files
-- authentication and authorization
-- database setup and EF Core models
-- ticket management features
-- CI/CD, Docker, or deployment assets
-
-That boundary is deliberate: this first increment is about making the project direction clear and defendable before framework code is generated.
+What is still intentionally deferred:
+- JWT authentication and authorization
+- EF Core setup, database models, and migrations
+- ticket modules, business workflows, and frontend feature screens
+- CI/CD, containers, and deployment automation
 
 ## Project Goal
 
-Build a small but solid **modular monolith** for internal ticket management that is easy to explain in an interview.
+Build a small but solid modular monolith that demonstrates strong fundamentals without fake enterprise complexity.
 
-The finished demo should showcase:
-- clean REST API design
-- practical service-layer business logic
-- EF Core persistence with readable queries
-- JWT-based authentication with a minimal role model
-- Angular screens for listing, creating, and updating tickets
-- focused validation, testing, and documentation
+The intended MVP will eventually cover:
+- JWT auth with a minimal role model (`Admin`, `Developer`)
+- ticket creation, listing, filtering, and status updates
+- explicit DTOs, validation, and service-layer logic
+- practical Angular screens built with router, forms, and HTTP services
 
-## Intended Stack
-
-### Backend
-- **.NET 8 Web API**
-- **Entity Framework Core**
-- **SQL Server** (or a similar relational database if the setup changes later)
-- JWT authentication
-
-### Frontend
-- **Angular**
-- Standalone components
-- Angular Router
-- Reactive Forms
-- HTTP services, guards, interceptors, and RxJS
-
-## Intended Architecture
-
-The target shape is a **clean modular monolith**, optimized for clarity over ceremony.
-
-Planned backend structure:
-
-```text
-src/backend/
-  Api/
-  Application/
-  Domain/
-  Infrastructure/
-```
-
-Planned frontend direction:
-
-```text
-src/frontend/
-  app/
-    core/
-    features/
-    shared/
-```
-
-This does **not** mean heavy enterprise patterns will be added by default. The project explicitly avoids unnecessary CQRS, event buses, MediatR-by-fashion, fake DDD complexity, or global frontend state unless real complexity justifies it.
-
-## Repository Structure
+## Runtime Baseline Structure
 
 ```text
 .
-├── docs/              # Project notes and future architecture/API documentation
+├── InternalTicketManager.sln
+├── docs/
 ├── src/
-│   ├── backend/       # Planned .NET backend area
-│   └── frontend/      # Planned Angular frontend area
+│   ├── backend/
+│   │   ├── Api/
+│   │   ├── Application/
+│   │   ├── Domain/
+│   │   ├── Infrastructure/
+│   │   └── README.md
+│   └── frontend/
+│       ├── src/app/
+│       │   ├── core/
+│       │   ├── features/
+│       │   └── shared/
+│       └── README.md
 ├── tests/
-│   ├── backend/       # Planned backend tests
-│   └── frontend/      # Planned frontend tests
-├── AGENTS.md          # Project standards and delivery rules for contributors/agents
 └── README.md
 ```
 
-## Planned MVP Scope
+## Run Commands
 
-The expected MVP is intentionally practical and interview-friendly:
-- authenticate users with a minimal role model (`Admin`, `Developer`)
-- create tickets
-- list tickets with filtering and pagination
-- update ticket status and assignment
-- validate requests clearly
-- expose clean API documentation
-- provide a simple Angular UI for the main flows
+### Backend API
 
-## What This Increment Does
+```bash
+dotnet restore InternalTicketManager.sln
+dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
+```
 
-This increment only establishes the project foundation:
-- replaces the placeholder README with realistic documentation
-- creates visible scaffold directories for backend, frontend, tests, and docs
-- keeps placeholders lightweight and intentional
+Expected baseline behavior:
+- Swagger UI available in development
+- `GET /api/health` returns `{ "status": "ok" }`
 
-## What Is Deferred
+### Frontend Angular Shell
 
-The following work is deferred to later increments:
-- generating the actual `.NET 8` solution and API project
-- generating the Angular workspace and application shell
-- implementing auth, persistence, domain models, and ticket endpoints
-- adding tests with real runners/frameworks
-- environment configuration, CI/CD, and containerization
+```bash
+npm install --prefix src/frontend
+npm start --prefix src/frontend
+```
 
-## Setup Notes
+Expected baseline behavior:
+- Angular dev server starts from `src/frontend`
+- the root route renders a neutral home page through the router outlet
 
-There is nothing to run yet.
+## Tooling Notes
 
-At this stage, the repository is documentation-first by design. Once the backend and frontend workspaces are generated in later increments, this README will be updated with:
-- local setup instructions
-- environment variable requirements
-- database migration commands
-- API and frontend run commands
-- testing commands
+- The backend projects are normalized to **.NET 8** targets, but the local machine used for bootstrap only exposed **.NET 9 template defaults**. The templates were generated with the available SDK and then aligned back to the required `net8.0` target framework.
+- The local machine also has **Angular CLI 16.2.1** with **Node 22**, and the CLI warns that this Node version is unsupported. The workspace was generated successfully, but a supported Node LTS version should be used for normal day-to-day frontend install/run work.
+- Per project rules, this increment did **not** run a build after the normalization changes.
 
-## Documentation Direction
+## Deferred Scope
 
-Supporting documentation will live under `docs/` as the project grows. That area is intended for:
-- architecture notes
-- API decisions
-- authentication notes
-- setup guidance
-- delivery and testing notes
+This bootstrap increment does **not** add:
+- auth wiring
+- ticket endpoints or business logic
+- EF Core models or persistence setup
+- test projects or CI/CD
 
-## Why This Approach
+That boundary is deliberate. The current goal is a clean runnable baseline, not a half-built product.
 
-This repository is meant to be defendable in an interview.
+## Why This Shape
 
-So instead of dumping generated framework output immediately, the project starts with a clear structure and honest documentation. That makes it easier to explain:
-- what the system is supposed to become
-- what has been done already
-- what was intentionally deferred
-- why complexity is being introduced only when it earns its place
-
-## Next Likely Increment
-
-The next sensible step is to bootstrap the actual application workspaces:
-1. create the `.NET 8` solution and backend projects
-2. create the Angular workspace
-3. wire up the initial folder structure and baseline configuration
-
-Until then, this repository should be read as a **project foundation**, not as a finished application.
+The project stays close to framework defaults where that helps clarity, then trims template noise that would be awkward to defend in an interview. That gives the repo a real starting point without pretending sample code is product functionality.

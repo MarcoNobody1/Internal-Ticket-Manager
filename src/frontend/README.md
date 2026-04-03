@@ -1,12 +1,26 @@
-# Frontend Placeholder
+# Frontend Workspace
 
-This folder will hold the future **Angular** application.
+This folder contains the real Angular workspace baseline for Internal Ticket Manager.
 
-Planned direction:
-- routing for the main application flows
-- reactive forms for create/update experiences
-- HTTP services for API access
-- guards and interceptors for auth-related concerns
-- simple, explainable feature-oriented organization
+## Current Structure
 
-Angular workspace generation is intentionally deferred in this increment so the repository stays honest about its current state.
+- `src/main.ts` — Angular bootstrap entry
+- `src/app/app.config.ts` — root providers with router setup
+- `src/app/app.routes.ts` — root route configuration
+- `src/app/app.component.*` — application shell with router outlet
+- `src/app/features/home/` — neutral home page used only to prove the shell and routing baseline
+- `src/app/core/`, `src/app/features/`, `src/app/shared/` — reserved structure for future cross-cutting, feature, and shared UI code
+
+## Current Baseline
+
+The frontend is intentionally thin:
+- standalone Angular app
+- router baseline
+- neutral shell/home page
+- no auth flows
+- no ticket screens
+- no state-management complexity
+
+## Tooling Note
+
+This workspace was generated with Angular CLI 16.2.1. The local bootstrap environment warned that Node 22 is unsupported for that CLI version, so use a supported Node LTS version for normal install/run work.

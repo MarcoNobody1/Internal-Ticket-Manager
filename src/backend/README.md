@@ -1,11 +1,27 @@
-# Backend Placeholder
+# Backend Workspace
 
-This folder will hold the future **.NET 8 Web API** backend.
+This folder now contains the real backend bootstrap for the project.
 
-Planned direction:
-- `Api/` for controllers, contracts, and HTTP concerns
-- `Application/` for use cases and service-layer orchestration
-- `Domain/` for core business entities and rules
-- `Infrastructure/` for EF Core, persistence, and external integrations
+## Projects
 
-This structure is documented now so the repository is easy to explain, but no solution, project, or runnable backend code is generated in this increment.
+- `Api/` — ASP.NET Core entry point, controller wiring, Swagger in development, and the bootstrap health endpoint
+- `Application/` — application-layer project reserved for future use cases and orchestration
+- `Domain/` — domain-layer project reserved for entities and business rules
+- `Infrastructure/` — infrastructure-layer project reserved for persistence and external integrations
+
+## Current Baseline
+
+The backend is intentionally minimal:
+- solution/project references are in place
+- `Program.cs` only wires controllers and Swagger
+- `GET /api/health` returns `{ "status": "ok" }`
+
+## Deferred Work
+
+This increment does **not** include:
+- JWT auth
+- EF Core or database setup
+- ticket entities, DTOs, services, or endpoints
+- tests
+
+The goal here is a clean modular-monolith starting point that is easy to explain and safe to grow.

@@ -1,0 +1,33 @@
+.home-page {
+  padding: 1rem 0 2rem;
+}
+
+.home-page__card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  padding: 1.5rem;
+}
+
+.home-page__eyebrow {
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.home-page__card h2 {
+  margin: 0 0 1rem;
+}
+
+.home-page__card p {
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.home-page__card ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
