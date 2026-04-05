@@ -27,3 +27,6 @@ TestResults/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Local editor lint overrides
+.htmlhintrc
