@@ -21,16 +21,17 @@ Current baseline includes:
 - admin-only CRUD for persisted users with one-role assignment (`Admin` / `Developer`)
 - backend health endpoint and protected identity probe
 - real EF Core persistence foundation with automatic local schema creation in Development
-- project CRUD endpoints
-- base ticket CRUD endpoints for list/detail/create/update
-- Angular standalone shell with login, workspace, and an admin users screen
+- project endpoints with explicit role-based permissions (`Admin` write, authenticated users read)
+- ticket endpoints with explicit role-based permissions (`Admin` delete, `Admin`/`Developer` create and edit, authenticated users read)
+- persisted ticket-to-developer assignments through a simple join table so one ticket can have multiple developers
+- Angular standalone shell with login, workspace, projects screen, project details, ticket create/edit flow, ticket details/comments, and an admin users screen
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
 
 Deferred on purpose:
-- ticket delete, filtering, pagination, and dedicated workflow endpoints
-- ticket screens beyond the protected workspace placeholder
+- ticket filtering, pagination, and dedicated workflow endpoints
+- advanced workflow automation beyond the current project/ticket CRUD and comment timeline
 - CI/CD and deployment automation
 
 ---
@@ -145,6 +146,7 @@ Expected baseline endpoints:
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 - `GET /api/users`
+- `GET /api/users/developers`
 - `GET /api/users/{id}`
 - `POST /api/users`
 - `PUT /api/users/{id}`
@@ -153,12 +155,26 @@ Expected baseline endpoints:
 - `GET /api/projects/{id}`
 - `POST /api/projects`
 - `PUT /api/projects/{id}`
+- `DELETE /api/projects/{id}`
 - `GET /api/tickets`
 - `GET /api/tickets/{id}`
 - `GET /api/tickets/{ticketId}/comments`
 - `POST /api/tickets`
 - `POST /api/tickets/{ticketId}/comments`
 - `PUT /api/tickets/{id}`
+- `DELETE /api/tickets/{id}`
+
+Permission summary:
+- `Users`:
+  - `GET /developers`: `Admin` or `Developer`
+  - remaining endpoints: `Admin`
+- `Projects`:
+  - `GET` endpoints: any authenticated user
+  - `POST/PUT/DELETE`: `Admin`
+- `Tickets`:
+  - `GET` endpoints and comments: any authenticated user
+  - `POST/PUT`: `Admin` or `Developer`
+  - `DELETE`: `Admin`
 
 #### Frontend
 
@@ -179,7 +195,8 @@ Frontend auth notes:
   - `/login` — public login page
 - `/workspace` — protected demo area after login
   - `/workspace/projects` — project management screen
-  - `/workspace/tickets` — ticket list screen
+  - `/workspace/projects/:projectId` — project details plus open tickets
+  - `/workspace/tickets` — ticket list plus create/edit form
   - `/workspace/tickets/:ticketId` — ticket details with comments timeline
   - `/workspace/users` — admin-only users management screen
 

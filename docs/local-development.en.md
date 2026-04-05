@@ -234,6 +234,7 @@ On first startup, the API will:
 
 Current admin users management notes:
 - `/api/users` CRUD endpoints are restricted to the `Admin` role.
+- `/api/users/developers` is available to authenticated `Admin` and `Developer` users so the ticket assignment UI can load valid assignees.
 - `/workspace/users` is available only to authenticated admins.
 - The app keeps the seeded demo credentials as the simplest supported way to enter the system locally.
 
@@ -244,6 +245,7 @@ Expected current tables:
 - `Users`
 - `Projects`
 - `Tickets`
+- `TicketAssignments`
 - `Comments`
 
 Default seeded users:
@@ -270,6 +272,14 @@ Admin users endpoints now covered by integration tests:
 - `POST /api/users`
 - `PUT /api/users/{id}`
 - `DELETE /api/users/{id}`
+
+Current role-based app behavior:
+- `Projects` reads are available to authenticated users, but create/update/delete is `Admin` only.
+- `Tickets` reads are available to authenticated users, create/update is `Admin` or `Developer`, and delete is `Admin` only.
+- Tickets can now be assigned to one or more users with role `Developer`.
+- The frontend now includes:
+  - `/workspace/projects/:projectId` for project details and open tickets
+  - ticket create/edit flows with project selection and multi-developer assignment
 
 When the API starts in `Development`, it will ensure the schema exists and seed the default auth data if needed.
 
@@ -360,6 +370,8 @@ In Postman, run the requests in this order:
 9. `Tickets / Get Tickets`
 10. `Tickets / Get Ticket By Id`
 11. `Tickets / Update Ticket`
+12. `Projects / Delete Project` (Admin only, optional)
+13. `Tickets / Delete Ticket` (Admin only, optional)
 
 ### 11.5 Variable behavior already included in the collection
 

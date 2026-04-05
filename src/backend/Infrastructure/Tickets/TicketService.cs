@@ -1,4 +1,5 @@
 using InternalTicketManager.Application.Tickets;
+using InternalTicketManager.Domain.Auth;
 using InternalTicketManager.Domain.Tickets;
 using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,8 @@ public sealed class TicketService : ITicketService
     {
         var tickets = await _dbContext.Tickets
             .AsNoTracking()
+            .Include(ticket => ticket.Assignments)
+            .ThenInclude(assignment => assignment.User)
             .OrderByDescending(ticket => ticket.CreatedAtUtc)
             .ThenBy(ticket => ticket.Title)
             .ToListAsync(cancellationToken);
@@ -29,6 +32,8 @@ public sealed class TicketService : ITicketService
     {
         var ticket = await _dbContext.Tickets
             .AsNoTracking()
+            .Include(ticket => ticket.Assignments)
+            .ThenInclude(assignment => assignment.User)
             .SingleOrDefaultAsync(existingTicket => existingTicket.Id == id, cancellationToken);
 
         return ticket is null ? null : MapToResponse(ticket);
@@ -57,7 +62,14 @@ public sealed class TicketService : ITicketService
         var projectExists = await ProjectExistsAsync(request.ProjectId, cancellationToken);
         if (!projectExists)
         {
-            return new CreateTicketResult(null, ProjectNotFound: true);
+            return new CreateTicketResult(null, ProjectNotFound: true, AssignedDevelopersInvalid: false);
+        }
+
+        var assignedDeveloperIds = NormalizeAssignedDeveloperIds(request.AssignedDeveloperIds);
+        var assignedDevelopersValid = await AssignedDevelopersAreValidAsync(assignedDeveloperIds, cancellationToken);
+        if (!assignedDevelopersValid)
+        {
+            return new CreateTicketResult(null, ProjectNotFound: false, AssignedDevelopersInvalid: true);
         }
 
         var utcNow = DateTime.UtcNow;
@@ -69,16 +81,31 @@ public sealed class TicketService : ITicketService
             Status = request.Status,
             Priority = request.Priority,
             ProjectId = request.ProjectId,
-            AssignedUserId = NormalizeOptionalValue(request.AssignedUserId),
             CreatedByUsername = request.CreatedByUsername.Trim(),
             CreatedAtUtc = utcNow,
             UpdatedAtUtc = utcNow
         };
 
+        foreach (var developerId in assignedDeveloperIds)
+        {
+            ticket.Assignments.Add(new TicketAssignment
+            {
+                TicketId = ticket.Id,
+                UserId = developerId,
+                AssignedAtUtc = utcNow
+            });
+        }
+
         _dbContext.Tickets.Add(ticket);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new CreateTicketResult(MapToResponse(ticket), ProjectNotFound: false);
+        await _dbContext.Entry(ticket)
+            .Collection(existingTicket => existingTicket.Assignments)
+            .Query()
+            .Include(assignment => assignment.User)
+            .LoadAsync(cancellationToken);
+
+        return new CreateTicketResult(MapToResponse(ticket), ProjectNotFound: false, AssignedDevelopersInvalid: false);
     }
 
     public async Task<CreateCommentResult> CreateCommentAsync(Guid ticketId, CreateCommentRequest request, CancellationToken cancellationToken)
@@ -111,17 +138,25 @@ public sealed class TicketService : ITicketService
     public async Task<UpdateTicketResult> UpdateTicketAsync(Guid id, UpdateTicketRequest request, CancellationToken cancellationToken)
     {
         var ticket = await _dbContext.Tickets
+            .Include(existingTicket => existingTicket.Assignments)
             .SingleOrDefaultAsync(existingTicket => existingTicket.Id == id, cancellationToken);
 
         if (ticket is null)
         {
-            return new UpdateTicketResult(null, TicketNotFound: true, ProjectNotFound: false);
+            return new UpdateTicketResult(null, TicketNotFound: true, ProjectNotFound: false, AssignedDevelopersInvalid: false);
         }
 
         var projectExists = await ProjectExistsAsync(request.ProjectId, cancellationToken);
         if (!projectExists)
         {
-            return new UpdateTicketResult(null, TicketNotFound: false, ProjectNotFound: true);
+            return new UpdateTicketResult(null, TicketNotFound: false, ProjectNotFound: true, AssignedDevelopersInvalid: false);
+        }
+
+        var assignedDeveloperIds = NormalizeAssignedDeveloperIds(request.AssignedDeveloperIds);
+        var assignedDevelopersValid = await AssignedDevelopersAreValidAsync(assignedDeveloperIds, cancellationToken);
+        if (!assignedDevelopersValid)
+        {
+            return new UpdateTicketResult(null, TicketNotFound: false, ProjectNotFound: false, AssignedDevelopersInvalid: true);
         }
 
         ticket.Title = request.Title.Trim();
@@ -129,12 +164,44 @@ public sealed class TicketService : ITicketService
         ticket.Status = request.Status;
         ticket.Priority = request.Priority;
         ticket.ProjectId = request.ProjectId;
-        ticket.AssignedUserId = NormalizeOptionalValue(request.AssignedUserId);
         ticket.UpdatedAtUtc = DateTime.UtcNow;
+
+        ticket.Assignments.Clear();
+        foreach (var developerId in assignedDeveloperIds)
+        {
+            ticket.Assignments.Add(new TicketAssignment
+            {
+                TicketId = ticket.Id,
+                UserId = developerId,
+                AssignedAtUtc = ticket.UpdatedAtUtc
+            });
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new UpdateTicketResult(MapToResponse(ticket), TicketNotFound: false, ProjectNotFound: false);
+        await _dbContext.Entry(ticket)
+            .Collection(existingTicket => existingTicket.Assignments)
+            .Query()
+            .Include(assignment => assignment.User)
+            .LoadAsync(cancellationToken);
+
+        return new UpdateTicketResult(MapToResponse(ticket), TicketNotFound: false, ProjectNotFound: false, AssignedDevelopersInvalid: false);
+    }
+
+    public async Task<bool> DeleteTicketAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var ticket = await _dbContext.Tickets
+            .SingleOrDefaultAsync(existingTicket => existingTicket.Id == id, cancellationToken);
+
+        if (ticket is null)
+        {
+            return false;
+        }
+
+        _dbContext.Tickets.Remove(ticket);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 
     private async Task<bool> ProjectExistsAsync(Guid projectId, CancellationToken cancellationToken)
@@ -151,6 +218,22 @@ public sealed class TicketService : ITicketService
             .AnyAsync(ticket => ticket.Id == ticketId, cancellationToken);
     }
 
+    private async Task<bool> AssignedDevelopersAreValidAsync(IReadOnlyCollection<Guid> assignedDeveloperIds, CancellationToken cancellationToken)
+    {
+        if (assignedDeveloperIds.Count == 0)
+        {
+            return true;
+        }
+
+        var developerCount = await _dbContext.Users
+            .AsNoTracking()
+            .CountAsync(
+                user => assignedDeveloperIds.Contains(user.Id) && user.RoleId == (int)UserRole.Developer,
+                cancellationToken);
+
+        return developerCount == assignedDeveloperIds.Count;
+    }
+
     private static TicketResponse MapToResponse(Ticket ticket)
     {
         return new TicketResponse(
@@ -160,7 +243,10 @@ public sealed class TicketService : ITicketService
             ticket.Status,
             ticket.Priority,
             ticket.ProjectId,
-            ticket.AssignedUserId,
+            ticket.Assignments
+                .OrderBy(assignment => assignment.User.Username)
+                .Select(assignment => new TicketAssigneeResponse(assignment.UserId, assignment.User.Username))
+                .ToList(),
             ticket.CreatedByUsername,
             ticket.CreatedAtUtc,
             ticket.UpdatedAtUtc);
@@ -184,5 +270,13 @@ public sealed class TicketService : ITicketService
         }
 
         return value.Trim();
+    }
+
+    private static IReadOnlyList<Guid> NormalizeAssignedDeveloperIds(IReadOnlyList<Guid>? assignedDeveloperIds)
+    {
+        return (assignedDeveloperIds ?? [])
+            .Where(developerId => developerId != Guid.Empty)
+            .Distinct()
+            .ToList();
     }
 }

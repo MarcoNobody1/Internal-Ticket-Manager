@@ -1,5 +1,7 @@
 using InternalTicketManager.Application.Projects;
+using InternalTicketManager.Application.Tickets;
 using InternalTicketManager.Domain.Projects;
+using InternalTicketManager.Domain.Tickets;
 using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,13 +26,16 @@ public sealed class ProjectService : IProjectService
         return projects.Select(MapToResponse).ToList();
     }
 
-    public async Task<ProjectResponse?> GetProjectByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ProjectDetailsResponse?> GetProjectByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var project = await _dbContext.Projects
             .AsNoTracking()
+            .Include(existingProject => existingProject.Tickets.Where(ticket => ticket.Status != TicketStatus.Resolved && ticket.Status != TicketStatus.Closed))
+            .ThenInclude(ticket => ticket.Assignments)
+            .ThenInclude(assignment => assignment.User)
             .SingleOrDefaultAsync(project => project.Id == id, cancellationToken);
 
-        return project is null ? null : MapToResponse(project);
+        return project is null ? null : MapToDetailsResponse(project);
     }
 
     public async Task<ProjectResponse> CreateProjectAsync(CreateProjectRequest request, CancellationToken cancellationToken)
@@ -68,6 +73,22 @@ public sealed class ProjectService : IProjectService
         return MapToResponse(project);
     }
 
+    public async Task<bool> DeleteProjectAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var project = await _dbContext.Projects
+            .SingleOrDefaultAsync(existingProject => existingProject.Id == id, cancellationToken);
+
+        if (project is null)
+        {
+            return false;
+        }
+
+        _dbContext.Projects.Remove(project);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
     private static ProjectResponse MapToResponse(Project project)
     {
         return new ProjectResponse(
@@ -76,6 +97,31 @@ public sealed class ProjectService : IProjectService
             project.Description,
             project.CreatedAtUtc,
             project.UpdatedAtUtc);
+    }
+
+    private static ProjectDetailsResponse MapToDetailsResponse(Project project)
+    {
+        return new ProjectDetailsResponse(
+            project.Id,
+            project.Name,
+            project.Description,
+            project.CreatedAtUtc,
+            project.UpdatedAtUtc,
+            project.Tickets
+                .OrderByDescending(ticket => ticket.UpdatedAtUtc)
+                .ThenBy(ticket => ticket.Title)
+                .Select(ticket => new ProjectTicketSummaryResponse(
+                    ticket.Id,
+                    ticket.Title,
+                    ticket.Status,
+                    ticket.Priority,
+                    ticket.CreatedByUsername,
+                    ticket.UpdatedAtUtc,
+                    ticket.Assignments
+                        .OrderBy(assignment => assignment.User.Username)
+                        .Select(assignment => new TicketAssigneeResponse(assignment.UserId, assignment.User.Username))
+                        .ToList()))
+                .ToList());
     }
 
     private static string? NormalizeDescription(string? description)

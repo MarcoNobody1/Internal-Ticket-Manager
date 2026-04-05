@@ -9,7 +9,7 @@ public sealed record TicketResponse(
     TicketStatus Status,
     TicketPriority Priority,
     Guid ProjectId,
-    string? AssignedUserId,
+    IReadOnlyList<TicketAssigneeResponse> AssignedDevelopers,
     string CreatedByUsername,
     DateTime CreatedAtUtc,
     DateTime UpdatedAtUtc);

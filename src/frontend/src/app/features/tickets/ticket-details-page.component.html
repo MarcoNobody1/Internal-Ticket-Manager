@@ -21,14 +21,15 @@
           </div>
 
           <mat-chip-set>
-            <mat-chip>{{ ticket.status }}</mat-chip>
-            <mat-chip>{{ ticket.priority }}</mat-chip>
+            <mat-chip>{{ getStatusLabel(ticket.status) }}</mat-chip>
+            <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
           </mat-chip-set>
         </div>
 
         <div class="ticket-details-page__meta">
           <span>Created by {{ ticket.createdByUsername }}</span>
-          <span *ngIf="ticket.assignedUserId">Assigned to {{ ticket.assignedUserId }}</span>
+          <a [routerLink]="['/workspace/projects', ticket.projectId]">Open project</a>
+          <span>{{ getAssignedDeveloperNames(ticket) }}</span>
           <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
         </div>
       </mat-card-content>

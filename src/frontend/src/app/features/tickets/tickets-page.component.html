@@ -5,22 +5,97 @@
     </mat-card-header>
     <mat-card-content>
       <p class="tickets-page__intro">
-        Start from a real ticket list, then open one ticket to review the current discussion and add a new comment.
+        Tickets stay readable for every signed-in user. Admins and developers can create or edit them, and only admins can delete them.
       </p>
 
-      <div class="tickets-page__loading" *ngIf="isLoadingTickets">
+      <ng-container *ngIf="canManageTickets; else ticketReadOnlyNotice">
+        <form class="tickets-form" [formGroup]="ticketForm" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" maxlength="200" />
+            <mat-hint align="end">{{ ticketForm.controls.title.value.length }}/{{ ticketTitleMaxLength }}</mat-hint>
+            <mat-error *ngIf="ticketForm.controls.title.hasError('required') || ticketForm.controls.title.hasError('requiredTrimmed')">
+              Title is required.
+            </mat-error>
+            <mat-error *ngIf="ticketForm.controls.title.hasError('maxlength')">Title must be 200 characters or fewer.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="4" maxlength="4000"></textarea>
+            <mat-hint align="end">{{ ticketForm.controls.description.value.length }}/{{ ticketDescriptionMaxLength }}</mat-hint>
+            <mat-error *ngIf="ticketForm.controls.description.hasError('maxlength')">
+              Description must be 4000 characters or fewer.
+            </mat-error>
+          </mat-form-field>
+
+          <div class="tickets-form__grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Project</mat-label>
+              <mat-select formControlName="projectId">
+                <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="ticketForm.controls.projectId.hasError('required')">Project is required.</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="status">
+                <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Priority</mat-label>
+              <mat-select formControlName="priority">
+                <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Assigned developers</mat-label>
+              <mat-select formControlName="assignedDeveloperIds" multiple>
+                <mat-option *ngFor="let developer of developers; trackBy: trackByDeveloperId" [value]="developer.id">{{ developer.username }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <p class="tickets-page__state tickets-page__state--error" *ngIf="projects.length === 0">
+            Create a project first so new tickets can be assigned.
+          </p>
+          <p class="tickets-page__state tickets-page__state--error" *ngIf="developers.length === 0">
+            Add at least one developer account before assigning tickets.
+          </p>
+          <p class="tickets-page__state tickets-page__state--error" *ngIf="submitErrorMessage">{{ submitErrorMessage }}</p>
+
+          <div class="tickets-form__actions">
+            <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting || deletingTicketId !== null || projects.length === 0">
+              {{ isEditMode ? 'Save changes' : 'Create ticket' }}
+            </button>
+            <button mat-button type="button" *ngIf="isEditMode" (click)="cancelEdit()" [disabled]="isSubmitting || deletingTicketId !== null">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </ng-container>
+
+      <ng-template #ticketReadOnlyNotice>
+        <p class="tickets-page__read-only">You can review ticket history and comments here, but this account cannot change ticket records.</p>
+      </ng-template>
+
+      <div class="tickets-page__loading" *ngIf="isLoading">
         <mat-spinner diameter="36"></mat-spinner>
         <span>Loading tickets...</span>
       </div>
 
-      <div *ngIf="!isLoadingTickets">
+      <div *ngIf="!isLoading">
         <div class="tickets-page__state tickets-page__state--error" *ngIf="loadErrorMessage">
           <span>{{ loadErrorMessage }}</span>
-          <button mat-button type="button" (click)="loadTickets()">Retry</button>
+          <button mat-button type="button" (click)="loadData()">Retry</button>
         </div>
 
         <div class="tickets-page__state" *ngIf="!loadErrorMessage && tickets.length === 0">
-          No tickets yet. Create one from the API first, then come back here to review comments.
+          {{ canManageTickets ? 'No tickets yet. Create the first one with the form above.' : 'No tickets are available yet.' }}
         </div>
 
         <div class="tickets-page__list" *ngIf="!loadErrorMessage && tickets.length > 0">
@@ -31,16 +106,27 @@
                   <h2>{{ ticket.title }}</h2>
                   <p>{{ ticket.description || 'No description provided.' }}</p>
                 </div>
-                <button mat-flat-button color="primary" [routerLink]="['/workspace/tickets', ticket.id]">Open details</button>
+
+                <div class="tickets-page__item-actions">
+                  <button mat-flat-button color="primary" [routerLink]="['/workspace/tickets', ticket.id]">Open details</button>
+                  <button mat-button type="button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null">
+                    Edit
+                  </button>
+                  <button mat-button color="warn" type="button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null">
+                    Delete
+                  </button>
+                </div>
               </div>
 
               <div class="tickets-page__meta">
                 <mat-chip-set>
-                  <mat-chip>{{ ticket.status }}</mat-chip>
-                  <mat-chip>{{ ticket.priority }}</mat-chip>
+                  <mat-chip>{{ getStatusLabel(ticket.status) }}</mat-chip>
+                  <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
                 </mat-chip-set>
 
+                <a [routerLink]="['/workspace/projects', ticket.projectId]">{{ getProjectName(ticket.projectId) }}</a>
                 <span>Created by {{ ticket.createdByUsername }}</span>
+                <span>{{ getAssignedDeveloperNames(ticket) }}</span>
                 <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
               </div>
             </mat-card-content>

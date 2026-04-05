@@ -8,8 +8,6 @@ public sealed record CreateTicketRequest : IValidatableObject
     public const int TitleMaxLength = 200;
     public const int DescriptionMaxLength = 4000;
     public const int UserNameMaxLength = 100;
-    public const int AssignedUserIdMaxLength = 100;
-
     [MaxLength(TitleMaxLength)]
     public string Title { get; init; } = string.Empty;
 
@@ -22,8 +20,7 @@ public sealed record CreateTicketRequest : IValidatableObject
 
     public Guid ProjectId { get; init; }
 
-    [MaxLength(AssignedUserIdMaxLength)]
-    public string? AssignedUserId { get; init; }
+    public IReadOnlyList<Guid> AssignedDeveloperIds { get; init; } = [];
 
     [MaxLength(UserNameMaxLength)]
     public string CreatedByUsername { get; init; } = string.Empty;
@@ -53,6 +50,11 @@ public sealed record CreateTicketRequest : IValidatableObject
         if (!Enum.IsDefined(Priority))
         {
             yield return new ValidationResult("Priority is invalid.", [nameof(Priority)]);
+        }
+
+        if (AssignedDeveloperIds.Any(developerId => developerId == Guid.Empty))
+        {
+            yield return new ValidationResult("AssignedDeveloperIds must not contain empty values.", [nameof(AssignedDeveloperIds)]);
         }
     }
 }

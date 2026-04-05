@@ -31,6 +31,20 @@ public sealed class UsersService : IUsersService
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<UserResponse>> GetDevelopersAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .Where(user => user.RoleId == (int)UserRole.Developer)
+            .OrderBy(user => user.Username)
+            .Select(user => new UserResponse(
+                user.Id,
+                user.Username,
+                user.Role.Name,
+                user.CreatedAtUtc))
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<UserResponse?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _dbContext.Users

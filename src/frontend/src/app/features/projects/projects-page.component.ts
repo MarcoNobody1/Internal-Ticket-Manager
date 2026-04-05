@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { finalize } from 'rxjs';
 
+import { AuthService } from '../../core/auth/auth.service';
 import { Project, SaveProjectRequest } from './project.models';
 import { ProjectsService } from './projects.service';
 
@@ -22,14 +24,13 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
 @Component({
   selector: 'itm-projects-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatTableModule],
   templateUrl: './projects-page.component.html',
   styleUrls: ['./projects-page.component.css']
 })
 export class ProjectsPageComponent implements OnInit {
   @ViewChild(FormGroupDirective) private projectFormDirective?: FormGroupDirective;
 
-  readonly displayedColumns = ['name', 'description', 'updatedAtUtc', 'actions'];
   readonly projectNameMaxLength = projectNameMaxLength;
   readonly projectDescriptionMaxLength = projectDescriptionMaxLength;
 
@@ -41,11 +42,24 @@ export class ProjectsPageComponent implements OnInit {
   projects: Project[] = [];
   isLoadingProjects = false;
   isSubmitting = false;
+  deletingProjectId: string | null = null;
   loadErrorMessage = '';
   submitErrorMessage = '';
   editingProjectId: string | null = null;
 
-  constructor(private readonly formBuilder: FormBuilder, private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly formBuilder: FormBuilder,
+    private readonly projectsService: ProjectsService
+  ) {}
+
+  get canManageProjects(): boolean {
+    return this.authService.hasRole('Admin');
+  }
+
+  get displayedColumns(): string[] {
+    return this.canManageProjects ? ['name', 'description', 'updatedAtUtc', 'actions'] : ['name', 'description', 'updatedAtUtc', 'details'];
+  }
 
   get isEditMode(): boolean {
     return this.editingProjectId !== null;
@@ -73,6 +87,10 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   startEdit(project: Project): void {
+    if (!this.canManageProjects) {
+      return;
+    }
+
     this.editingProjectId = project.id;
     this.submitErrorMessage = '';
     this.projectForm.setValue({
@@ -82,10 +100,18 @@ export class ProjectsPageComponent implements OnInit {
   }
 
   cancelEdit(): void {
+    if (!this.canManageProjects) {
+      return;
+    }
+
     this.resetForm();
   }
 
   submit(): void {
+    if (!this.canManageProjects) {
+      return;
+    }
+
     if (this.projectForm.invalid) {
       this.projectForm.markAllAsTouched();
       return;
@@ -110,6 +136,36 @@ export class ProjectsPageComponent implements OnInit {
           : 'The project could not be created. Review the form and try again.';
       }
     });
+  }
+
+  deleteProject(project: Project): void {
+    if (!this.canManageProjects || this.deletingProjectId) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete project "${project.name}"? This also removes its tickets.`);
+    if (!confirmed) {
+      return;
+    }
+
+    this.deletingProjectId = project.id;
+    this.submitErrorMessage = '';
+
+    this.projectsService
+      .deleteProject(project.id)
+      .pipe(finalize(() => (this.deletingProjectId = null)))
+      .subscribe({
+        next: () => {
+          this.projects = this.projects.filter((existingProject) => existingProject.id !== project.id);
+
+          if (this.editingProjectId === project.id) {
+            this.resetForm();
+          }
+        },
+        error: () => {
+          this.submitErrorMessage = 'The project could not be deleted right now. Try again.';
+        }
+      });
   }
 
   trackByProjectId(_: number, project: Project): string {

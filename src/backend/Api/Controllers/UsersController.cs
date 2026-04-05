@@ -7,7 +7,7 @@ namespace InternalTicketManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = nameof(UserRole.Admin))]
+[Authorize]
 public sealed class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
@@ -18,6 +18,7 @@ public sealed class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [ProducesResponseType<IReadOnlyList<UserResponse>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -27,7 +28,19 @@ public sealed class UsersController : ControllerBase
         return Ok(users);
     }
 
+    [HttpGet("developers")]
+    [Authorize(Roles = $"{nameof(UserRole.Admin)},{nameof(UserRole.Developer)}")]
+    [ProducesResponseType<IReadOnlyList<UserResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetDevelopersAsync(CancellationToken cancellationToken)
+    {
+        var developers = await _usersService.GetDevelopersAsync(cancellationToken);
+        return Ok(developers);
+    }
+
     [HttpGet("{id:guid}")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -39,6 +52,7 @@ public sealed class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -57,6 +71,7 @@ public sealed class UsersController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -79,6 +94,7 @@ public sealed class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = nameof(UserRole.Admin))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

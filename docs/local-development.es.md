@@ -271,6 +271,14 @@ Endpoints admin de usuarios ahora cubiertos por tests de integración:
 - `PUT /api/users/{id}`
 - `DELETE /api/users/{id}`
 
+Comportamiento actual por rol:
+- `Projects`: lectura para usuarios autenticados, pero crear/editar/eliminar es solo para `Admin`.
+- `Tickets`: lectura para usuarios autenticados, crear/editar para `Admin` o `Developer`, y eliminar solo para `Admin`.
+- Los tickets ya se pueden asignar a uno o varios usuarios con rol `Developer`.
+- El frontend incluye ahora:
+  - `/workspace/projects/:projectId` para detalle de proyecto y tickets abiertos
+  - flujos de tickets con selección de proyecto y asignación múltiple de developers
+
 Cuando la API arranca en `Development`, va a asegurar que el esquema existe y sembrar los datos de auth por defecto si faltan.
 
 ### Frontend
@@ -360,6 +368,8 @@ En Postman, lanza los requests en este orden:
 9. `Tickets / Get Tickets`
 10. `Tickets / Get Ticket By Id`
 11. `Tickets / Update Ticket`
+12. `Projects / Delete Project` (solo Admin, opcional)
+13. `Tickets / Delete Ticket` (solo Admin, opcional)
 
 ### 11.5 Variables que la colección rellena automáticamente
 

@@ -1,4 +1,7 @@
 using System.Data.Common;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 using InternalTicketManager.Domain.Tickets;
 using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -90,7 +93,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
         TicketStatus status = TicketStatus.Open,
         TicketPriority priority = TicketPriority.Medium,
         string? description = null,
-        string? assignedUserId = null,
+        IReadOnlyCollection<Guid>? assignedDeveloperIds = null,
         DateTime? createdAtUtc = null,
         DateTime? updatedAtUtc = null)
     {
@@ -105,13 +108,36 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
             Description = description,
             Status = status,
             Priority = priority,
-            AssignedUserId = assignedUserId,
             CreatedByUsername = createdByUsername,
             CreatedAtUtc = createdAtUtc ?? DateTime.UtcNow,
             UpdatedAtUtc = updatedAtUtc ?? createdAtUtc ?? DateTime.UtcNow
         });
 
+        if (assignedDeveloperIds is not null)
+        {
+            foreach (var developerId in assignedDeveloperIds.Distinct())
+            {
+                dbContext.TicketAssignments.Add(new TicketAssignment
+                {
+                    TicketId = id,
+                    UserId = developerId,
+                    AssignedAtUtc = updatedAtUtc ?? createdAtUtc ?? DateTime.UtcNow
+                });
+            }
+        }
+
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Guid> GetUserIdByUsernameAsync(string username)
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+
+        return await dbContext.Users
+            .Where(user => user.Username == username)
+            .Select(user => user.Id)
+            .SingleAsync();
     }
 
     public async Task SeedCommentAsync(
@@ -134,5 +160,38 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
         });
 
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task<HttpClient> CreateAuthenticatedClientAsync(string username, string password)
+    {
+        var client = CreateClient();
+        await AuthenticateClientAsync(client, username, password);
+        return client;
+    }
+
+    public Task<HttpClient> CreateAdminClientAsync()
+    {
+        return CreateAuthenticatedClientAsync("admin.demo", "AdminDemo123!");
+    }
+
+    public Task<HttpClient> CreateDeveloperClientAsync()
+    {
+        return CreateAuthenticatedClientAsync("developer.demo", "DeveloperDemo123!");
+    }
+
+    private static async Task AuthenticateClientAsync(HttpClient client, string username, string password)
+    {
+        var response = await client.PostAsJsonAsync("/api/auth/login", new
+        {
+            username,
+            password
+        });
+
+        response.EnsureSuccessStatusCode();
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var accessToken = document.RootElement.GetProperty("accessToken").GetString();
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 }

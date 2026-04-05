@@ -17,8 +17,7 @@ public sealed record UpdateTicketRequest : IValidatableObject
 
     public Guid ProjectId { get; init; }
 
-    [MaxLength(CreateTicketRequest.AssignedUserIdMaxLength)]
-    public string? AssignedUserId { get; init; }
+    public IReadOnlyList<Guid> AssignedDeveloperIds { get; init; } = [];
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -40,6 +39,11 @@ public sealed record UpdateTicketRequest : IValidatableObject
         if (!Enum.IsDefined(Priority))
         {
             yield return new ValidationResult("Priority is invalid.", [nameof(Priority)]);
+        }
+
+        if (AssignedDeveloperIds.Any(developerId => developerId == Guid.Empty))
+        {
+            yield return new ValidationResult("AssignedDeveloperIds must not contain empty values.", [nameof(AssignedDeveloperIds)]);
         }
     }
 }

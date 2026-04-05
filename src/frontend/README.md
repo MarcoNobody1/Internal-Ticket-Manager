@@ -21,8 +21,9 @@ The frontend is intentionally modest:
 - Angular Material login UI
 - session-based JWT persistence for the current browser tab
 - bearer token interceptor and auth guard
-- protected workspace placeholder with logout
-- no ticket screens
+- protected workspace with projects, tickets, comments, and logout
+- role-aware projects UI (admin write actions only)
+- ticket create/edit form with project assignment, status, and priority controls
 - no state-management complexity
 
 ## Tooling Note
