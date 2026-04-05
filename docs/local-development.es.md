@@ -258,6 +258,29 @@ bun run test -- --watch=false --browsers=ChromeHeadless
 ng serve
 ```
 
+### Opcional: arrancar ambas partes desde VSCode
+
+Si utilizas Visual Studio Code, el repositorio ahora incluye:
+
+- `.vscode/tasks.json`
+- `.vscode/launch.json`
+
+Desde VSCode:
+
+1. Abre la **raíz del repositorio**.
+2. Abre **Run and Debug**.
+3. Elige `Full App: API + Frontend`.
+4. Pulsa `F5`.
+
+Eso arranca:
+- la API .NET
+- el frontend Angular en `http://localhost:4201`
+- una ventana del navegador apuntando al frontend
+
+sin tener que abrir manualmente varias terminales.
+
+El flujo de VSCode utiliza intencionadamente el puerto `4201`.
+
 ---
 
 ## 11. Probar el backend con Postman

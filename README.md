@@ -34,6 +34,32 @@ Deferred on purpose:
 
 ---
 
+## Prerequisites
+
+Before trying to run the project locally, make sure your machine has these tools installed:
+
+- **Git**
+- **.NET 8 SDK**
+- **Node.js 22.x**
+- **Bun**
+- **Angular CLI 18.x**
+- **Docker Desktop** with Docker Compose
+- **Visual Studio Code** (optional, but recommended if you want the one-click launch workflow)
+
+Recommended verification commands:
+
+```powershell
+git --version
+dotnet --version
+node --version
+bun --version
+ng version
+docker --version
+docker compose version
+```
+
+---
+
 ## Repository Structure
 
 ```text
@@ -144,6 +170,28 @@ Frontend auth notes:
 - Routes:
   - `/login` — public login page
   - `/workspace` — protected demo area after login
+
+#### Visual Studio Code launch workflow
+
+If you open the repository in VSCode, you can now start the app without manually opening separate terminals.
+
+Available VSCode configurations:
+
+- `Full App: API + Frontend`
+- `Backend: API (.NET)`
+- `Frontend: Angular`
+
+VSCode files added for this workflow:
+
+- `.vscode/tasks.json`
+- `.vscode/launch.json`
+
+Recommended usage:
+
+1. Open the repository root in VSCode.
+2. Press `F5` or open **Run and Debug**.
+3. Choose `Full App: API + Frontend`.
+4. VSCode will start the backend, start the Angular frontend on `http://localhost:4201`, and open the browser automatically.
 
 ---
 

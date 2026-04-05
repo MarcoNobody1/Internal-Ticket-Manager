@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Backend: API (.NET)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "dotnet run --project ${workspaceFolder}/src/backend/Api/InternalTicketManager.Api.csproj",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Frontend: Angular",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "ng serve --port 4201",
+      "cwd": "${workspaceFolder}/src/frontend"
+    },
+    {
+      "name": "Frontend: Browser",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4201",
+      "webRoot": "${workspaceFolder}/src/frontend",
+      "preLaunchTask": "app: run full stack"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full App: API + Frontend",
+      "configurations": [
+        "Frontend: Browser"
+      ],
+      "stopAll": true
+    }
+  ]
+}
