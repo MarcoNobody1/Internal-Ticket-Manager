@@ -62,14 +62,11 @@
           </div>
         </div>
 
-        <div class="workspace-page__hero-actions">
-          <a mat-flat-button color="primary" routerLink="/workspace/account">
-            <mat-icon>manage_accounts</mat-icon>
-            Open account
-          </a>
-          <a mat-button *ngIf="session.role === 'Developer'" routerLink="/workspace/account" fragment="assigned-tickets">
-            Review assigned tickets
-          </a>
+        <div class="workspace-page__session-note">
+          <mat-icon>info</mat-icon>
+          <span>
+            Account details, session storage notes, and assigned-ticket shortcuts stay available from the account menu in the top navigation.
+          </span>
         </div>
       </mat-card-content>
     </mat-card>

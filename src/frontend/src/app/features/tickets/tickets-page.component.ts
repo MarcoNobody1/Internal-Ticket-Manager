@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -20,7 +21,6 @@ import { UsersService } from '../users/users.service';
 import {
   CreateTicketRequest,
   PagedResult,
-  getAssignedDeveloperNames as formatAssignedDeveloperNames,
   getTicketPriorityLabel,
   getTicketStatusLabel,
   Ticket,
@@ -51,6 +51,7 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
     MatCardModule,
     MatChipsModule,
     MatFormFieldModule,
+    MatIconModule,
     MatInputModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
@@ -262,10 +263,6 @@ export class TicketsPageComponent implements OnInit {
 
   getPriorityLabel(priority: TicketPriority): string {
     return getTicketPriorityLabel(priority);
-  }
-
-  getAssignedDeveloperNames(ticket: Ticket): string {
-    return formatAssignedDeveloperNames(ticket.assignedDevelopers);
   }
 
   trackByTicketId(_: number, ticket: Ticket): string {

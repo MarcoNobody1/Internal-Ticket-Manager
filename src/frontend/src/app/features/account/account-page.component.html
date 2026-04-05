@@ -22,9 +22,12 @@
         </div>
       </div>
 
-      <p class="account-page__copy">
-        This page keeps the auth demo explainable: identity comes from the JWT-backed login, the frontend keeps it in session storage, and expired sessions are now cleared automatically.
-      </p>
+      <div class="account-page__session-note">
+        <mat-icon>info</mat-icon>
+        <p class="account-page__copy">
+          Identity comes from the JWT-backed login, the frontend keeps it in session storage, and expired sessions are cleared automatically.
+        </p>
+      </div>
     </mat-card-content>
   </mat-card>
 
