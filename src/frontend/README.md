@@ -29,6 +29,11 @@ The frontend is intentionally modest:
 
 This workspace now runs on Angular 18 + Angular Material 18, which is compatible with the current Node 22 development environment used in this repository.
 
+- The workspace keeps TypeScript on the Angular-supported range declared by Angular 18 tooling (`>=5.4 <5.6`).
+- `baseUrl` was intentionally removed from `tsconfig.json` because the app does not use path aliases and newer TypeScript versions mark that pattern as deprecated for future releases.
+- `rootDir` is explicitly set to `./src` in the root/app/spec tsconfig files to keep editor diagnostics and build output layout aligned.
+- Deprecated compatibility flags such as `downlevelIteration` and legacy `moduleResolution: node` were removed in favor of modern Angular 18 settings.
+
 ## Local Auth Demo Notes
 
 - `ng add @angular/material` was applied to wire Material theme, fonts, and animations.
