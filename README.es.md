@@ -79,6 +79,7 @@ Esa guía explica:
 - cómo aplicar la migración de EF Core existente y crear las tablas actuales
 - cómo configurar la connection string de la API
 - cómo correr backend y frontend
+- cómo importar y usar la colección de Postman para probar el CRUD del backend
 - cómo desmontar todo al terminar
 
 ---
@@ -205,3 +206,4 @@ Esta base es simple y defendible:
 - [README in English](./README.md)
 - [Local setup guide (English)](./docs/local-development.en.md)
 - [Guía de entorno local (Español)](./docs/local-development.es.md)
+- [Colección de Postman](./docs/postman/InternalTicketManager.postman_collection.json)

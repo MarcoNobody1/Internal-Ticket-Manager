@@ -260,7 +260,70 @@ ng serve
 
 ---
 
-## 11. Future EF Core Migrations Workflow
+## 11. Test the Backend with Postman
+
+The repository already includes an importable Postman collection here:
+
+```text
+docs/postman/InternalTicketManager.postman_collection.json
+```
+
+### 11.1 Import the collection
+
+1. Open **Postman**.
+2. Click **Import**.
+3. Select:
+
+```text
+Internal-Ticket-Manager/docs/postman/InternalTicketManager.postman_collection.json
+```
+
+### 11.2 Verify the collection variables
+
+After import, the collection already includes these variables:
+
+- `baseUrl` = `http://localhost:5215`
+- `token`
+- `projectId`
+- `ticketId`
+
+### 11.3 Start the backend before sending requests
+
+From the **repository root**:
+
+```powershell
+dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
+```
+
+### 11.4 Recommended request order
+
+In Postman, run the requests in this order:
+
+1. `Health / Get Health`
+2. `Auth / Login (Admin Demo)`
+3. `Auth / Get Current User`
+4. `Projects / Create Project`
+5. `Projects / Get Projects`
+6. `Projects / Get Project By Id`
+7. `Projects / Update Project`
+8. `Tickets / Create Ticket`
+9. `Tickets / Get Tickets`
+10. `Tickets / Get Ticket By Id`
+11. `Tickets / Update Ticket`
+
+### 11.5 Variable behavior already included in the collection
+
+The collection automatically stores:
+
+- `token` after login
+- `projectId` after creating a project
+- `ticketId` after creating a ticket
+
+That means you can test the CRUD flow without manually copying IDs between requests.
+
+---
+
+## 12. Future EF Core Migrations Workflow
 
 From the **repository root**:
 
@@ -274,7 +337,7 @@ The real `DbContext` already exists. Use this flow whenever the model changes an
 
 ---
 
-## 12. Tear Down / Clean Up
+## 13. Tear Down / Clean Up
 
 ### Stop containers but keep database data
 
