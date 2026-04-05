@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
-import { Ticket, TicketComment } from './ticket.models';
+import { getAssignedDeveloperNames as formatAssignedDeveloperNames, getTicketPriorityLabel, getTicketStatusLabel, Ticket, TicketComment, TicketPriority, TicketStatus } from './ticket.models';
 import { TicketsService } from './tickets.service';
 
 const commentMaxLength = 2000;
@@ -28,6 +28,8 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
   styleUrls: ['./ticket-details-page.component.css']
 })
 export class TicketDetailsPageComponent implements OnInit {
+  @ViewChild(FormGroupDirective) private commentFormDirective?: FormGroupDirective;
+
   readonly commentMaxLength = commentMaxLength;
   readonly commentForm = this.formBuilder.nonNullable.group({
     authorUsername: [{ value: this.authService.getSession()?.username ?? '', disabled: true }, [Validators.required]],
@@ -83,7 +85,7 @@ export class TicketDetailsPageComponent implements OnInit {
             ...this.ticket!,
             updatedAtUtc: comment.createdAtUtc
           };
-          this.commentForm.controls.content.reset('');
+          this.resetCommentForm();
           this.isSubmitting = false;
         },
         error: () => {
@@ -91,6 +93,18 @@ export class TicketDetailsPageComponent implements OnInit {
           this.isSubmitting = false;
         }
       });
+  }
+
+  getStatusLabel(status: TicketStatus): string {
+    return getTicketStatusLabel(status);
+  }
+
+  getPriorityLabel(priority: TicketPriority): string {
+    return getTicketPriorityLabel(priority);
+  }
+
+  getAssignedDeveloperNames(ticket: Ticket): string {
+    return formatAssignedDeveloperNames(ticket.assignedDevelopers);
   }
 
   private loadTicketDetails(ticketId: string): void {
@@ -111,5 +125,21 @@ export class TicketDetailsPageComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  private resetCommentForm(): void {
+    this.commentFormDirective?.resetForm({
+      authorUsername: this.authService.getSession()?.username ?? '',
+      content: ''
+    });
+
+    this.commentForm.reset({
+      authorUsername: this.authService.getSession()?.username ?? '',
+      content: ''
+    });
+
+    this.commentForm.markAsPristine();
+    this.commentForm.markAsUntouched();
+    this.commentForm.updateValueAndValidity({ emitEvent: false });
   }
 }
