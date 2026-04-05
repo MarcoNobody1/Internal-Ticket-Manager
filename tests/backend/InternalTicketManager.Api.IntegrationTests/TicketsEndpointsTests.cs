@@ -36,7 +36,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             createdAtUtc: new DateTime(2026, 4, 2, 10, 0, 0, DateTimeKind.Utc),
             updatedAtUtc: new DateTime(2026, 4, 2, 10, 0, 0, DateTimeKind.Utc));
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.GetAsync("/api/tickets");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -52,7 +52,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     {
         await _factory.ResetDatabaseAsync();
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.GetAsync($"/api/tickets/{Guid.NewGuid()}");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -80,7 +80,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             "First comment",
             new DateTime(2026, 4, 5, 10, 0, 0, DateTimeKind.Utc));
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.GetAsync($"/api/tickets/{ticketId}/comments");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -96,7 +96,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     {
         await _factory.ResetDatabaseAsync();
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.GetAsync($"/api/tickets/{Guid.NewGuid()}/comments");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -107,9 +107,10 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     {
         await _factory.ResetDatabaseAsync();
         var projectId = Guid.NewGuid();
+        var assignedDeveloperId = await _factory.GetUserIdByUsernameAsync("developer.demo");
         await _factory.SeedProjectAsync(projectId, "Platform");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync("/api/tickets", new
         {
             title = "  Fix login form  ",
@@ -117,7 +118,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             status = TicketStatus.Open,
             priority = TicketPriority.High,
             projectId,
-            assignedUserId = "  dev-01  ",
+            assignedDeveloperIds = new[] { assignedDeveloperId },
             createdByUsername = "  marco  "
         });
 
@@ -128,9 +129,38 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         Assert.Equal("Fix login form", document.RootElement.GetProperty("title").GetString());
         Assert.Equal("The submit button stays disabled.", document.RootElement.GetProperty("description").GetString());
         Assert.Equal(projectId, document.RootElement.GetProperty("projectId").GetGuid());
-        Assert.Equal("dev-01", document.RootElement.GetProperty("assignedUserId").GetString());
+        Assert.Equal(1, document.RootElement.GetProperty("assignedDevelopers").GetArrayLength());
+        Assert.Equal(assignedDeveloperId, document.RootElement.GetProperty("assignedDevelopers")[0].GetProperty("id").GetGuid());
+        Assert.Equal("developer.demo", document.RootElement.GetProperty("assignedDevelopers")[0].GetProperty("username").GetString());
         Assert.Equal("marco", document.RootElement.GetProperty("createdByUsername").GetString());
         Assert.Equal((int)TicketPriority.High, document.RootElement.GetProperty("priority").GetInt32());
+    }
+
+    [Fact]
+    public async Task PostTicket_WithAdminUserInAssignments_ReturnsBadRequestAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var adminId = await _factory.GetUserIdByUsernameAsync("admin.demo");
+        await _factory.SeedProjectAsync(projectId, "Platform");
+
+        var client = await _factory.CreateDeveloperClientAsync();
+        var response = await client.PostAsJsonAsync("/api/tickets", new
+        {
+            title = "Fix login form",
+            description = "Invalid assignment",
+            status = TicketStatus.Open,
+            priority = TicketPriority.Medium,
+            projectId,
+            assignedDeveloperIds = new[] { adminId },
+            createdByUsername = "developer.demo"
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Contains(document.RootElement.GetProperty("errors").GetProperty("AssignedDeveloperIds").EnumerateArray(), value =>
+            value.GetString() == "Assigned developers must exist and have the Developer role.");
     }
 
     [Fact]
@@ -143,7 +173,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         await _factory.SeedProjectAsync(projectId, "Platform");
         await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync($"/api/tickets/{ticketId}/comments", new
         {
             authorUsername = "  developer.demo  ",
@@ -169,7 +199,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         await _factory.SeedProjectAsync(projectId, "Platform");
         await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync($"/api/tickets/{ticketId}/comments", new
         {
             authorUsername = "developer.demo",
@@ -188,7 +218,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     {
         await _factory.ResetDatabaseAsync();
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync($"/api/tickets/{Guid.NewGuid()}/comments", new
         {
             authorUsername = "developer.demo",
@@ -205,7 +235,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         var projectId = Guid.NewGuid();
         await _factory.SeedProjectAsync(projectId, "Platform");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync("/api/tickets", new
         {
             title = "   ",
@@ -230,7 +260,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         var projectId = Guid.NewGuid();
         await _factory.SeedProjectAsync(projectId, "Platform");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync("/api/tickets", new
         {
             title = "Fix login form",
@@ -253,7 +283,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     {
         await _factory.ResetDatabaseAsync();
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PostAsJsonAsync("/api/tickets", new
         {
             title = "Fix login form",
@@ -281,17 +311,30 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
 
         await _factory.SeedProjectAsync(currentProjectId, "Platform");
         await _factory.SeedProjectAsync(newProjectId, "Support");
+        var existingDeveloperId = await _factory.GetUserIdByUsernameAsync("developer.demo");
         await _factory.SeedTicketAsync(
             ticketId,
             currentProjectId,
             "Old title",
             "marco",
             description: "Old description",
-            assignedUserId: "dev-01",
+            assignedDeveloperIds: [existingDeveloperId],
             createdAtUtc: new DateTime(2026, 4, 1, 10, 0, 0, DateTimeKind.Utc),
             updatedAtUtc: new DateTime(2026, 4, 1, 10, 0, 0, DateTimeKind.Utc));
 
-        var client = _factory.CreateClient();
+        var newDeveloperResponse = await (await _factory.CreateAdminClientAsync()).PostAsJsonAsync("/api/users", new
+        {
+            username = "developer.ops",
+            password = "DeveloperOps123!",
+            role = "Developer"
+        });
+
+        newDeveloperResponse.EnsureSuccessStatusCode();
+
+        using var newDeveloperDocument = JsonDocument.Parse(await newDeveloperResponse.Content.ReadAsStringAsync());
+        var newDeveloperId = newDeveloperDocument.RootElement.GetProperty("id").GetGuid();
+
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PutAsJsonAsync($"/api/tickets/{ticketId}", new
         {
             title = "Updated title",
@@ -299,7 +342,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             status = TicketStatus.InProgress,
             priority = TicketPriority.Critical,
             projectId = newProjectId,
-            assignedUserId = "  dev-02  "
+            assignedDeveloperIds = new[] { newDeveloperId }
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -309,7 +352,8 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         Assert.Equal("Updated title", document.RootElement.GetProperty("title").GetString());
         Assert.Equal("Updated description", document.RootElement.GetProperty("description").GetString());
         Assert.Equal(newProjectId, document.RootElement.GetProperty("projectId").GetGuid());
-        Assert.Equal("dev-02", document.RootElement.GetProperty("assignedUserId").GetString());
+        Assert.Equal(1, document.RootElement.GetProperty("assignedDevelopers").GetArrayLength());
+        Assert.Equal(newDeveloperId, document.RootElement.GetProperty("assignedDevelopers")[0].GetProperty("id").GetGuid());
         Assert.Equal("marco", document.RootElement.GetProperty("createdByUsername").GetString());
         Assert.Equal(new DateTime(2026, 4, 1, 10, 0, 0, DateTimeKind.Utc), document.RootElement.GetProperty("createdAtUtc").GetDateTime());
         Assert.True(document.RootElement.GetProperty("updatedAtUtc").GetDateTime() > document.RootElement.GetProperty("createdAtUtc").GetDateTime());
@@ -322,7 +366,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         var projectId = Guid.NewGuid();
         await _factory.SeedProjectAsync(projectId, "Platform");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PutAsJsonAsync($"/api/tickets/{Guid.NewGuid()}", new
         {
             title = "Updated title",
@@ -330,7 +374,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             status = TicketStatus.InProgress,
             priority = TicketPriority.High,
             projectId,
-            assignedUserId = "dev-02"
+            assignedDeveloperIds = Array.Empty<Guid>()
         });
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -345,7 +389,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         await _factory.SeedProjectAsync(projectId, "Platform");
         await _factory.SeedTicketAsync(ticketId, projectId, "Old title", "marco");
 
-        var client = _factory.CreateClient();
+        var client = await _factory.CreateDeveloperClientAsync();
         var response = await client.PutAsJsonAsync($"/api/tickets/{ticketId}", new
         {
             title = "Updated title",
@@ -353,7 +397,7 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
             status = TicketStatus.InProgress,
             priority = TicketPriority.High,
             projectId = Guid.NewGuid(),
-            assignedUserId = "dev-02"
+            assignedDeveloperIds = Array.Empty<Guid>()
         });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -361,5 +405,51 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         Assert.Contains(document.RootElement.GetProperty("errors").GetProperty("ProjectId").EnumerateArray(), value =>
             value.GetString() == "Project does not exist.");
+    }
+
+    [Fact]
+    public async Task GetTickets_WithoutBearerToken_ReturnsUnauthorizedAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/tickets");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteTicket_WithDeveloperCredentials_ReturnsForbiddenAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+        await _factory.SeedProjectAsync(projectId, "Platform");
+        await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
+
+        var client = await _factory.CreateDeveloperClientAsync();
+        var response = await client.DeleteAsync($"/api/tickets/{ticketId}");
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteTicket_WithAdminCredentials_DeletesTicketAndCommentsAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+        await _factory.SeedProjectAsync(projectId, "Platform");
+        await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
+        await _factory.SeedCommentAsync(Guid.NewGuid(), ticketId, "developer.demo", "I can reproduce this issue.");
+
+        var client = await _factory.CreateAdminClientAsync();
+        var deleteResponse = await client.DeleteAsync($"/api/tickets/{ticketId}");
+        var getTicketResponse = await client.GetAsync($"/api/tickets/{ticketId}");
+        var getCommentsResponse = await client.GetAsync($"/api/tickets/{ticketId}/comments");
+
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, getTicketResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, getCommentsResponse.StatusCode);
     }
 }

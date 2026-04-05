@@ -29,9 +29,6 @@ public sealed class TicketConfiguration : IEntityTypeConfiguration<Ticket>
             .HasConversion<string>()
             .HasMaxLength(32);
 
-        builder.Property(ticket => ticket.AssignedUserId)
-            .HasMaxLength(100);
-
         builder.Property(ticket => ticket.CreatedByUsername)
             .IsRequired()
             .HasMaxLength(100);
@@ -49,6 +46,11 @@ public sealed class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         builder.HasMany(ticket => ticket.Comments)
             .WithOne(comment => comment.Ticket)
             .HasForeignKey(comment => comment.TicketId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(ticket => ticket.Assignments)
+            .WithOne(assignment => assignment.Ticket)
+            .HasForeignKey(assignment => assignment.TicketId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

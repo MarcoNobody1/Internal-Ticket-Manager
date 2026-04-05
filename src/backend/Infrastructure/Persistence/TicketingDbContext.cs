@@ -20,6 +20,8 @@ public sealed class TicketingDbContext : DbContext
 
     public DbSet<Ticket> Tickets => Set<Ticket>();
 
+    public DbSet<TicketAssignment> TicketAssignments => Set<TicketAssignment>();
+
     public DbSet<Comment> Comments => Set<Comment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

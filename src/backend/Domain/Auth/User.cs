@@ -15,4 +15,6 @@ public sealed class User
     public Role Role { get; set; } = null!;
 
     public DateTime CreatedAtUtc { get; set; }
+
+    public ICollection<Tickets.TicketAssignment> TicketAssignments { get; set; } = new List<Tickets.TicketAssignment>();
 }

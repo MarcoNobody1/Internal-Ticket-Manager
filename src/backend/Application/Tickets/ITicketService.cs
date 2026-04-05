@@ -13,4 +13,6 @@ public interface ITicketService
     Task<CreateCommentResult> CreateCommentAsync(Guid ticketId, CreateCommentRequest request, CancellationToken cancellationToken);
 
     Task<UpdateTicketResult> UpdateTicketAsync(Guid id, UpdateTicketRequest request, CancellationToken cancellationToken);
+
+    Task<bool> DeleteTicketAsync(Guid id, CancellationToken cancellationToken);
 }

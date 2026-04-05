@@ -39,6 +39,34 @@ public sealed class UsersEndpointsTests : IClassFixture<TestWebApplicationFactor
     }
 
     [Fact]
+    public async Task GetDevelopers_WithDeveloperToken_ReturnsDeveloperOptionsAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var adminClient = _factory.CreateClient();
+        await AuthenticateAsync(adminClient, "admin.demo", "AdminDemo123!");
+
+        var createResponse = await adminClient.PostAsJsonAsync("/api/users", new
+        {
+            username = "developer.ops",
+            password = "DeveloperOps123!",
+            role = "Developer"
+        });
+
+        createResponse.EnsureSuccessStatusCode();
+
+        var developerClient = _factory.CreateClient();
+        await AuthenticateAsync(developerClient, "developer.demo", "DeveloperDemo123!");
+
+        var response = await developerClient.GetAsync("/api/users/developers");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(2, document.RootElement.GetArrayLength());
+        Assert.All(document.RootElement.EnumerateArray(), user => Assert.Equal("Developer", user.GetProperty("role").GetString()));
+    }
+
+    [Fact]
     public async Task GetUsers_WithAdminToken_ReturnsSeededUsersAsync()
     {
         await _factory.ResetDatabaseAsync();

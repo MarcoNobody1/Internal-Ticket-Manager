@@ -14,8 +14,6 @@ public sealed class Ticket
 
     public Guid ProjectId { get; set; }
 
-    public string? AssignedUserId { get; set; }
-
     public string CreatedByUsername { get; set; } = string.Empty;
 
     public DateTime CreatedAtUtc { get; set; }
@@ -25,4 +23,6 @@ public sealed class Ticket
     public Projects.Project Project { get; set; } = null!;
 
     public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
+    public ICollection<TicketAssignment> Assignments { get; set; } = new List<TicketAssignment>();
 }
