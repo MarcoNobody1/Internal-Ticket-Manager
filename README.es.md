@@ -34,6 +34,32 @@ Lo que sigue diferido a propósito:
 
 ---
 
+## Requisitos previos
+
+Antes de intentar levantar el proyecto en local, asegúrate de que tu equipo tiene instaladas estas herramientas:
+
+- **Git**
+- **.NET 8 SDK**
+- **Node.js 22.x**
+- **Bun**
+- **Angular CLI 18.x**
+- **Docker Desktop** con Docker Compose
+- **Visual Studio Code** (opcional, pero recomendable si quieres usar el arranque cómodo con un clic)
+
+Comandos recomendados para verificarlo:
+
+```powershell
+git --version
+dotnet --version
+node --version
+bun --version
+ng version
+docker --version
+docker compose version
+```
+
+---
+
 ## Estructura del repositorio
 
 ```text
@@ -134,6 +160,28 @@ Abre una terminal en el **workspace frontend**:
 cd <ruta>\Internal-Ticket-Manager\src\frontend
 ng serve
 ```
+
+#### Flujo de arranque desde Visual Studio Code
+
+Si abres el repositorio en VSCode, ahora puedes arrancar la aplicación sin abrir manualmente varias terminales.
+
+Configuraciones disponibles en VSCode:
+
+- `Full App: API + Frontend`
+- `Backend: API (.NET)`
+- `Frontend: Angular`
+
+Archivos de VSCode añadidos para este flujo:
+
+- `.vscode/tasks.json`
+- `.vscode/launch.json`
+
+Uso recomendado:
+
+1. Abre la raíz del repositorio en VSCode.
+2. Pulsa `F5` o abre **Run and Debug**.
+3. Elige `Full App: API + Frontend`.
+4. VSCode arrancará el backend, levantará el frontend Angular en `http://localhost:4201` y abrirá el navegador automáticamente.
 
 ---
 
