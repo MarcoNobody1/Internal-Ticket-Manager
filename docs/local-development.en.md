@@ -232,6 +232,11 @@ On first startup, the API will:
 - seed the `Admin` and `Developer` roles if missing
 - seed the default demo users if missing
 
+Current admin users management notes:
+- `/api/users` CRUD endpoints are restricted to the `Admin` role.
+- `/workspace/users` is available only to authenticated admins.
+- The app keeps the seeded demo credentials as the simplest supported way to enter the system locally.
+
 Because the repository does not keep committed migration files, the local database should be treated as a disposable development database. If the schema changes later, the simplest supported refresh path is to recreate the local database/volume and start the API again.
 
 Expected current tables:
@@ -258,6 +263,13 @@ dotnet build InternalTicketManager.sln
 dotnet test tests/backend/InternalTicketManager.Api.IntegrationTests/InternalTicketManager.Api.IntegrationTests.csproj
 dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
+
+Admin users endpoints now covered by integration tests:
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `POST /api/users`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
 
 When the API starts in `Development`, it will ensure the schema exists and seed the default auth data if needed.
 

@@ -18,11 +18,12 @@ This repository is intentionally built as a **small modular monolith**.
 
 Current baseline includes:
 - JWT auth backed by persisted users and roles
+- admin-only CRUD for persisted users with one-role assignment (`Admin` / `Developer`)
 - backend health endpoint and protected identity probe
 - real EF Core persistence foundation with automatic local schema creation in Development
 - project CRUD endpoints
 - base ticket CRUD endpoints for list/detail/create/update
-- Angular standalone shell with a first login/workspace auth slice
+- Angular standalone shell with login, workspace, and an admin users screen
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
@@ -143,6 +144,11 @@ Expected baseline endpoints:
 - `GET /api/health`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `POST /api/users`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
 - `GET /api/projects`
 - `GET /api/projects/{id}`
 - `POST /api/projects`
@@ -175,6 +181,7 @@ Frontend auth notes:
   - `/workspace/projects` — project management screen
   - `/workspace/tickets` — ticket list screen
   - `/workspace/tickets/:ticketId` — ticket details with comments timeline
+  - `/workspace/users` — admin-only users management screen
 
 #### Visual Studio Code launch workflow
 

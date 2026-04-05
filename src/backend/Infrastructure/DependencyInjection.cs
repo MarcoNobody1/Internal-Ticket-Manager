@@ -1,10 +1,12 @@
 using InternalTicketManager.Application.Auth;
 using InternalTicketManager.Application.Projects;
 using InternalTicketManager.Application.Tickets;
+using InternalTicketManager.Application.Users;
 using InternalTicketManager.Infrastructure.Auth;
 using InternalTicketManager.Infrastructure.Projects;
 using InternalTicketManager.Infrastructure.Persistence;
 using InternalTicketManager.Infrastructure.Tickets;
+using InternalTicketManager.Infrastructure.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ApplicationDbInitializer>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ITicketService, TicketService>();
+        services.AddScoped<IUsersService, UsersService>();
 
         return services;
     }

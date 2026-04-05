@@ -18,11 +18,12 @@ Este repositorio está planteado intencionalmente como un **monolito modular peq
 
 Lo que ya existe:
 - autenticación JWT apoyada en usuarios y roles persistidos
+- CRUD admin-only para usuarios persistidos con asignación de un solo rol (`Admin` / `Developer`)
 - endpoint de salud y endpoint protegido de identidad
 - base real de persistencia con creación automática del esquema local en Development
 - CRUD de proyectos
 - CRUD base de tickets para listar, ver detalle, crear y actualizar
-- shell Angular standalone con login funcional y espacio protegido
+- shell Angular standalone con login funcional, workspace y pantalla admin de usuarios
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
 - documentación para reproducir el entorno local
@@ -143,6 +144,11 @@ Endpoints base esperados:
 - `GET /api/health`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `POST /api/users`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
 - `GET /api/projects`
 - `GET /api/projects/{id}`
 - `POST /api/projects`
@@ -160,6 +166,18 @@ Abre una terminal en el **workspace frontend**:
 cd <ruta>\Internal-Ticket-Manager\src\frontend
 ng serve
 ```
+
+Notas del flujo auth/frontend:
+- Angular Material sigue siendo la base visual.
+- Las credenciales demo seed siguen siendo:
+  - `admin.demo / AdminDemo123!`
+  - `developer.demo / DeveloperDemo123!`
+- Rutas principales:
+  - `/login`
+  - `/workspace/projects`
+  - `/workspace/tickets`
+  - `/workspace/tickets/:ticketId`
+  - `/workspace/users` — solo para admins
 
 #### Flujo de arranque desde Visual Studio Code
 

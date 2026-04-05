@@ -41,6 +41,10 @@ export class AuthService {
     return this.getSession() !== null;
   }
 
+  hasRole(role: string): boolean {
+    return this.getSession()?.role === role;
+  }
+
   private setSession(session: AuthSession): void {
     sessionStorage.setItem(AUTH_SESSION_STORAGE_KEY, JSON.stringify(session));
     this.sessionSubject.next(session);
