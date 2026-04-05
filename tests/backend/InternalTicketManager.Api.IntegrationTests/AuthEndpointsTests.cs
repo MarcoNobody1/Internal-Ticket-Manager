@@ -4,16 +4,19 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
+using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace InternalTicketManager.Api.IntegrationTests;
 
-public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+public sealed class AuthEndpointsTests : IClassFixture<TestWebApplicationFactory>
 {
-    private readonly WebApplicationFactory<Program> _factory;
+    private readonly TestWebApplicationFactory _factory;
 
-    public AuthEndpointsTests(WebApplicationFactory<Program> factory)
+    public AuthEndpointsTests(TestWebApplicationFactory factory)
     {
         _factory = factory;
     }
@@ -21,6 +24,7 @@ public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     [Fact]
     public async Task Login_WithValidAdminCredentials_ReturnsTokenAsync()
     {
+        await _factory.ResetDatabaseAsync();
         var client = _factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/auth/login", new
@@ -40,6 +44,7 @@ public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     [Fact]
     public async Task Login_WithInvalidCredentials_ReturnsUnauthorizedAsync()
     {
+        await _factory.ResetDatabaseAsync();
         var client = _factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/auth/login", new
@@ -54,6 +59,7 @@ public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     [Fact]
     public async Task GetCurrentUser_WithoutBearerToken_ReturnsUnauthorizedAsync()
     {
+        await _factory.ResetDatabaseAsync();
         var client = _factory.CreateClient();
 
         var response = await client.GetAsync("/api/auth/me");
@@ -64,6 +70,7 @@ public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     [Fact]
     public async Task DeveloperLogin_TokenContainsRoleClaim_AndMeEchoesIdentityAsync()
     {
+        await _factory.ResetDatabaseAsync();
         var client = _factory.CreateClient();
 
         var loginResponse = await client.PostAsJsonAsync("/api/auth/login", new
@@ -95,5 +102,21 @@ public sealed class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Pro
         Assert.True(meDocument.RootElement.GetProperty("isAuthenticated").GetBoolean());
         Assert.Equal("developer.demo", meDocument.RootElement.GetProperty("username").GetString());
         Assert.Equal("Developer", meDocument.RootElement.GetProperty("role").GetString());
+    }
+
+    [Fact]
+    public async Task DatabaseInitialization_SeedsExpectedUsersAndRolesAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+
+        using var scope = _factory.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+
+        Assert.Equal(2, await dbContext.Roles.CountAsync());
+        Assert.Equal(2, await dbContext.Users.CountAsync());
+
+        var adminUser = await dbContext.Users.Include(user => user.Role).SingleAsync(user => user.Username == "admin.demo");
+        Assert.Equal("Admin", adminUser.Role.Name);
+        Assert.DoesNotContain("AdminDemo123!", adminUser.PasswordHash, StringComparison.Ordinal);
     }
 }

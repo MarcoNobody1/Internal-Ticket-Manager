@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -27,6 +27,8 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
   styleUrls: ['./projects-page.component.css']
 })
 export class ProjectsPageComponent implements OnInit {
+  @ViewChild(FormGroupDirective) private projectFormDirective?: FormGroupDirective;
+
   readonly displayedColumns = ['name', 'description', 'updatedAtUtc', 'actions'];
   readonly projectNameMaxLength = projectNameMaxLength;
   readonly projectDescriptionMaxLength = projectDescriptionMaxLength;
@@ -117,10 +119,17 @@ export class ProjectsPageComponent implements OnInit {
   private resetForm(): void {
     this.editingProjectId = null;
     this.submitErrorMessage = '';
+    this.projectFormDirective?.resetForm({
+      name: '',
+      description: ''
+    });
     this.projectForm.reset({
       name: '',
       description: ''
     });
+    this.projectForm.markAsPristine();
+    this.projectForm.markAsUntouched();
+    this.projectForm.updateValueAndValidity({ emitEvent: false });
   }
 
   private toSaveProjectRequest(): SaveProjectRequest {

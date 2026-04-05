@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace InternalTicketManager.Api.IntegrationTests;
@@ -28,15 +29,15 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
                 services.Remove(existingDescriptor);
             }
 
+            services.RemoveAll<TicketingDbContext>();
+            services.RemoveAll<ApplicationDbInitializer>();
+
             _connection = new SqliteConnection("Data Source=:memory:");
             _connection.Open();
 
             services.AddSingleton(_connection);
             services.AddDbContext<TicketingDbContext>(options => options.UseSqlite(_connection));
-
-            using var scope = services.BuildServiceProvider().CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
-            dbContext.Database.EnsureCreated();
+            services.AddScoped<ApplicationDbInitializer>();
         });
     }
 
@@ -59,9 +60,10 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
     {
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbInitializer>();
 
         await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
+        await dbInitializer.InitializeAsync();
     }
 
     public async Task SeedProjectAsync(Guid id, string name, string? description = null)
