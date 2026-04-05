@@ -1,15 +1,35 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { CreateTicketCommentRequest, CreateTicketRequest, Ticket, TicketComment, UpdateTicketRequest } from './ticket.models';
+import { CreateTicketCommentRequest, CreateTicketRequest, PagedResult, Ticket, TicketComment, TicketQuery, UpdateTicketRequest } from './ticket.models';
 
 @Injectable({ providedIn: 'root' })
 export class TicketsService {
   constructor(private readonly httpClient: HttpClient) {}
 
-  getTickets(): Observable<Ticket[]> {
-    return this.httpClient.get<Ticket[]>('/api/tickets');
+  getTickets(query: TicketQuery): Observable<PagedResult<Ticket>> {
+    let params = new HttpParams()
+      .set('pageNumber', query.pageNumber)
+      .set('pageSize', query.pageSize);
+
+    if (query.status !== undefined) {
+      params = params.set('status', query.status);
+    }
+
+    if (query.priority !== undefined) {
+      params = params.set('priority', query.priority);
+    }
+
+    if (query.projectId) {
+      params = params.set('projectId', query.projectId);
+    }
+
+    if (query.assignedUserId) {
+      params = params.set('assignedUserId', query.assignedUserId);
+    }
+
+    return this.httpClient.get<PagedResult<Ticket>>('/api/tickets', { params });
   }
 
   getTicketById(ticketId: string): Observable<Ticket> {

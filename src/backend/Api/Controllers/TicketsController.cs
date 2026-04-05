@@ -1,3 +1,4 @@
+using InternalTicketManager.Application.Common;
 using InternalTicketManager.Application.Tickets;
 using InternalTicketManager.Domain.Auth;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,14 @@ public sealed class TicketsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType<IReadOnlyList<TicketResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<PagedResult<TicketResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<IReadOnlyList<TicketResponse>>> GetTicketsAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedResult<TicketResponse>>> GetTicketsAsync(
+        [FromQuery] GetTicketsRequest request,
+        CancellationToken cancellationToken)
     {
-        var tickets = await _ticketService.GetTicketsAsync(cancellationToken);
+        var tickets = await _ticketService.GetTicketsAsync(request, cancellationToken);
         return Ok(tickets);
     }
 

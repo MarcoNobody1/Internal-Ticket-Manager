@@ -13,6 +13,12 @@
   margin-bottom: 1.5rem;
 }
 
+.tickets-filters {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
 .tickets-form__grid {
   display: grid;
   gap: 1rem;
@@ -46,6 +52,7 @@
 .tickets-page__list {
   display: grid;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .tickets-page__item {

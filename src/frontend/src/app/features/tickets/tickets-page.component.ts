@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { finalize, forkJoin } from 'rxjs';
@@ -18,10 +19,12 @@ import { User } from '../users/user.models';
 import { UsersService } from '../users/users.service';
 import {
   CreateTicketRequest,
+  PagedResult,
   getAssignedDeveloperNames as formatAssignedDeveloperNames,
   getTicketPriorityLabel,
   getTicketStatusLabel,
   Ticket,
+  TicketQuery,
   TicketPriority,
   ticketPriorityOptions,
   TicketStatus,
@@ -49,6 +52,7 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
     MatChipsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatPaginatorModule,
     MatProgressSpinnerModule,
     MatSelectModule
   ],
@@ -58,10 +62,13 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
 export class TicketsPageComponent implements OnInit {
   @ViewChild(FormGroupDirective) private ticketFormDirective?: FormGroupDirective;
 
+  private readonly defaultPageSize = 10;
+
   readonly ticketTitleMaxLength = ticketTitleMaxLength;
   readonly ticketDescriptionMaxLength = ticketDescriptionMaxLength;
   readonly statusOptions = ticketStatusOptions;
   readonly priorityOptions = ticketPriorityOptions;
+  readonly pageSizeOptions = [5, 10, 20];
 
   readonly ticketForm = this.formBuilder.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(ticketTitleMaxLength), requiredTrimmedValidator]],
@@ -72,9 +79,23 @@ export class TicketsPageComponent implements OnInit {
     assignedDeveloperIds: [[] as string[]]
   });
 
+  readonly filtersForm = this.formBuilder.group({
+    status: this.formBuilder.control<TicketStatus | null>(null),
+    priority: this.formBuilder.control<TicketPriority | null>(null),
+    projectId: this.formBuilder.nonNullable.control(''),
+    assignedUserId: this.formBuilder.nonNullable.control('')
+  });
+
   tickets: Ticket[] = [];
   projects: Project[] = [];
   developers: User[] = [];
+  ticketPage: PagedResult<Ticket> = {
+    items: [],
+    pageNumber: 1,
+    pageSize: this.defaultPageSize,
+    totalCount: 0,
+    totalPages: 0
+  };
   isLoading = false;
   isSubmitting = false;
   deletingTicketId: string | null = null;
@@ -112,14 +133,14 @@ export class TicketsPageComponent implements OnInit {
 
     forkJoin({
       projects: this.projectsService.getProjects(),
-      tickets: this.ticketsService.getTickets(),
+      tickets: this.ticketsService.getTickets(this.getTicketQuery()),
       developers: this.usersService.getDevelopers()
     })
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: ({ projects, tickets, developers }) => {
           this.projects = sortProjectsByName(projects);
-          this.tickets = sortTicketsByUpdatedAt(tickets);
+          this.setTicketPage(tickets);
           this.developers = developers;
         },
         error: () => {
@@ -171,15 +192,20 @@ export class TicketsPageComponent implements OnInit {
 
     this.isSubmitting = true;
     this.submitErrorMessage = '';
+    const isEditOperation = this.editingTicketId !== null;
 
     const submitOperation = this.editingTicketId
       ? this.ticketsService.updateTicket(this.editingTicketId, this.toUpdateTicketRequest())
       : this.ticketsService.createTicket(this.toCreateTicketRequest(session.username));
 
     submitOperation.pipe(finalize(() => (this.isSubmitting = false))).subscribe({
-      next: (ticket) => {
-        this.tickets = upsertTicket(this.tickets, ticket);
+      next: () => {
         this.resetForm();
+        if (!isEditOperation) {
+          this.ticketPage.pageNumber = 1;
+        }
+
+        this.loadTicketsPage();
       },
       error: () => {
         this.submitErrorMessage = this.editingTicketId
@@ -207,11 +233,15 @@ export class TicketsPageComponent implements OnInit {
       .pipe(finalize(() => (this.deletingTicketId = null)))
       .subscribe({
         next: () => {
-          this.tickets = this.tickets.filter((existingTicket) => existingTicket.id !== ticket.id);
-
           if (this.editingTicketId === ticket.id) {
             this.resetForm();
           }
+
+          if (this.tickets.length === 1 && this.ticketPage.pageNumber > 1) {
+            this.ticketPage.pageNumber -= 1;
+          }
+
+          this.loadTicketsPage();
         },
         error: () => {
           this.submitErrorMessage = 'The ticket could not be deleted right now. Try again.';
@@ -241,6 +271,29 @@ export class TicketsPageComponent implements OnInit {
 
   trackByDeveloperId(_: number, developer: User): string {
     return developer.id;
+  }
+
+  applyFilters(): void {
+    this.ticketPage.pageNumber = 1;
+    this.loadTicketsPage();
+  }
+
+  clearFilters(): void {
+    this.filtersForm.reset({
+      status: null,
+      priority: null,
+      projectId: '',
+      assignedUserId: ''
+    });
+    this.ticketPage.pageNumber = 1;
+    this.ticketPage.pageSize = this.defaultPageSize;
+    this.loadTicketsPage();
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.ticketPage.pageNumber = event.pageIndex + 1;
+    this.ticketPage.pageSize = event.pageSize;
+    this.loadTicketsPage();
   }
 
   private resetForm(): void {
@@ -290,6 +343,41 @@ export class TicketsPageComponent implements OnInit {
       assignedDeveloperIds: [...new Set(formValue.assignedDeveloperIds)]
     };
   }
+
+  private loadTicketsPage(): void {
+    this.isLoading = true;
+    this.loadErrorMessage = '';
+
+    this.ticketsService
+      .getTickets(this.getTicketQuery())
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: (ticketPage) => {
+          this.setTicketPage(ticketPage);
+        },
+        error: () => {
+          this.loadErrorMessage = 'Tickets could not be loaded right now. Try again.';
+        }
+      });
+  }
+
+  private getTicketQuery(): TicketQuery {
+    const filters = this.filtersForm.getRawValue();
+
+    return {
+      status: filters.status ?? undefined,
+      priority: filters.priority ?? undefined,
+      projectId: filters.projectId || undefined,
+      assignedUserId: filters.assignedUserId || undefined,
+      pageNumber: this.ticketPage.pageNumber,
+      pageSize: this.ticketPage.pageSize
+    };
+  }
+
+  private setTicketPage(ticketPage: PagedResult<Ticket>): void {
+    this.ticketPage = ticketPage;
+    this.tickets = ticketPage.items;
+  }
 }
 
 function normalizeOptionalValue(value: string): string | null {
@@ -301,11 +389,3 @@ function sortProjectsByName(projects: Project[]): Project[] {
   return [...projects].sort((left, right) => left.name.localeCompare(right.name));
 }
 
-function sortTicketsByUpdatedAt(tickets: Ticket[]): Ticket[] {
-  return [...tickets].sort((left, right) => new Date(right.updatedAtUtc).getTime() - new Date(left.updatedAtUtc).getTime());
-}
-
-function upsertTicket(tickets: Ticket[], savedTicket: Ticket): Ticket[] {
-  const remainingTickets = tickets.filter((ticket) => ticket.id !== savedTicket.id);
-  return sortTicketsByUpdatedAt([...remainingTickets, savedTicket]);
-}

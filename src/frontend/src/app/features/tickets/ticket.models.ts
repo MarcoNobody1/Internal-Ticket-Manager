@@ -19,6 +19,23 @@ export interface Ticket {
   updatedAtUtc: string;
 }
 
+export interface PagedResult<T> {
+  items: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface TicketQuery {
+  status?: TicketStatus;
+  priority?: TicketPriority;
+  projectId?: string;
+  assignedUserId?: string;
+  pageNumber: number;
+  pageSize: number;
+}
+
 export interface TicketComment {
   id: string;
   ticketId: string;

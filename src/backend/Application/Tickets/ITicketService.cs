@@ -1,8 +1,10 @@
+using InternalTicketManager.Application.Common;
+
 namespace InternalTicketManager.Application.Tickets;
 
 public interface ITicketService
 {
-    Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(CancellationToken cancellationToken);
+    Task<PagedResult<TicketResponse>> GetTicketsAsync(GetTicketsRequest request, CancellationToken cancellationToken);
 
     Task<TicketResponse?> GetTicketByIdAsync(Guid id, CancellationToken cancellationToken);
 

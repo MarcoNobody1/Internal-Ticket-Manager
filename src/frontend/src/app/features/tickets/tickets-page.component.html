@@ -83,6 +83,47 @@
         <p class="tickets-page__read-only">You can review ticket history and comments here, but this account cannot change ticket records.</p>
       </ng-template>
 
+      <form class="tickets-filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+        <div class="tickets-form__grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+              <mat-option [value]="null">All statuses</mat-option>
+              <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option [value]="null">All priorities</mat-option>
+              <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Project</mat-label>
+            <mat-select formControlName="projectId">
+              <mat-option value="">All projects</mat-option>
+              <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Assigned user</mat-label>
+            <mat-select formControlName="assignedUserId">
+              <mat-option value="">Anyone</mat-option>
+              <mat-option *ngFor="let developer of developers; trackBy: trackByDeveloperId" [value]="developer.id">{{ developer.username }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="tickets-form__actions">
+          <button mat-flat-button color="primary" type="submit" [disabled]="isLoading">Apply filters</button>
+          <button mat-button type="button" (click)="clearFilters()" [disabled]="isLoading">Clear</button>
+        </div>
+      </form>
+
       <div class="tickets-page__loading" *ngIf="isLoading">
         <mat-spinner diameter="36"></mat-spinner>
         <span>Loading tickets...</span>
@@ -95,7 +136,9 @@
         </div>
 
         <div class="tickets-page__state" *ngIf="!loadErrorMessage && tickets.length === 0">
-          {{ canManageTickets ? 'No tickets yet. Create the first one with the form above.' : 'No tickets are available yet.' }}
+          {{ ticketPage.totalCount === 0
+            ? (canManageTickets ? 'No tickets yet. Create the first one with the form above.' : 'No tickets are available yet.')
+            : 'No tickets matched the current filters.' }}
         </div>
 
         <div class="tickets-page__list" *ngIf="!loadErrorMessage && tickets.length > 0">
@@ -132,6 +175,14 @@
             </mat-card-content>
           </mat-card>
         </div>
+
+        <mat-paginator
+          *ngIf="!loadErrorMessage && ticketPage.totalCount > 0"
+          [length]="ticketPage.totalCount"
+          [pageIndex]="ticketPage.pageNumber - 1"
+          [pageSize]="ticketPage.pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)"></mat-paginator>
       </div>
     </mat-card-content>
   </mat-card>
