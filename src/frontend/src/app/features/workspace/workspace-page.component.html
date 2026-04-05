@@ -1,68 +1,27 @@
-<mat-toolbar color="primary">
-  <span class="workspace-toolbar__brand">
-    <mat-icon>confirmation_number</mat-icon>
-    Internal Ticket Manager
-  </span>
-  <span class="workspace-toolbar__spacer"></span>
-  <button mat-button type="button" (click)="logout()">Logout</button>
-</mat-toolbar>
+<ng-container *ngIf="session$ | async as session">
+  <mat-toolbar color="primary">
+    <span class="workspace-toolbar__brand">
+      <mat-icon>confirmation_number</mat-icon>
+      Internal Ticket Manager
+    </span>
+    <span class="workspace-toolbar__spacer"></span>
+    <a mat-button routerLink="/workspace/projects" routerLinkActive="workspace-toolbar__link--active">Projects</a>
+    <span class="workspace-toolbar__session">{{ session.username }} · {{ session.role }}</span>
+    <button mat-button type="button" (click)="logout()">Logout</button>
+  </mat-toolbar>
 
-<section class="workspace-page" *ngIf="session$ | async as session">
-  <mat-card class="workspace-page__hero">
-    <mat-card-content>
-      <p class="workspace-page__eyebrow">Protected Workspace</p>
-      <h1>Welcome, {{ session.username }}</h1>
-      <p>
-        You are authenticated as <strong>{{ session.role }}</strong>. This screen is intentionally small: it proves route protection,
-        token attachment, and logout without inventing ticket UI too early.
-      </p>
-
-      <mat-chip-listbox aria-label="Session details">
-        <mat-chip-option selected disabled>{{ session.role }}</mat-chip-option>
-        <mat-chip-option selected disabled>JWT active</mat-chip-option>
-        <mat-chip-option selected disabled>Session tab storage</mat-chip-option>
-      </mat-chip-listbox>
-    </mat-card-content>
-  </mat-card>
-
-  <div class="workspace-page__grid">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>What this slice covers</mat-card-title>
-      </mat-card-header>
+  <section class="workspace-page">
+    <mat-card class="workspace-page__hero">
       <mat-card-content>
-        <mat-list>
-          <mat-list-item>Login against <code>POST /api/auth/login</code></mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>Bearer token attachment through an HTTP interceptor</mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>Session-based token persistence for the current browser tab</mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>Guarded navigation for authenticated routes</mat-list-item>
-        </mat-list>
+        <p class="workspace-page__eyebrow">Protected Workspace</p>
+        <h1>Welcome, {{ session.username }}</h1>
+        <p>
+          The workspace now starts with project management: a simple Material screen backed by the existing Projects CRUD so the protected area
+          feels like a real application instead of a placeholder.
+        </p>
       </mat-card-content>
     </mat-card>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>What comes next</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <mat-list>
-          <mat-list-item>Project and ticket screens with Material tables/forms</mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>Ticket filtering and workflow actions</mat-list-item>
-          <mat-divider></mat-divider>
-          <mat-list-item>Comment timeline and richer protected app shell</mat-list-item>
-        </mat-list>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <mat-card>
-    <mat-card-content class="workspace-page__footer">
-      <mat-icon>info</mat-icon>
-      <span>This is still a deliberately small post-login workspace, but now it looks and feels closer to a real app shell.</span>
-    </mat-card-content>
-  </mat-card>
-</section>
+    <router-outlet></router-outlet>
+  </section>
+</ng-container>
