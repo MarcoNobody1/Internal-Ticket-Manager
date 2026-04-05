@@ -1,5 +1,5 @@
 <div class="tickets-page">
-  <mat-card>
+  <mat-card class="tickets-page__section-card">
     <mat-card-header>
       <mat-card-title>Tickets</mat-card-title>
     </mat-card-header>
@@ -8,7 +8,19 @@
         Tickets stay readable for every signed-in user. Admins and developers can create or edit them, and only admins can delete them.
       </p>
 
-      <ng-container *ngIf="canManageTickets; else ticketReadOnlyNotice">
+      <div class="tickets-page__subtle-note">
+        <mat-icon>info</mat-icon>
+        <span>Use filters to narrow the ticket list without changing the current route or workspace flow.</span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="tickets-page__section-card" *ngIf="canManageTickets; else ticketReadOnlyCard">
+    <mat-card-header>
+      <mat-card-title>{{ isEditMode ? 'Edit ticket' : 'Create ticket' }}</mat-card-title>
+      <mat-card-subtitle>Keep ticket updates focused and easy to review.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
         <form class="tickets-form" [formGroup]="ticketForm" (ngSubmit)="submit()">
           <mat-form-field appearance="outline">
             <mat-label>Title</mat-label>
@@ -77,15 +89,26 @@
             </button>
           </div>
         </form>
-      </ng-container>
+    </mat-card-content>
+  </mat-card>
 
-      <ng-template #ticketReadOnlyNotice>
+  <ng-template #ticketReadOnlyCard>
+    <mat-card class="tickets-page__section-card">
+      <mat-card-content>
         <p class="tickets-page__read-only">You can review ticket history and comments here, but this account cannot change ticket records.</p>
-      </ng-template>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
 
+  <mat-card class="tickets-page__section-card tickets-page__section-card--filters">
+    <mat-card-header>
+      <mat-card-title>Filters</mat-card-title>
+      <mat-card-subtitle>Refine the list without crowding the create or edit form.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
       <form class="tickets-filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-        <div class="tickets-form__grid">
-          <mat-form-field appearance="outline">
+        <div class="tickets-form__grid tickets-form__grid--filters">
+          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
             <mat-label>Status</mat-label>
             <mat-select formControlName="status">
               <mat-option [value]="null">All statuses</mat-option>
@@ -93,7 +116,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
             <mat-label>Priority</mat-label>
             <mat-select formControlName="priority">
               <mat-option [value]="null">All priorities</mat-option>
@@ -101,7 +124,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
             <mat-label>Project</mat-label>
             <mat-select formControlName="projectId">
               <mat-option value="">All projects</mat-option>
@@ -109,7 +132,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
             <mat-label>Assigned user</mat-label>
             <mat-select formControlName="assignedUserId">
               <mat-option value="">Anyone</mat-option>
@@ -123,7 +146,11 @@
           <button mat-button type="button" (click)="clearFilters()" [disabled]="isLoading">Clear</button>
         </div>
       </form>
+    </mat-card-content>
+  </mat-card>
 
+  <mat-card class="tickets-page__section-card">
+    <mat-card-content>
       <div class="tickets-page__loading" *ngIf="isLoading">
         <mat-spinner diameter="36"></mat-spinner>
         <span>Loading tickets...</span>
@@ -145,9 +172,9 @@
           <mat-card class="tickets-page__item" *ngFor="let ticket of tickets; trackBy: trackByTicketId">
             <mat-card-content>
               <div class="tickets-page__item-header">
-                <div>
+                <div class="tickets-page__item-copy">
                   <h2>{{ ticket.title }}</h2>
-                  <p>{{ ticket.description || 'No description provided.' }}</p>
+                  <p class="tickets-page__item-description">{{ ticket.description || 'No description provided.' }}</p>
                 </div>
 
                 <div class="tickets-page__item-actions">
@@ -167,10 +194,19 @@
                   <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
                 </mat-chip-set>
 
-                <a [routerLink]="['/workspace/projects', ticket.projectId]">{{ getProjectName(ticket.projectId) }}</a>
-                <span>Created by {{ ticket.createdByUsername }}</span>
-                <span>{{ getAssignedDeveloperNames(ticket) }}</span>
-                <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
+                <div class="tickets-page__meta-details">
+                  <a [routerLink]="['/workspace/projects', ticket.projectId]">{{ getProjectName(ticket.projectId) }}</a>
+                  <span>Created by {{ ticket.createdByUsername }}</span>
+                  <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
+                </div>
+              </div>
+
+              <div class="tickets-page__assignees">
+                <span class="tickets-page__meta-label">Assigned developers</span>
+                <mat-chip-set>
+                  <mat-chip *ngFor="let developer of ticket.assignedDevelopers">{{ developer.username }}</mat-chip>
+                  <mat-chip *ngIf="ticket.assignedDevelopers.length === 0">Unassigned</mat-chip>
+                </mat-chip-set>
               </div>
             </mat-card-content>
           </mat-card>
