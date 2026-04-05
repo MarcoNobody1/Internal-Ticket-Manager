@@ -33,3 +33,6 @@ Thumbs.db
 
 # Local editor lint overrides
 .htmlhintrc
+
+# Local SQL scratch files
+*.session.sql

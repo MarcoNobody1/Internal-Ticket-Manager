@@ -17,15 +17,15 @@ The backend is intentionally small but already useful:
 - `GET /api/health` returns `{ "status": "ok" }`
 - `POST /api/auth/login` authenticates persisted demo users and issues a JWT
 - `GET /api/auth/me` proves protected identity access
-- `GET/POST/PUT` project endpoints run on top of EF Core persistence
-- `GET/POST/PUT` ticket endpoints cover the first useful CRUD slice
+- `GET/POST/PUT/DELETE` project endpoints run on top of EF Core persistence with admin-only writes
+- `GET/POST/PUT/DELETE` ticket endpoints cover the first useful CRUD slice with explicit admin/developer permissions
 - local SQL Server development is prepared through Docker Compose + connection string configuration
 - in Development, the app ensures the schema exists and seeds the default auth roles/users automatically
 
 ## Deferred Work
 
 This increment does **not** include:
-- ticket delete, filtering, pagination, comments, or dedicated status/assignment endpoints yet
+- ticket filtering, pagination, or dedicated status/assignment workflow endpoints yet
 - frontend login flow and protected Angular screens
 
 The goal here is a clean modular-monolith starting point that is easy to explain and safe to grow.

@@ -21,16 +21,16 @@ Lo que ya existe:
 - CRUD admin-only para usuarios persistidos con asignación de un solo rol (`Admin` / `Developer`)
 - endpoint de salud y endpoint protegido de identidad
 - base real de persistencia con creación automática del esquema local en Development
-- CRUD de proyectos
-- CRUD base de tickets para listar, ver detalle, crear y actualizar
-- shell Angular standalone con login funcional, workspace y pantalla admin de usuarios
+- endpoints de proyectos con permisos explícitos por rol (`Admin` escribe, usuarios autenticados leen)
+- endpoints de tickets con permisos explícitos por rol (`Admin` borra, `Admin`/`Developer` crean y editan, usuarios autenticados leen)
+- shell Angular standalone con login funcional, workspace, pantalla de proyectos, flujo de tickets crear/editar, detalle con comentarios y pantalla admin de usuarios
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
 - documentación para reproducir el entorno local
 
 Lo que sigue diferido a propósito:
-- delete de tickets, filtros, paginación, comentarios y endpoints dedicados de workflow
-- pantallas funcionales de tickets más allá del workspace protegido actual
+- filtros, paginación y endpoints dedicados de workflow para tickets
+- workflows de asignación más amplios más allá del campo actual de un solo usuario asignado
 - CI/CD y despliegue
 
 ---
@@ -153,10 +153,23 @@ Endpoints base esperados:
 - `GET /api/projects/{id}`
 - `POST /api/projects`
 - `PUT /api/projects/{id}`
+- `DELETE /api/projects/{id}`
 - `GET /api/tickets`
 - `GET /api/tickets/{id}`
+- `GET /api/tickets/{ticketId}/comments`
 - `POST /api/tickets`
+- `POST /api/tickets/{ticketId}/comments`
 - `PUT /api/tickets/{id}`
+- `DELETE /api/tickets/{id}`
+
+Resumen de permisos:
+- `Projects`:
+  - endpoints `GET`: cualquier usuario autenticado
+  - `POST/PUT/DELETE`: `Admin`
+- `Tickets`:
+  - endpoints `GET` y comentarios: cualquier usuario autenticado
+  - `POST/PUT`: `Admin` o `Developer`
+  - `DELETE`: `Admin`
 
 #### Frontend
 
@@ -175,7 +188,7 @@ Notas del flujo auth/frontend:
 - Rutas principales:
   - `/login`
   - `/workspace/projects`
-  - `/workspace/tickets`
+  - `/workspace/tickets` — listado más formulario de alta/edición
   - `/workspace/tickets/:ticketId`
   - `/workspace/users` — solo para admins
 
