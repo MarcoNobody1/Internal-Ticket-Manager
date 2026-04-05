@@ -1,0 +1,92 @@
+.ticket-details-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.ticket-details-page__loading,
+.ticket-details-page__state {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  min-height: 8rem;
+  text-align: center;
+}
+
+.ticket-details-page__state--error {
+  color: #b42318;
+}
+
+.ticket-details-page__eyebrow {
+  color: #4f46e5;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin: 1rem 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.ticket-details-page__header {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.ticket-details-page__header h1 {
+  margin: 0 0 0.5rem;
+}
+
+.ticket-details-page__header p {
+  margin: 0;
+}
+
+.ticket-details-page__meta {
+  color: #475467;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ticket-comment-form {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ticket-comment-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ticket-comments-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.ticket-comments-list__item {
+  border-left: 4px solid #4f46e5;
+}
+
+.ticket-comments-list__header {
+  align-items: center;
+  color: #475467;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.ticket-comments-list__item p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 799px) {
+  .ticket-details-page__header,
+  .ticket-comments-list__header {
+    flex-direction: column;
+    align-items: start;
+  }
+}

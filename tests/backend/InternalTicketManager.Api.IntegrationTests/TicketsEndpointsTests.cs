@@ -59,6 +59,50 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
     }
 
     [Fact]
+    public async Task GetComments_WhenTicketExists_ReturnsCommentsOrderedByCreatedAtAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+
+        await _factory.SeedProjectAsync(projectId, "Platform");
+        await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
+        await _factory.SeedCommentAsync(
+            Guid.NewGuid(),
+            ticketId,
+            "developer.demo",
+            "Second comment",
+            new DateTime(2026, 4, 5, 10, 30, 0, DateTimeKind.Utc));
+        await _factory.SeedCommentAsync(
+            Guid.NewGuid(),
+            ticketId,
+            "admin.demo",
+            "First comment",
+            new DateTime(2026, 4, 5, 10, 0, 0, DateTimeKind.Utc));
+
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync($"/api/tickets/{ticketId}/comments");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(2, document.RootElement.GetArrayLength());
+        Assert.Equal("First comment", document.RootElement[0].GetProperty("content").GetString());
+        Assert.Equal("Second comment", document.RootElement[1].GetProperty("content").GetString());
+    }
+
+    [Fact]
+    public async Task GetComments_WhenTicketDoesNotExist_ReturnsNotFoundAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync($"/api/tickets/{Guid.NewGuid()}/comments");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
     public async Task PostTicket_WithValidRequest_CreatesTicketAsync()
     {
         await _factory.ResetDatabaseAsync();
@@ -87,6 +131,71 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         Assert.Equal("dev-01", document.RootElement.GetProperty("assignedUserId").GetString());
         Assert.Equal("marco", document.RootElement.GetProperty("createdByUsername").GetString());
         Assert.Equal((int)TicketPriority.High, document.RootElement.GetProperty("priority").GetInt32());
+    }
+
+    [Fact]
+    public async Task PostComment_WithValidRequest_CreatesCommentAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+
+        await _factory.SeedProjectAsync(projectId, "Platform");
+        await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
+
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync($"/api/tickets/{ticketId}/comments", new
+        {
+            authorUsername = "  developer.demo  ",
+            content = "  I can reproduce this issue on Firefox too.  "
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(response.Headers.Location);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(ticketId, document.RootElement.GetProperty("ticketId").GetGuid());
+        Assert.Equal("developer.demo", document.RootElement.GetProperty("authorUsername").GetString());
+        Assert.Equal("I can reproduce this issue on Firefox too.", document.RootElement.GetProperty("content").GetString());
+    }
+
+    [Fact]
+    public async Task PostComment_WithBlankContent_ReturnsBadRequestAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        var ticketId = Guid.NewGuid();
+
+        await _factory.SeedProjectAsync(projectId, "Platform");
+        await _factory.SeedTicketAsync(ticketId, projectId, "Fix login form", "marco");
+
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync($"/api/tickets/{ticketId}/comments", new
+        {
+            authorUsername = "developer.demo",
+            content = "   "
+        });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Contains(document.RootElement.GetProperty("errors").GetProperty("Content").EnumerateArray(), value =>
+            value.GetString() == "Content is required.");
+    }
+
+    [Fact]
+    public async Task PostComment_WhenTicketDoesNotExist_ReturnsNotFoundAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+
+        var client = _factory.CreateClient();
+        var response = await client.PostAsJsonAsync($"/api/tickets/{Guid.NewGuid()}/comments", new
+        {
+            authorUsername = "developer.demo",
+            content = "I can reproduce this issue."
+        });
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
     [Fact]
