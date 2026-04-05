@@ -276,8 +276,11 @@ Comportamiento actual por rol:
 - `Tickets`: lectura para usuarios autenticados, crear/editar para `Admin` o `Developer`, y eliminar solo para `Admin`.
 - Los tickets ya se pueden asignar a uno o varios usuarios con rol `Developer`.
 - El frontend incluye ahora:
+  - `/workspace/account` para mostrar mejor la cuenta, la sesión y accesos directos a tickets asignados para developers
+  - `/workspace/access-denied` para manejar 403 de forma intencional en la UI
   - `/workspace/projects/:projectId` para detalle de proyecto y tickets abiertos
   - flujos de tickets con selección de proyecto y asignación múltiple de developers
+  - deep links `/workspace/tickets?assignedUserId=<id>` para abrir la vista filtrada desde la cuenta
 
 Cuando la API arranca en `Development`, va a asegurar que el esquema existe y sembrar los datos de auth por defecto si faltan.
 

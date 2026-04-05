@@ -16,3 +16,5 @@ export interface AuthSession {
   username: string;
   role: string;
 }
+
+export type AuthRedirectReason = 'authenticationRequired' | 'sessionExpired' | 'signedOut';
