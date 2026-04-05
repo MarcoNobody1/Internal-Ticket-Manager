@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace InternalTicketManager.Infrastructure.Persistence;
 
@@ -10,12 +11,23 @@ public sealed class TicketingDbContextFactory : IDesignTimeDbContextFactory<Tick
     {
         var apiProjectPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Api"));
 
-        IConfigurationRoot configuration = new ConfigurationBuilder()
+        var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(apiProjectPath)
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile("appsettings.Development.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
+            .AddEnvironmentVariables();
+
+        try
+        {
+            var apiAssembly = Assembly.Load("InternalTicketManager.Api");
+            configurationBuilder.AddUserSecrets(apiAssembly, optional: true);
+        }
+        catch
+        {
+            // Fallback to JSON/environment sources when the API assembly is unavailable at design time.
+        }
+
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
         var connectionString = configuration.GetConnectionString("TicketingDb");
         if (string.IsNullOrWhiteSpace(connectionString))

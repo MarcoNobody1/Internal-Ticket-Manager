@@ -38,7 +38,7 @@ This workspace now runs on Angular 18 + Angular Material 18, which is compatible
 
 - `ng add @angular/material` was applied to wire Material theme, fonts, and animations.
 - `ng serve` uses `proxy.conf.json`, so frontend code can call `/api/auth/login` directly during local development.
-- Demo credentials come from the backend development configuration:
+- Demo credentials come from the backend database seeding path:
   - `admin.demo / AdminDemo123!`
   - `developer.demo / DeveloperDemo123!`
 

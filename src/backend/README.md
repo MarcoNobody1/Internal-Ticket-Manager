@@ -15,11 +15,12 @@ The backend is intentionally small but already useful:
 - solution/project references are in place
 - `Program.cs` wires controllers, Swagger, JWT bearer auth, and authorization
 - `GET /api/health` returns `{ "status": "ok" }`
-- `POST /api/auth/login` issues a demo JWT
+- `POST /api/auth/login` authenticates persisted demo users and issues a JWT
 - `GET /api/auth/me` proves protected identity access
 - `GET/POST/PUT` project endpoints run on top of EF Core persistence
 - `GET/POST/PUT` ticket endpoints cover the first useful CRUD slice
 - local SQL Server development is prepared through Docker Compose + connection string configuration
+- in Development, the app ensures the schema exists and seeds the default auth roles/users automatically
 
 ## Deferred Work
 

@@ -1,3 +1,4 @@
+using InternalTicketManager.Domain.Auth;
 using InternalTicketManager.Domain.Projects;
 using InternalTicketManager.Domain.Tickets;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,10 @@ public sealed class TicketingDbContext : DbContext
     }
 
     public DbSet<Project> Projects => Set<Project>();
+
+    public DbSet<Role> Roles => Set<Role>();
+
+    public DbSet<User> Users => Set<User>();
 
     public DbSet<Ticket> Tickets => Set<Ticket>();
 

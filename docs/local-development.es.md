@@ -214,23 +214,36 @@ dotnet user-secrets list --project src/backend/Api/InternalTicketManager.Api.csp
 
 ---
 
-## 9. Aplicar la migración existente de EF Core
+## 9. Arrancar la API y dejar que cree el esquema local
 
-El proyecto ya incluye la primera migración de persistencia:
+El repositorio no mantiene ficheros de migración de EF Core versionados.
 
-- nombre de la migración: `InitialTicketingPersistence`
+En **Development**, la API crea automáticamente el esquema local a partir del modelo actual y siembra los datos base de autenticación.
 
 Desde la **raíz del repositorio**, ejecuta:
 
 ```powershell
-dotnet tool restore
-dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
+dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
 
+En el primer arranque, la API hará lo siguiente:
+- comprobar que el esquema existe en `TicketingDb`
+- crear las tablas actuales
+- sembrar los roles `Admin` y `Developer` si faltan
+- sembrar los usuarios demo por defecto si faltan
+
+Como el repositorio no mantiene ficheros de migración versionados, la base de datos local debe tratarse como una base de desarrollo desechable. Si el esquema cambia más adelante, la forma más simple y soportada de refrescarlo es recrear la base/volumen local y arrancar de nuevo la API.
+
 Tablas actuales esperadas:
+- `Roles`
+- `Users`
 - `Projects`
 - `Tickets`
 - `Comments`
+
+Usuarios seed por defecto:
+- `admin.demo / AdminDemo123!`
+- `developer.demo / DeveloperDemo123!`
 
 ---
 
@@ -245,6 +258,8 @@ dotnet build InternalTicketManager.sln
 dotnet test tests/backend/InternalTicketManager.Api.IntegrationTests/InternalTicketManager.Api.IntegrationTests.csproj
 dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
+
+Cuando la API arranca en `Development`, va a asegurar que el esquema existe y sembrar los datos de auth por defecto si faltan.
 
 ### Frontend
 
@@ -346,21 +361,7 @@ Así puedes probar el flujo CRUD sin copiar identificadores a mano entre peticio
 
 ---
 
-## 12. Flujo futuro de EF Core migrations
-
-Desde la **raíz del repositorio**:
-
-```powershell
-dotnet tool restore
-dotnet ef migrations add InitialCreate --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
-dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
-```
-
-El `DbContext` real ya existe. Utiliza este flujo cuando el modelo cambie y necesites crear una nueva migración.
-
----
-
-## 13. Desmontaje / limpieza
+## 12. Desmontaje / limpieza
 
 ### Parar contenedores pero conservar datos
 
@@ -377,6 +378,8 @@ Ejecuta desde la **raíz del repositorio**:
 ```powershell
 docker compose down -v
 ```
+
+Ese es también el camino recomendado si en algún momento el esquema local deja de coincidir con el modelo actual del código.
 
 ### Borrar el `.env` local
 
