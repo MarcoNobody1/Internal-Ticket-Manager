@@ -1,0 +1,42 @@
+.users-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.users-page__intro {
+  margin-bottom: 1rem;
+}
+
+.users-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.users-form__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.users-page__loading,
+.users-page__state {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.users-page__state--error {
+  color: #b3261e;
+}
+
+.users-table {
+  overflow-x: auto;
+}
+
+.users-table table {
+  width: 100%;
+}
+
+.users-table__actions {
+  white-space: nowrap;
+}

@@ -7,6 +7,7 @@
     <span class="workspace-toolbar__spacer"></span>
     <a mat-button routerLink="/workspace/projects" routerLinkActive="workspace-toolbar__link--active">Projects</a>
     <a mat-button routerLink="/workspace/tickets" routerLinkActive="workspace-toolbar__link--active">Tickets</a>
+    <a mat-button *ngIf="session.role === 'Admin'" routerLink="/workspace/users" routerLinkActive="workspace-toolbar__link--active">Users</a>
     <span class="workspace-toolbar__session">{{ session.username }} · {{ session.role }}</span>
     <button mat-button type="button" (click)="logout()">Logout</button>
   </mat-toolbar>
@@ -17,8 +18,8 @@
         <p class="workspace-page__eyebrow">Protected Workspace</p>
         <h1>Welcome, {{ session.username }}</h1>
         <p>
-          The protected workspace now includes projects plus a first ticket details flow, so you can open a ticket, review its comment timeline,
-          and add a new update without introducing a heavy front-end architecture.
+          The protected workspace now covers projects, tickets, and a small admin users area so the demo stays explainable while still showing
+          persisted auth management.
         </p>
       </mat-card-content>
     </mat-card>

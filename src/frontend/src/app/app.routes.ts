@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { authGuard, publicOnlyGuard } from './core/auth/auth.guard';
+import { adminGuard, authGuard, publicOnlyGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -39,6 +39,11 @@ export const routes: Routes = [
         path: 'tickets/:ticketId',
         loadComponent: () =>
           import('./features/tickets/ticket-details-page.component').then((m) => m.TicketDetailsPageComponent)
+      },
+      {
+        path: 'users',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/users/users-page.component').then((m) => m.UsersPageComponent)
       }
     ]
   },

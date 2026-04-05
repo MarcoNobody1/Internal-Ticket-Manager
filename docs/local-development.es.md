@@ -232,6 +232,11 @@ En el primer arranque, la API hará lo siguiente:
 - sembrar los roles `Admin` y `Developer` si faltan
 - sembrar los usuarios demo por defecto si faltan
 
+Notas actuales sobre gestión admin de usuarios:
+- El CRUD de `/api/users` está restringido al rol `Admin`.
+- `/workspace/users` solo está disponible para admins autenticados.
+- Las credenciales demo seed siguen siendo la forma soportada más simple para entrar al sistema en local.
+
 Como el repositorio no mantiene ficheros de migración versionados, la base de datos local debe tratarse como una base de desarrollo desechable. Si el esquema cambia más adelante, la forma más simple y soportada de refrescarlo es recrear la base/volumen local y arrancar de nuevo la API.
 
 Tablas actuales esperadas:
@@ -258,6 +263,13 @@ dotnet build InternalTicketManager.sln
 dotnet test tests/backend/InternalTicketManager.Api.IntegrationTests/InternalTicketManager.Api.IntegrationTests.csproj
 dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
+
+Endpoints admin de usuarios ahora cubiertos por tests de integración:
+- `GET /api/users`
+- `GET /api/users/{id}`
+- `POST /api/users`
+- `PUT /api/users/{id}`
+- `DELETE /api/users/{id}`
 
 Cuando la API arranca en `Development`, va a asegurar que el esquema existe y sembrar los datos de auth por defecto si faltan.
 

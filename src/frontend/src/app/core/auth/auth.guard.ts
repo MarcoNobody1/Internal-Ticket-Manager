@@ -28,3 +28,22 @@ export const publicOnlyGuard: CanActivateFn = () => {
 
   return router.createUrlTree(['/workspace']);
 };
+
+export const adminGuard: CanActivateFn = (_route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (!authService.isAuthenticated()) {
+    return router.createUrlTree(['/login'], {
+      queryParams: {
+        returnUrl: state.url
+      }
+    });
+  }
+
+  if (authService.hasRole('Admin')) {
+    return true;
+  }
+
+  return router.createUrlTree(['/workspace']);
+};
