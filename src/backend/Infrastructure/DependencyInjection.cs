@@ -1,5 +1,7 @@
+using InternalTicketManager.Application.Auth;
 using InternalTicketManager.Application.Projects;
 using InternalTicketManager.Application.Tickets;
+using InternalTicketManager.Infrastructure.Auth;
 using InternalTicketManager.Infrastructure.Projects;
 using InternalTicketManager.Infrastructure.Persistence;
 using InternalTicketManager.Infrastructure.Tickets;
@@ -22,6 +24,9 @@ public static class DependencyInjection
         services.AddDbContext<TicketingDbContext>(options =>
             options.UseSqlServer(connectionString));
 
+        services.AddScoped<IAuthUserStore, DatabaseAuthUserStore>();
+        services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+        services.AddScoped<ApplicationDbInitializer>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<ITicketService, TicketService>();
 

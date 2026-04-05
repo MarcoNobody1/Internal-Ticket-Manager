@@ -17,9 +17,9 @@
 Este repositorio está planteado intencionalmente como un **monolito modular pequeño**.
 
 Lo que ya existe:
-- base de autenticación JWT con usuarios demo
+- autenticación JWT apoyada en usuarios y roles persistidos
 - endpoint de salud y endpoint protegido de identidad
-- base real de persistencia con EF Core y primera migración ya creada
+- base real de persistencia con creación automática del esquema local en Development
 - CRUD de proyectos
 - CRUD base de tickets para listar, ver detalle, crear y actualizar
 - shell Angular standalone con login funcional y espacio protegido
@@ -102,7 +102,7 @@ Esa guía explica:
 - el **orden exacto de comandos**
 - cómo levantar Docker y SQL Server
 - cómo crear `TicketingDb`
-- cómo aplicar la migración de EF Core existente y crear las tablas actuales
+- cómo la API crea el esquema local y deja sembrados los usuarios por defecto
 - cómo configurar la connection string de la API
 - cómo correr backend y frontend
 - cómo importar y usar la colección de Postman para probar el CRUD del backend
@@ -245,7 +245,7 @@ Esta base es simple y defendible:
 - Bun para gestión de paquetes frontend
 - Angular CLI solo para operaciones Angular
 - `user-secrets` para no subir credenciales locales reales
-- camino natural hacia EF Core migrations cuando exista persistencia real
+- creación automática del esquema local y usuarios demo sembrados para facilitar el onboarding
 
 ---
 

@@ -5,16 +5,16 @@ namespace InternalTicketManager.Application.Auth;
 public sealed class AuthService : IAuthService
 {
     private readonly IAuthUserStore _authUserStore;
-    private readonly ICredentialValidator _credentialValidator;
+    private readonly IPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
     public AuthService(
         IAuthUserStore authUserStore,
-        ICredentialValidator credentialValidator,
+        IPasswordHasher passwordHasher,
         IJwtTokenGenerator jwtTokenGenerator)
     {
         _authUserStore = authUserStore;
-        _credentialValidator = credentialValidator;
+        _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
     }
 
@@ -25,8 +25,9 @@ public sealed class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid username or password.");
         }
 
-        AuthUser? user = await _authUserStore.FindByUsernameAsync(request.Username, cancellationToken);
-        if (user is null || !_credentialValidator.IsValid(request.Password, user.Password))
+        var username = request.Username.Trim();
+        AuthUser? user = await _authUserStore.FindByUsernameAsync(username, cancellationToken);
+        if (user is null || !_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
         {
             throw new UnauthorizedAccessException("Invalid username or password.");
         }

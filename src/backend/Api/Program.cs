@@ -2,6 +2,7 @@ using System.Text;
 using InternalTicketManager.Application.Auth;
 using InternalTicketManager.Infrastructure;
 using InternalTicketManager.Infrastructure.Auth;
+using InternalTicketManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -71,11 +72,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddSingleton<IAuthUserStore, ConfigurationAuthUserStore>();
-builder.Services.AddSingleton<ICredentialValidator, PlainTextCredentialValidator>();
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<ApplicationDbInitializer>();
+    await dbInitializer.InitializeAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

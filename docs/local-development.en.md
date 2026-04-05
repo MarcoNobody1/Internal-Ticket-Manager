@@ -214,23 +214,36 @@ dotnet user-secrets list --project src/backend/Api/InternalTicketManager.Api.csp
 
 ---
 
-## 9. Apply the Existing EF Core Migration
+## 9. Start the API and let it create the local schema
 
-The project already contains the first persistence migration:
+The repository does not keep committed EF Core migration files.
 
-- migration name: `InitialTicketingPersistence`
+In **Development**, the API creates the local schema from the current model and seeds the default auth data automatically.
 
 From the **repository root**, run:
 
 ```powershell
-dotnet tool restore
-dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
+dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
 
+On first startup, the API will:
+- ensure the schema exists in `TicketingDb`
+- create the current tables
+- seed the `Admin` and `Developer` roles if missing
+- seed the default demo users if missing
+
+Because the repository does not keep committed migration files, the local database should be treated as a disposable development database. If the schema changes later, the simplest supported refresh path is to recreate the local database/volume and start the API again.
+
 Expected current tables:
+- `Roles`
+- `Users`
 - `Projects`
 - `Tickets`
 - `Comments`
+
+Default seeded users:
+- `admin.demo / AdminDemo123!`
+- `developer.demo / DeveloperDemo123!`
 
 ---
 
@@ -245,6 +258,8 @@ dotnet build InternalTicketManager.sln
 dotnet test tests/backend/InternalTicketManager.Api.IntegrationTests/InternalTicketManager.Api.IntegrationTests.csproj
 dotnet run --project src/backend/Api/InternalTicketManager.Api.csproj
 ```
+
+When the API starts in `Development`, it will ensure the schema exists and seed the default auth data if needed.
 
 ### Frontend
 
@@ -346,21 +361,7 @@ That means you can test the CRUD flow without manually copying IDs between reque
 
 ---
 
-## 12. Future EF Core Migrations Workflow
-
-From the **repository root**:
-
-```powershell
-dotnet tool restore
-dotnet ef migrations add InitialCreate --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
-dotnet ef database update --project src/backend/Infrastructure/InternalTicketManager.Infrastructure.csproj --startup-project src/backend/Api/InternalTicketManager.Api.csproj
-```
-
-The real `DbContext` already exists. Use this flow whenever the model changes and a new migration is needed.
-
----
-
-## 13. Tear Down / Clean Up
+## 12. Tear Down / Clean Up
 
 ### Stop containers but keep database data
 
@@ -377,6 +378,8 @@ Run from the **repository root**:
 ```powershell
 docker compose down -v
 ```
+
+That is also the recommended reset path if the local schema ever falls behind the current code model.
 
 ### Remove the local `.env`
 

@@ -17,9 +17,9 @@
 This repository is intentionally built as a **small modular monolith**.
 
 Current baseline includes:
-- JWT auth foundation with demo users
+- JWT auth backed by persisted users and roles
 - backend health endpoint and protected identity probe
-- real EF Core persistence foundation with the first migration already created
+- real EF Core persistence foundation with automatic local schema creation in Development
 - project CRUD endpoints
 - base ticket CRUD endpoints for list/detail/create/update
 - Angular standalone shell with a first login/workspace auth slice
@@ -102,7 +102,7 @@ That guide explains:
 - the **exact command order**
 - how to start Docker and SQL Server
 - how to create `TicketingDb`
-- how to apply the existing EF Core migration and create the current tables
+- how the API creates the local schema and seeds the default users
 - how to configure the API connection string
 - how to run backend and frontend locally
 - how to import and use the Postman collection to test the backend CRUD
@@ -166,7 +166,7 @@ ng serve
 Frontend auth notes:
 - Angular Material is already wired with the standard prebuilt theme.
 - `ng serve` now proxies `/api/*` requests to the backend at `http://localhost:5215`.
-- Demo login credentials from backend development settings:
+- Demo login credentials from backend database seeding:
   - `admin.demo / AdminDemo123!`
   - `developer.demo / DeveloperDemo123!`
 - Routes:
@@ -260,7 +260,7 @@ This setup is intentionally simple and defendable:
 - Bun for consistent frontend package management
 - Angular CLI for Angular operations only
 - .NET user-secrets to avoid committing real local credentials
-- future-ready EF Core migration workflow without inventing fake persistence too early
+- automatic local schema creation plus seeded demo users for reproducible onboarding
 
 ---
 
