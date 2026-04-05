@@ -42,9 +42,107 @@ public sealed class TicketsEndpointsTests : IClassFixture<TestWebApplicationFact
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        Assert.Equal(2, document.RootElement.GetArrayLength());
-        Assert.Equal("Newer ticket", document.RootElement[0].GetProperty("title").GetString());
-        Assert.Equal("Older ticket", document.RootElement[1].GetProperty("title").GetString());
+        Assert.Equal(2, document.RootElement.GetProperty("totalCount").GetInt32());
+        Assert.Equal(1, document.RootElement.GetProperty("pageNumber").GetInt32());
+        Assert.Equal(10, document.RootElement.GetProperty("pageSize").GetInt32());
+        Assert.Equal("Newer ticket", document.RootElement.GetProperty("items")[0].GetProperty("title").GetString());
+        Assert.Equal("Older ticket", document.RootElement.GetProperty("items")[1].GetProperty("title").GetString());
+    }
+
+    [Fact]
+    public async Task GetTickets_WithFilters_ReturnsOnlyMatchingTicketsAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var platformProjectId = Guid.NewGuid();
+        var supportProjectId = Guid.NewGuid();
+        var developerId = await _factory.GetUserIdByUsernameAsync("developer.demo");
+
+        await _factory.SeedProjectAsync(platformProjectId, "Platform");
+        await _factory.SeedProjectAsync(supportProjectId, "Support");
+        await _factory.SeedTicketAsync(
+            Guid.NewGuid(),
+            platformProjectId,
+            "Matching ticket",
+            "marco",
+            status: TicketStatus.InProgress,
+            priority: TicketPriority.High,
+            assignedDeveloperIds: [developerId],
+            createdAtUtc: new DateTime(2026, 4, 3, 10, 0, 0, DateTimeKind.Utc),
+            updatedAtUtc: new DateTime(2026, 4, 3, 10, 0, 0, DateTimeKind.Utc));
+        await _factory.SeedTicketAsync(
+            Guid.NewGuid(),
+            platformProjectId,
+            "Wrong status",
+            "marco",
+            status: TicketStatus.Open,
+            priority: TicketPriority.High,
+            assignedDeveloperIds: [developerId]);
+        await _factory.SeedTicketAsync(
+            Guid.NewGuid(),
+            platformProjectId,
+            "Wrong priority",
+            "marco",
+            status: TicketStatus.InProgress,
+            priority: TicketPriority.Low,
+            assignedDeveloperIds: [developerId]);
+        await _factory.SeedTicketAsync(
+            Guid.NewGuid(),
+            supportProjectId,
+            "Wrong project",
+            "marco",
+            status: TicketStatus.InProgress,
+            priority: TicketPriority.High,
+            assignedDeveloperIds: [developerId]);
+        await _factory.SeedTicketAsync(
+            Guid.NewGuid(),
+            platformProjectId,
+            "Wrong assignment",
+            "marco",
+            status: TicketStatus.InProgress,
+            priority: TicketPriority.High);
+
+        var client = await _factory.CreateDeveloperClientAsync();
+        var response = await client.GetAsync($"/api/tickets?status={(int)TicketStatus.InProgress}&priority={(int)TicketPriority.High}&projectId={platformProjectId}&assignedUserId={developerId}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(1, document.RootElement.GetProperty("totalCount").GetInt32());
+        Assert.Equal(1, document.RootElement.GetProperty("items").GetArrayLength());
+        Assert.Equal("Matching ticket", document.RootElement.GetProperty("items")[0].GetProperty("title").GetString());
+    }
+
+    [Fact]
+    public async Task GetTickets_WithPagination_ReturnsRequestedPageAndMetadataAsync()
+    {
+        await _factory.ResetDatabaseAsync();
+        var projectId = Guid.NewGuid();
+        await _factory.SeedProjectAsync(projectId, "Platform");
+
+        for (var index = 1; index <= 5; index++)
+        {
+            await _factory.SeedTicketAsync(
+                Guid.NewGuid(),
+                projectId,
+                $"Ticket {index}",
+                "marco",
+                createdAtUtc: new DateTime(2026, 4, index, 10, 0, 0, DateTimeKind.Utc),
+                updatedAtUtc: new DateTime(2026, 4, index, 10, 0, 0, DateTimeKind.Utc));
+        }
+
+        var client = await _factory.CreateDeveloperClientAsync();
+        var response = await client.GetAsync("/api/tickets?pageNumber=2&pageSize=2");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.Equal(2, document.RootElement.GetProperty("pageNumber").GetInt32());
+        Assert.Equal(2, document.RootElement.GetProperty("pageSize").GetInt32());
+        Assert.Equal(5, document.RootElement.GetProperty("totalCount").GetInt32());
+        Assert.Equal(3, document.RootElement.GetProperty("totalPages").GetInt32());
+        Assert.Equal(2, document.RootElement.GetProperty("items").GetArrayLength());
+        Assert.Equal("Ticket 3", document.RootElement.GetProperty("items")[0].GetProperty("title").GetString());
+        Assert.Equal("Ticket 2", document.RootElement.GetProperty("items")[1].GetProperty("title").GetString());
     }
 
     [Fact]

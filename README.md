@@ -156,7 +156,7 @@ Expected baseline endpoints:
 - `POST /api/projects`
 - `PUT /api/projects/{id}`
 - `DELETE /api/projects/{id}`
-- `GET /api/tickets`
+- `GET /api/tickets?status=&priority=&projectId=&assignedUserId=&pageNumber=&pageSize=`
 - `GET /api/tickets/{id}`
 - `GET /api/tickets/{ticketId}/comments`
 - `POST /api/tickets`
@@ -175,6 +175,8 @@ Permission summary:
   - `GET` endpoints and comments: any authenticated user
   - `POST/PUT`: `Admin` or `Developer`
   - `DELETE`: `Admin`
+
+`GET /api/tickets` supports explicit filters for `status`, `priority`, `projectId`, and `assignedUserId`, plus `pageNumber` and `pageSize`. It now returns a paged shape: `items`, `pageNumber`, `pageSize`, `totalCount`, and `totalPages`.
 
 #### Frontend
 

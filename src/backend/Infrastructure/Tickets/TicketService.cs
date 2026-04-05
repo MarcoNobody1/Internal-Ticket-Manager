@@ -1,3 +1,4 @@
+using InternalTicketManager.Application.Common;
 using InternalTicketManager.Application.Tickets;
 using InternalTicketManager.Domain.Auth;
 using InternalTicketManager.Domain.Tickets;
@@ -15,17 +16,36 @@ public sealed class TicketService : ITicketService
         _dbContext = dbContext;
     }
 
-    public async Task<IReadOnlyList<TicketResponse>> GetTicketsAsync(CancellationToken cancellationToken)
+    public async Task<PagedResult<TicketResponse>> GetTicketsAsync(GetTicketsRequest request, CancellationToken cancellationToken)
     {
-        var tickets = await _dbContext.Tickets
+        var filteredQuery = _dbContext.Tickets
             .AsNoTracking()
+            .Where(ticket => !request.Status.HasValue || ticket.Status == request.Status.Value)
+            .Where(ticket => !request.Priority.HasValue || ticket.Priority == request.Priority.Value)
+            .Where(ticket => !request.ProjectId.HasValue || ticket.ProjectId == request.ProjectId.Value)
+            .Where(ticket => !request.AssignedUserId.HasValue || ticket.Assignments.Any(assignment => assignment.UserId == request.AssignedUserId.Value));
+
+        var totalCount = await filteredQuery.CountAsync(cancellationToken);
+
+        var tickets = await filteredQuery
             .Include(ticket => ticket.Assignments)
             .ThenInclude(assignment => assignment.User)
             .OrderByDescending(ticket => ticket.CreatedAtUtc)
             .ThenBy(ticket => ticket.Title)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return tickets.Select(MapToResponse).ToList();
+        var totalPages = totalCount == 0
+            ? 0
+            : (int)Math.Ceiling(totalCount / (double)request.PageSize);
+
+        return new PagedResult<TicketResponse>(
+            tickets.Select(MapToResponse).ToList(),
+            request.PageNumber,
+            request.PageSize,
+            totalCount,
+            totalPages);
     }
 
     public async Task<TicketResponse?> GetTicketByIdAsync(Guid id, CancellationToken cancellationToken)

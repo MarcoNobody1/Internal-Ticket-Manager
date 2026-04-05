@@ -21,6 +21,56 @@ describe('TicketsService', () => {
     httpTestingController.verify();
   });
 
+  it('loads tickets with explicit filter and pagination query parameters', () => {
+    let totalCount = 0;
+
+    ticketsService
+      .getTickets({
+        status: 2,
+        priority: 3,
+        projectId: '8e3b7f77-2a07-4e8c-9b28-beb0176c2e06',
+        assignedUserId: '11111111-1111-1111-1111-111111111111',
+        pageNumber: 2,
+        pageSize: 5
+      })
+      .subscribe((result) => {
+        totalCount = result.totalCount;
+        expect(result.items.length).toBe(1);
+      });
+
+    const request = httpTestingController.expectOne((pendingRequest) => pendingRequest.url === '/api/tickets');
+    expect(request.request.method).toBe('GET');
+    expect(request.request.params.get('status')).toBe('2');
+    expect(request.request.params.get('priority')).toBe('3');
+    expect(request.request.params.get('projectId')).toBe('8e3b7f77-2a07-4e8c-9b28-beb0176c2e06');
+    expect(request.request.params.get('assignedUserId')).toBe('11111111-1111-1111-1111-111111111111');
+    expect(request.request.params.get('pageNumber')).toBe('2');
+    expect(request.request.params.get('pageSize')).toBe('5');
+
+    request.flush({
+      items: [
+        {
+          id: '5ab6d4cd-1f3d-4dc8-92af-e7d594cda111',
+          title: 'Fix login form',
+          description: 'The submit button stays disabled.',
+          status: 2,
+          priority: 3,
+          projectId: '8e3b7f77-2a07-4e8c-9b28-beb0176c2e06',
+          assignedDevelopers: [{ id: '11111111-1111-1111-1111-111111111111', username: 'developer.demo' }],
+          createdByUsername: 'developer.demo',
+          createdAtUtc: '2026-04-05T12:00:00Z',
+          updatedAtUtc: '2026-04-05T12:00:00Z'
+        }
+      ],
+      pageNumber: 2,
+      pageSize: 5,
+      totalCount: 7,
+      totalPages: 2
+    });
+
+    expect(totalCount).toBe(7);
+  });
+
   it('posts a comment to the nested ticket comments endpoint', () => {
     const ticketId = '8e3b7f77-2a07-4e8c-9b28-beb0176c2e06';
     let savedCommentId = '';

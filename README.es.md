@@ -154,7 +154,7 @@ Endpoints base esperados:
 - `POST /api/projects`
 - `PUT /api/projects/{id}`
 - `DELETE /api/projects/{id}`
-- `GET /api/tickets`
+- `GET /api/tickets?status=&priority=&projectId=&assignedUserId=&pageNumber=&pageSize=`
 - `GET /api/tickets/{id}`
 - `GET /api/tickets/{ticketId}/comments`
 - `POST /api/tickets`
@@ -170,6 +170,8 @@ Resumen de permisos:
   - endpoints `GET` y comentarios: cualquier usuario autenticado
   - `POST/PUT`: `Admin` o `Developer`
   - `DELETE`: `Admin`
+
+`GET /api/tickets` ahora acepta filtros explícitos para `status`, `priority`, `projectId` y `assignedUserId`, más `pageNumber` y `pageSize`. La respuesta paginada devuelve `items`, `pageNumber`, `pageSize`, `totalCount` y `totalPages`.
 
 #### Frontend
 
