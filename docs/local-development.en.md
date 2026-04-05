@@ -278,8 +278,11 @@ Current role-based app behavior:
 - `Tickets` reads are available to authenticated users, create/update is `Admin` or `Developer`, and delete is `Admin` only.
 - Tickets can now be assigned to one or more users with role `Developer`.
 - The frontend now includes:
+  - `/workspace/account` for visible account/session details and developer assigned-ticket shortcuts
+  - `/workspace/access-denied` for intentional frontend 403 handling
   - `/workspace/projects/:projectId` for project details and open tickets
   - ticket create/edit flows with project selection and multi-developer assignment
+  - `/workspace/tickets?assignedUserId=<id>` deep links so the account page can open a filtered assigned-tickets view
 
 When the API starts in `Development`, it will ensure the schema exists and seed the default auth data if needed.
 

@@ -26,6 +26,15 @@ export const routes: Routes = [
         redirectTo: 'projects'
       },
       {
+        path: 'account',
+        loadComponent: () => import('./features/account/account-page.component').then((m) => m.AccountPageComponent)
+      },
+      {
+        path: 'access-denied',
+        loadComponent: () =>
+          import('./features/access-denied/access-denied-page.component').then((m) => m.AccessDeniedPageComponent)
+      },
+      {
         path: 'projects',
         loadComponent: () =>
           import('./features/projects/projects-page.component').then((m) => m.ProjectsPageComponent)

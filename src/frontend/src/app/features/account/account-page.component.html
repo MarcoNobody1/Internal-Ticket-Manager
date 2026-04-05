@@ -1,0 +1,77 @@
+<section class="account-page" *ngIf="session as currentSession">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar>account_circle</mat-icon>
+      <mat-card-subtitle>Account</mat-card-subtitle>
+      <mat-card-title>{{ currentSession.username }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="account-page__grid">
+        <div>
+          <span class="account-page__label">Role</span>
+          <strong>{{ currentSession.role }}</strong>
+        </div>
+        <div>
+          <span class="account-page__label">Session storage</span>
+          <strong>Browser session only</strong>
+        </div>
+        <div>
+          <span class="account-page__label">Session expires</span>
+          <strong>{{ currentSession.expiresAtUtc | date: 'medium' }}</strong>
+        </div>
+      </div>
+
+      <p class="account-page__copy">
+        This page keeps the auth demo explainable: identity comes from the JWT-backed login, the frontend keeps it in session storage, and expired sessions are now cleared automatically.
+      </p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card id="assigned-tickets">
+    <mat-card-header>
+      <mat-card-title>Assigned tickets</mat-card-title>
+      <mat-card-subtitle *ngIf="isDeveloper; else adminAssignedTicketsSubtitle">Direct links for the signed-in developer</mat-card-subtitle>
+      <ng-template #adminAssignedTicketsSubtitle>
+        <mat-card-subtitle>Admins do not have a developer assignment list in this demo.</mat-card-subtitle>
+      </ng-template>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="account-page__loading" *ngIf="isLoadingAssignedTickets">
+        <mat-spinner diameter="32"></mat-spinner>
+        <span>Loading assigned tickets...</span>
+      </div>
+
+      <p class="account-page__state account-page__state--error" *ngIf="assignedTicketsErrorMessage">{{ assignedTicketsErrorMessage }}</p>
+
+      <ng-container *ngIf="!isLoadingAssignedTickets && !assignedTicketsErrorMessage">
+        <ng-container *ngIf="isDeveloper; else adminAssignedTicketsState">
+          <div class="account-page__ticket-list" *ngIf="assignedTickets.length > 0; else noAssignedTicketsState">
+            <a class="account-page__ticket-link" *ngFor="let ticket of assignedTickets" [routerLink]="['/workspace/tickets', ticket.id]">
+              <span>{{ ticket.title }}</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </div>
+
+          <ng-template #noAssignedTicketsState>
+            <p class="account-page__state">No tickets are assigned to you right now.</p>
+          </ng-template>
+
+          <a
+            mat-flat-button
+            color="primary"
+            *ngIf="assignedDeveloperId"
+            [routerLink]="['/workspace/tickets']"
+            [queryParams]="{ assignedUserId: assignedDeveloperId }">
+            Open assigned tickets view
+          </a>
+        </ng-container>
+
+        <ng-template #adminAssignedTicketsState>
+          <p class="account-page__state">This admin account can review identity and session data here. Assigned developer tickets are only shown for developer accounts.</p>
+        </ng-template>
+      </ng-container>
+    </mat-card-content>
+  </mat-card>
+</section>

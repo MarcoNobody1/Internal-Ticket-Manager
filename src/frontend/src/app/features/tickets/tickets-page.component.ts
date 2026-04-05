@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -104,9 +104,11 @@ export class TicketsPageComponent implements OnInit {
   editingTicketId: string | null = null;
 
   constructor(
+    private readonly activatedRoute: ActivatedRoute,
     private readonly authService: AuthService,
     private readonly formBuilder: FormBuilder,
     private readonly projectsService: ProjectsService,
+    private readonly router: Router,
     private readonly ticketsService: TicketsService,
     private readonly usersService: UsersService
   ) {}
@@ -124,6 +126,7 @@ export class TicketsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.applyRouteFilters();
     this.loadData();
   }
 
@@ -275,6 +278,7 @@ export class TicketsPageComponent implements OnInit {
 
   applyFilters(): void {
     this.ticketPage.pageNumber = 1;
+    this.updateRouteFilters();
     this.loadTicketsPage();
   }
 
@@ -287,13 +291,29 @@ export class TicketsPageComponent implements OnInit {
     });
     this.ticketPage.pageNumber = 1;
     this.ticketPage.pageSize = this.defaultPageSize;
+    this.updateRouteFilters();
     this.loadTicketsPage();
   }
 
   onPageChange(event: PageEvent): void {
     this.ticketPage.pageNumber = event.pageIndex + 1;
     this.ticketPage.pageSize = event.pageSize;
+    this.updateRouteFilters();
     this.loadTicketsPage();
+  }
+
+  private applyRouteFilters(): void {
+    const queryParamMap = this.activatedRoute.snapshot.queryParamMap;
+
+    this.filtersForm.reset({
+      status: parseOptionalNumericQueryParam<TicketStatus>(queryParamMap.get('status')),
+      priority: parseOptionalNumericQueryParam<TicketPriority>(queryParamMap.get('priority')),
+      projectId: queryParamMap.get('projectId') ?? '',
+      assignedUserId: queryParamMap.get('assignedUserId') ?? ''
+    });
+
+    this.ticketPage.pageNumber = parsePositiveInteger(queryParamMap.get('pageNumber')) ?? 1;
+    this.ticketPage.pageSize = parsePositiveInteger(queryParamMap.get('pageSize')) ?? this.defaultPageSize;
   }
 
   private resetForm(): void {
@@ -378,6 +398,22 @@ export class TicketsPageComponent implements OnInit {
     this.ticketPage = ticketPage;
     this.tickets = ticketPage.items;
   }
+
+  private updateRouteFilters(): void {
+    const query = this.getTicketQuery();
+
+    void this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: {
+        status: query.status ?? null,
+        priority: query.priority ?? null,
+        projectId: query.projectId ?? null,
+        assignedUserId: query.assignedUserId ?? null,
+        pageNumber: query.pageNumber !== 1 ? query.pageNumber : null,
+        pageSize: query.pageSize !== this.defaultPageSize ? query.pageSize : null
+      }
+    });
+  }
 }
 
 function normalizeOptionalValue(value: string): string | null {
@@ -387,5 +423,23 @@ function normalizeOptionalValue(value: string): string | null {
 
 function sortProjectsByName(projects: Project[]): Project[] {
   return [...projects].sort((left, right) => left.name.localeCompare(right.name));
+}
+
+function parseOptionalNumericQueryParam<T extends number>(value: string | null): T | null {
+  if (!value) {
+    return null;
+  }
+
+  const parsedValue = Number(value);
+  return Number.isInteger(parsedValue) ? (parsedValue as T) : null;
+}
+
+function parsePositiveInteger(value: string | null): number | null {
+  if (!value) {
+    return null;
+  }
+
+  const parsedValue = Number(value);
+  return Number.isInteger(parsedValue) && parsedValue > 0 ? parsedValue : null;
 }
 

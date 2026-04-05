@@ -1,23 +1,28 @@
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 
 import { AUTH_SESSION_STORAGE_KEY, AuthService } from './auth.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let httpTestingController: HttpTestingController;
+  let router: Router;
 
-  beforeEach(() => {
-    sessionStorage.clear();
-
+  function configureTestingModule(): void {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      providers: [provideRouter([]), provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    });
 
     authService = TestBed.inject(AuthService);
     httpTestingController = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
+  }
+
+  beforeEach(() => {
+    sessionStorage.clear();
+    configureTestingModule();
   });
 
   afterEach(() => {
@@ -54,4 +59,49 @@ describe('AuthService', () => {
     expect(storedSession).toContain('demo-token');
     expect(storedSession).toContain('admin.demo');
   });
+
+  it('clears an expired stored session during startup', () => {
+    TestBed.resetTestingModule();
+    sessionStorage.setItem(
+      AUTH_SESSION_STORAGE_KEY,
+      JSON.stringify({
+        accessToken: 'expired-token',
+        expiresAtUtc: '2000-01-01T00:00:00Z',
+        username: 'developer.demo',
+        role: 'Developer'
+      })
+    );
+
+    configureTestingModule();
+
+    expect(authService.getSession()).toBeNull();
+    expect(sessionStorage.getItem(AUTH_SESSION_STORAGE_KEY)).toBeNull();
+  });
+
+  it('expires an active session and redirects to login', fakeAsync(() => {
+    spyOn(router, 'navigate').and.resolveTo(true);
+
+    authService.login({
+      username: 'developer.demo',
+      password: 'DeveloperDemo123!'
+    }).subscribe();
+
+    const request = httpTestingController.expectOne('/api/auth/login');
+    request.flush({
+      accessToken: 'short-lived-token',
+      expiresAtUtc: new Date(Date.now() + 50).toISOString(),
+      username: 'developer.demo',
+      role: 'Developer'
+    });
+
+    tick(60);
+
+    expect(authService.getSession()).toBeNull();
+    expect(router.navigate).toHaveBeenCalledWith(['/login'], {
+      queryParams: {
+        reason: 'sessionExpired',
+        returnUrl: '/'
+      }
+    });
+  }));
 });

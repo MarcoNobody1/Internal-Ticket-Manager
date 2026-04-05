@@ -1,0 +1,19 @@
+<mat-card class="access-denied-page">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>gpp_bad</mat-icon>
+    <mat-card-subtitle>Access denied</mat-card-subtitle>
+    <mat-card-title>This account cannot open that area.</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p>
+      The route you tried to open needs permissions that this signed-in user does not have.
+      <ng-container *ngIf="blockedRoute">Requested route: <strong>{{ blockedRoute }}</strong>.</ng-container>
+    </p>
+
+    <div class="access-denied-page__actions">
+      <a mat-flat-button color="primary" routerLink="/workspace">Back to workspace</a>
+      <a mat-button routerLink="/workspace/account">Review account</a>
+    </div>
+  </mat-card-content>
+</mat-card>

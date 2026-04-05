@@ -13,6 +13,7 @@ export const authGuard: CanActivateFn = (_route, state) => {
 
   return router.createUrlTree(['/login'], {
     queryParams: {
+      reason: 'authenticationRequired',
       returnUrl: state.url
     }
   });
@@ -36,6 +37,7 @@ export const adminGuard: CanActivateFn = (_route, state) => {
   if (!authService.isAuthenticated()) {
     return router.createUrlTree(['/login'], {
       queryParams: {
+        reason: 'authenticationRequired',
         returnUrl: state.url
       }
     });
@@ -45,5 +47,9 @@ export const adminGuard: CanActivateFn = (_route, state) => {
     return true;
   }
 
-  return router.createUrlTree(['/workspace']);
+  return router.createUrlTree(['/workspace/access-denied'], {
+    queryParams: {
+      from: state.url
+    }
+  });
 };

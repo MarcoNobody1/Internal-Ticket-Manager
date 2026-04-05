@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
 
+import { AuthRedirectReason } from '../../core/auth/auth.models';
 import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
@@ -32,6 +33,7 @@ import { AuthService } from '../../core/auth/auth.service';
 })
 export class LoginPageComponent {
   isSubmitting = false;
+  readonly noticeMessage = this.getNoticeMessage(this.activatedRoute.snapshot.queryParamMap.get('reason'));
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     username: ['', [Validators.required]],
@@ -68,5 +70,18 @@ export class LoginPageComponent {
           });
         }
       });
+  }
+
+  private getNoticeMessage(reason: string | null): string | null {
+    switch (reason as AuthRedirectReason | null) {
+      case 'authenticationRequired':
+        return 'Sign in to continue to the protected workspace.';
+      case 'sessionExpired':
+        return 'Your session expired. Sign in again to keep working.';
+      case 'signedOut':
+        return 'You signed out successfully.';
+      default:
+        return null;
+    }
   }
 }

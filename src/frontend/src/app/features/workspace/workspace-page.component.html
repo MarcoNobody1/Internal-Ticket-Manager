@@ -8,9 +8,34 @@
     <a mat-button routerLink="/workspace/projects" routerLinkActive="workspace-toolbar__link--active">Projects</a>
     <a mat-button routerLink="/workspace/tickets" routerLinkActive="workspace-toolbar__link--active">Tickets</a>
     <a mat-button *ngIf="session.role === 'Admin'" routerLink="/workspace/users" routerLinkActive="workspace-toolbar__link--active">Users</a>
-    <span class="workspace-toolbar__session">{{ session.username }} · {{ session.role }}</span>
+    <button
+      mat-button
+      type="button"
+      [matMenuTriggerFor]="accountMenu"
+      class="workspace-toolbar__account-button"
+      aria-label="Open account menu">
+      <mat-icon>account_circle</mat-icon>
+      <span class="workspace-toolbar__session">{{ session.username }} · {{ session.role }}</span>
+    </button>
     <button mat-button type="button" (click)="logout()">Logout</button>
   </mat-toolbar>
+
+  <mat-menu #accountMenu="matMenu" xPosition="before">
+    <div class="workspace-account-menu__content">
+      <p class="workspace-account-menu__eyebrow">Signed in as</p>
+      <p class="workspace-account-menu__name">{{ session.username }}</p>
+      <p class="workspace-account-menu__role">Role: {{ session.role }}</p>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item routerLink="/workspace/account">
+      <mat-icon>manage_accounts</mat-icon>
+      <span>Open account</span>
+    </button>
+    <button mat-menu-item *ngIf="session.role === 'Developer'" routerLink="/workspace/account" fragment="assigned-tickets">
+      <mat-icon>assignment_ind</mat-icon>
+      <span>Assigned tickets</span>
+    </button>
+  </mat-menu>
 
   <section class="workspace-page">
     <mat-card class="workspace-page__hero">
@@ -21,6 +46,31 @@
           The protected workspace now covers projects, tickets, and a small admin users area so the demo stays explainable while still showing
           persisted auth management.
         </p>
+
+        <div class="workspace-page__identity-grid">
+          <div>
+            <span class="workspace-page__label">Username</span>
+            <strong>{{ session.username }}</strong>
+          </div>
+          <div>
+            <span class="workspace-page__label">Role</span>
+            <strong>{{ session.role }}</strong>
+          </div>
+          <div>
+            <span class="workspace-page__label">Session expires</span>
+            <strong>{{ session.expiresAtUtc | date: 'medium' }}</strong>
+          </div>
+        </div>
+
+        <div class="workspace-page__hero-actions">
+          <a mat-flat-button color="primary" routerLink="/workspace/account">
+            <mat-icon>manage_accounts</mat-icon>
+            Open account
+          </a>
+          <a mat-button *ngIf="session.role === 'Developer'" routerLink="/workspace/account" fragment="assigned-tickets">
+            Review assigned tickets
+          </a>
+        </div>
       </mat-card-content>
     </mat-card>
 

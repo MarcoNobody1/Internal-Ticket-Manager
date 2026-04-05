@@ -21,12 +21,18 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   return next(authenticatedRequest).pipe(
     tap({
       error: (error: unknown) => {
-        if (!(error instanceof HttpErrorResponse) || error.status !== 401 || request.url.endsWith('/api/auth/login')) {
+        if (!(error instanceof HttpErrorResponse) || request.url.endsWith('/api/auth/login')) {
           return;
         }
 
-        authService.logout();
-        void router.navigate(['/login']);
+        if (error.status === 401) {
+          authService.logoutAndRedirect('sessionExpired', router.url);
+          return;
+        }
+
+        if (error.status === 403) {
+          authService.redirectToAccessDenied(router.url);
+        }
       }
     })
   );

@@ -196,11 +196,19 @@ Frontend auth notes:
 - Routes:
   - `/login` — public login page
 - `/workspace` — protected demo area after login
+  - `/workspace/account` — account/session summary plus developer assigned-ticket shortcuts
+  - `/workspace/access-denied` — intentional 403 state for blocked routes
   - `/workspace/projects` — project management screen
   - `/workspace/projects/:projectId` — project details plus open tickets
-  - `/workspace/tickets` — ticket list plus create/edit form
+  - `/workspace/tickets` — ticket list plus create/edit form (supports filter query params like `assignedUserId`)
   - `/workspace/tickets/:ticketId` — ticket details with comments timeline
   - `/workspace/users` — admin-only users management screen
+
+Frontend auth UX notes:
+- The toolbar now exposes a dedicated account menu with current user/session details.
+- Developer accounts get an account page with direct links to their assigned tickets.
+- Expired sessions are cleared automatically and 401 redirects bring the user back to `/login` with a friendly message.
+- 403 responses now redirect to `/workspace/access-denied` instead of failing silently.
 
 #### Visual Studio Code launch workflow
 

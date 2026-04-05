@@ -9,6 +9,11 @@
     </mat-card-header>
 
     <mat-card-content>
+      <div class="login-page__notice" *ngIf="noticeMessage">
+        <mat-icon>info</mat-icon>
+        <span>{{ noticeMessage }}</span>
+      </div>
+
       <p class="login-page__intro">
         This demo uses the existing backend JWT endpoint and keeps auth state in session storage for a modest, interview-defendable flow.
       </p>
