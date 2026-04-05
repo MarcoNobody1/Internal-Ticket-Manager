@@ -18,7 +18,19 @@ export const routes: Routes = [
     path: 'workspace',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/workspace/workspace-page.component').then((m) => m.WorkspacePageComponent)
+      import('./features/workspace/workspace-page.component').then((m) => m.WorkspacePageComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'projects'
+      },
+      {
+        path: 'projects',
+        loadComponent: () =>
+          import('./features/projects/projects-page.component').then((m) => m.ProjectsPageComponent)
+      }
+    ]
   },
   {
     path: '**',
