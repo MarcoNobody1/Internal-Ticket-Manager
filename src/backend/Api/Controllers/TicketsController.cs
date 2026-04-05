@@ -31,6 +31,15 @@ public sealed class TicketsController : ControllerBase
         return ticket is null ? NotFound() : Ok(ticket);
     }
 
+    [HttpGet("{ticketId:guid}/comments")]
+    [ProducesResponseType<IReadOnlyList<CommentResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IReadOnlyList<CommentResponse>>> GetCommentsAsync(Guid ticketId, CancellationToken cancellationToken)
+    {
+        var comments = await _ticketService.GetCommentsAsync(ticketId, cancellationToken);
+        return comments is null ? NotFound() : Ok(comments);
+    }
+
     [HttpPost]
     [ProducesResponseType<TicketResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -46,6 +55,24 @@ public sealed class TicketsController : ControllerBase
         }
 
         return Created($"/api/tickets/{result.Ticket!.Id}", result.Ticket);
+    }
+
+    [HttpPost("{ticketId:guid}/comments")]
+    [ProducesResponseType<CommentResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CommentResponse>> CreateCommentAsync(
+        Guid ticketId,
+        [FromBody] CreateCommentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _ticketService.CreateCommentAsync(ticketId, request, cancellationToken);
+        if (result.TicketNotFound)
+        {
+            return NotFound();
+        }
+
+        return Created($"/api/tickets/{ticketId}/comments/{result.Comment!.Id}", result.Comment);
     }
 
     [HttpPut("{id:guid}")]

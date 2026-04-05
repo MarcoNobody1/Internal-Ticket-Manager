@@ -111,4 +111,26 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>, 
 
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task SeedCommentAsync(
+        Guid id,
+        Guid ticketId,
+        string authorUsername,
+        string content,
+        DateTime? createdAtUtc = null)
+    {
+        using var scope = Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<TicketingDbContext>();
+
+        dbContext.Comments.Add(new Comment
+        {
+            Id = id,
+            TicketId = ticketId,
+            AuthorUsername = authorUsername,
+            Content = content,
+            CreatedAtUtc = createdAtUtc ?? DateTime.UtcNow
+        });
+
+        await dbContext.SaveChangesAsync();
+    }
 }

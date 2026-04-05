@@ -1,0 +1,61 @@
+.tickets-page {
+  display: grid;
+}
+
+.tickets-page__intro {
+  margin-bottom: 1.5rem;
+}
+
+.tickets-page__loading,
+.tickets-page__state {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  min-height: 8rem;
+  text-align: center;
+}
+
+.tickets-page__state--error {
+  color: #b42318;
+}
+
+.tickets-page__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.tickets-page__item {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.tickets-page__item h2 {
+  margin: 0 0 0.5rem;
+}
+
+.tickets-page__item p {
+  margin: 0;
+}
+
+.tickets-page__item-header {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.tickets-page__meta {
+  align-items: center;
+  color: #475467;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 799px) {
+  .tickets-page__item-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

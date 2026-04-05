@@ -28,7 +28,7 @@ Current baseline includes:
 - reproducible local setup documentation
 
 Deferred on purpose:
-- ticket delete, filtering, pagination, comments, and dedicated workflow endpoints
+- ticket delete, filtering, pagination, and dedicated workflow endpoints
 - ticket screens beyond the protected workspace placeholder
 - CI/CD and deployment automation
 
@@ -149,7 +149,9 @@ Expected baseline endpoints:
 - `PUT /api/projects/{id}`
 - `GET /api/tickets`
 - `GET /api/tickets/{id}`
+- `GET /api/tickets/{ticketId}/comments`
 - `POST /api/tickets`
+- `POST /api/tickets/{ticketId}/comments`
 - `PUT /api/tickets/{id}`
 
 #### Frontend
@@ -169,7 +171,10 @@ Frontend auth notes:
   - `developer.demo / DeveloperDemo123!`
 - Routes:
   - `/login` — public login page
-  - `/workspace` — protected demo area after login
+- `/workspace` — protected demo area after login
+  - `/workspace/projects` — project management screen
+  - `/workspace/tickets` — ticket list screen
+  - `/workspace/tickets/:ticketId` — ticket details with comments timeline
 
 #### Visual Studio Code launch workflow
 

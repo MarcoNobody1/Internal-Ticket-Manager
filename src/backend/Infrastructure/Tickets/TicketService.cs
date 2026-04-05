@@ -34,6 +34,24 @@ public sealed class TicketService : ITicketService
         return ticket is null ? null : MapToResponse(ticket);
     }
 
+    public async Task<IReadOnlyList<CommentResponse>?> GetCommentsAsync(Guid ticketId, CancellationToken cancellationToken)
+    {
+        var ticketExists = await TicketExistsAsync(ticketId, cancellationToken);
+        if (!ticketExists)
+        {
+            return null;
+        }
+
+        var comments = await _dbContext.Comments
+            .AsNoTracking()
+            .Where(comment => comment.TicketId == ticketId)
+            .OrderBy(comment => comment.CreatedAtUtc)
+            .ThenBy(comment => comment.Id)
+            .ToListAsync(cancellationToken);
+
+        return comments.Select(MapToResponse).ToList();
+    }
+
     public async Task<CreateTicketResult> CreateTicketAsync(CreateTicketRequest request, CancellationToken cancellationToken)
     {
         var projectExists = await ProjectExistsAsync(request.ProjectId, cancellationToken);
@@ -61,6 +79,33 @@ public sealed class TicketService : ITicketService
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new CreateTicketResult(MapToResponse(ticket), ProjectNotFound: false);
+    }
+
+    public async Task<CreateCommentResult> CreateCommentAsync(Guid ticketId, CreateCommentRequest request, CancellationToken cancellationToken)
+    {
+        var ticket = await _dbContext.Tickets
+            .SingleOrDefaultAsync(existingTicket => existingTicket.Id == ticketId, cancellationToken);
+
+        if (ticket is null)
+        {
+            return new CreateCommentResult(null, TicketNotFound: true);
+        }
+
+        var comment = new Comment
+        {
+            Id = Guid.NewGuid(),
+            TicketId = ticketId,
+            AuthorUsername = request.AuthorUsername.Trim(),
+            Content = request.Content.Trim(),
+            CreatedAtUtc = DateTime.UtcNow
+        };
+
+        _dbContext.Comments.Add(comment);
+        ticket.UpdatedAtUtc = comment.CreatedAtUtc;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new CreateCommentResult(MapToResponse(comment), TicketNotFound: false);
     }
 
     public async Task<UpdateTicketResult> UpdateTicketAsync(Guid id, UpdateTicketRequest request, CancellationToken cancellationToken)
@@ -99,6 +144,13 @@ public sealed class TicketService : ITicketService
             .AnyAsync(project => project.Id == projectId, cancellationToken);
     }
 
+    private async Task<bool> TicketExistsAsync(Guid ticketId, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Tickets
+            .AsNoTracking()
+            .AnyAsync(ticket => ticket.Id == ticketId, cancellationToken);
+    }
+
     private static TicketResponse MapToResponse(Ticket ticket)
     {
         return new TicketResponse(
@@ -112,6 +164,16 @@ public sealed class TicketService : ITicketService
             ticket.CreatedByUsername,
             ticket.CreatedAtUtc,
             ticket.UpdatedAtUtc);
+    }
+
+    private static CommentResponse MapToResponse(Comment comment)
+    {
+        return new CommentResponse(
+            comment.Id,
+            comment.TicketId,
+            comment.AuthorUsername,
+            comment.Content,
+            comment.CreatedAtUtc);
     }
 
     private static string? NormalizeOptionalValue(string? value)
