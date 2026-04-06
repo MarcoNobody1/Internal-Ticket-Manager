@@ -1,18 +1,18 @@
 <div class="ticket-details-page">
   <div class="ticket-details-page__loading" *ngIf="isLoading">
-    <mat-spinner diameter="40"></mat-spinner>
+    <p-progressSpinner [style]="{ width: '40px', height: '40px' }" strokeWidth="6"></p-progressSpinner>
     <span>Loading ticket details...</span>
   </div>
 
   <div class="ticket-details-page__state ticket-details-page__state--error" *ngIf="!isLoading && loadErrorMessage">
     <span>{{ loadErrorMessage }}</span>
-    <a mat-button routerLink="/workspace/tickets">Back to tickets</a>
+    <a pButton text routerLink="/workspace/tickets" icon="pi pi-arrow-left" label="Back to tickets"></a>
   </div>
 
   <ng-container *ngIf="!isLoading && ticket">
-    <mat-card>
-      <mat-card-content>
-        <a mat-button routerLink="/workspace/tickets">← Back to tickets</a>
+    <p-card class="itm-surface-card">
+      <ng-template pTemplate="content">
+        <a pButton text routerLink="/workspace/tickets" icon="pi pi-arrow-left" label="Back to tickets"></a>
         <p class="ticket-details-page__eyebrow">Ticket details</p>
         <div class="ticket-details-page__header">
           <div>
@@ -20,10 +20,10 @@
             <p>{{ ticket.description || 'No description provided.' }}</p>
           </div>
 
-          <mat-chip-set>
-            <mat-chip>{{ getStatusLabel(ticket.status) }}</mat-chip>
-            <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
-          </mat-chip-set>
+          <div class="ticket-details-page__tag-row">
+            <p-tag [severity]="getStatusSeverity(ticket.status)" [value]="getStatusLabel(ticket.status)"></p-tag>
+            <p-tag [severity]="getPrioritySeverity(ticket.priority)" [value]="getPriorityLabel(ticket.priority)"></p-tag>
+          </div>
         </div>
 
         <div class="ticket-details-page__meta">
@@ -32,51 +32,53 @@
           <span>{{ getAssignedDeveloperNames(ticket) }}</span>
           <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </ng-template>
+    </p-card>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Comments</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form class="ticket-comment-form" [formGroup]="commentForm" (ngSubmit)="submitComment()">
-          <mat-form-field appearance="outline">
-            <mat-label>Author</mat-label>
-            <input matInput formControlName="authorUsername" readonly />
-          </mat-form-field>
+    <p-card class="itm-surface-card">
+      <ng-template pTemplate="content">
+        <div class="itm-page-header">
+          <div class="itm-page-header__copy">
+            <p class="itm-page-eyebrow">Comments</p>
+            <h2 class="itm-page-title">Share the latest update</h2>
+          </div>
+        </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Add a comment</mat-label>
-            <textarea matInput formControlName="content" rows="5" maxlength="2000"></textarea>
-            <mat-hint align="end">{{ commentForm.controls.content.value.length }}/{{ commentMaxLength }}</mat-hint>
-            <mat-error *ngIf="commentForm.controls.content.hasError('required') || commentForm.controls.content.hasError('requiredTrimmed')">
-              Comment content is required.
-            </mat-error>
-            <mat-error *ngIf="commentForm.controls.content.hasError('maxlength')">Comment content must be 2000 characters or fewer.</mat-error>
-          </mat-form-field>
+        <form class="ticket-comment-form itm-form-grid" [formGroup]="commentForm" (ngSubmit)="submitComment()">
+          <div class="itm-field">
+            <label for="comment-author">Author</label>
+            <input id="comment-author" pInputText formControlName="authorUsername" readonly />
+          </div>
+
+          <div class="itm-field">
+            <label for="comment-content">Add a comment</label>
+            <textarea id="comment-content" pInputTextarea formControlName="content" rows="5" maxlength="2000" placeholder="Share the latest investigation or next action."></textarea>
+            <small>{{ commentForm.controls.content.value.length }}/{{ commentMaxLength }}</small>
+            <small class="itm-field__error" *ngIf="commentForm.controls.content.touched && (commentForm.controls.content.hasError('required') || commentForm.controls.content.hasError('requiredTrimmed'))">Comment content is required.</small>
+            <small class="itm-field__error" *ngIf="commentForm.controls.content.hasError('maxlength')">Comment content must be 2000 characters or fewer.</small>
+          </div>
 
           <p class="ticket-details-page__state ticket-details-page__state--error" *ngIf="submitErrorMessage">{{ submitErrorMessage }}</p>
 
           <div class="ticket-comment-form__actions">
-            <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting">Post comment</button>
+            <button pButton type="submit" [disabled]="isSubmitting" icon="pi pi-send" label="Post comment"></button>
           </div>
         </form>
 
         <div class="ticket-details-page__state" *ngIf="comments.length === 0">No comments yet. Add the first update for this ticket.</div>
 
         <div class="ticket-comments-list" *ngIf="comments.length > 0">
-          <mat-card class="ticket-comments-list__item" *ngFor="let comment of comments">
-            <mat-card-content>
+          <p-card class="ticket-comments-list__item" *ngFor="let comment of comments">
+            <ng-template pTemplate="content">
               <div class="ticket-comments-list__header">
                 <strong>{{ comment.authorUsername }}</strong>
                 <span>{{ comment.createdAtUtc | date: 'medium' }}</span>
               </div>
               <p>{{ comment.content }}</p>
-            </mat-card-content>
-          </mat-card>
+            </ng-template>
+          </p-card>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </ng-template>
+    </p-card>
   </ng-container>
 </div>

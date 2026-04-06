@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { Textarea } from 'primeng/inputtextarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TagModule } from 'primeng/tag';
 import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { getTicketPrioritySeverity, getTicketStatusSeverity } from '../../shared/ui/ui-severity.utils';
 import { getAssignedDeveloperNames as formatAssignedDeveloperNames, getTicketPriorityLabel, getTicketStatusLabel, Ticket, TicketComment, TicketPriority, TicketStatus } from './ticket.models';
 import { TicketsService } from './tickets.service';
 
@@ -23,7 +24,7 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
 @Component({
   selector: 'itm-ticket-details-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, CardModule, InputTextModule, Textarea, ProgressSpinnerModule, TagModule],
   templateUrl: './ticket-details-page.component.html',
   styleUrls: ['./ticket-details-page.component.css']
 })
@@ -106,6 +107,9 @@ export class TicketDetailsPageComponent implements OnInit {
   getAssignedDeveloperNames(ticket: Ticket): string {
     return formatAssignedDeveloperNames(ticket.assignedDevelopers);
   }
+
+  getStatusSeverity = getTicketStatusSeverity;
+  getPrioritySeverity = getTicketPrioritySeverity;
 
   private loadTicketDetails(ticketId: string): void {
     this.isLoading = true;

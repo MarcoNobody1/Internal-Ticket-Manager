@@ -3,11 +3,6 @@
   gap: 1.5rem;
 }
 
-.tickets-page__section-card {
-  border-radius: 20px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
-}
-
 .tickets-page__intro {
   margin: 0;
 }
@@ -61,10 +56,8 @@
   margin-top: 1rem;
 }
 
-.tickets-page__subtle-note mat-icon {
+.tickets-page__subtle-note i {
   font-size: 1rem;
-  height: 1rem;
-  width: 1rem;
 }
 
 .tickets-page__loading,
@@ -160,9 +153,10 @@
   padding-top: 1rem;
 }
 
-.tickets-page__assignees mat-chip-set {
+.tickets-page__tag-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .tickets-page__meta a {

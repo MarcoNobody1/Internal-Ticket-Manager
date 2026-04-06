@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TagModule } from 'primeng/tag';
 
 import { getAssignedDeveloperNames as formatAssignedDeveloperNames, getTicketPriorityLabel, getTicketStatusLabel, TicketPriority, TicketStatus } from '../tickets/ticket.models';
 import { ProjectDetails } from './project.models';
 import { ProjectsService } from './projects.service';
+import { getTicketPrioritySeverity, getTicketStatusSeverity } from '../../shared/ui/ui-severity.utils';
 
 @Component({
   selector: 'itm-project-details-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatCardModule, MatChipsModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterLink, ButtonModule, CardModule, ProgressSpinnerModule, TagModule],
   templateUrl: './project-details-page.component.html',
   styleUrls: ['./project-details-page.component.css']
 })
@@ -50,6 +51,9 @@ export class ProjectDetailsPageComponent implements OnInit {
   getAssignedDeveloperNames(ticketAssignees: ProjectDetails['openTickets'][number]['assignedDevelopers']): string {
     return formatAssignedDeveloperNames(ticketAssignees);
   }
+
+  getStatusSeverity = getTicketStatusSeverity;
+  getPrioritySeverity = getTicketPrioritySeverity;
 
   private loadProject(projectId: string): void {
     this.isLoading = true;

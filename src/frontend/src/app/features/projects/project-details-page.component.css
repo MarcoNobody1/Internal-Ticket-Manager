@@ -54,6 +54,12 @@
   border-left: 4px solid #4f46e5;
 }
 
+.project-details-page__ticket-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .project-details-page__ticket-header {
   align-items: start;
   display: flex;
