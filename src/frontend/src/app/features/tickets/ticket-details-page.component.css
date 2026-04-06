@@ -33,6 +33,12 @@
   justify-content: space-between;
 }
 
+.ticket-details-page__tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .ticket-details-page__header h1 {
   margin: 0 0 0.5rem;
 }

@@ -2,13 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MessageService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DividerModule } from 'primeng/divider';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { AuthRedirectReason } from '../../core/auth/auth.models';
@@ -20,13 +19,11 @@ import { AuthService } from '../../core/auth/auth.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatDividerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatSnackBarModule
+    ButtonModule,
+    CardModule,
+    DividerModule,
+    InputTextModule,
+    MessageModule
   ],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
@@ -45,7 +42,7 @@ export class LoginPageComponent {
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
-    private readonly snackBar: MatSnackBar
+    private readonly messageService: MessageService
   ) {}
 
   submit(): void {
@@ -65,8 +62,11 @@ export class LoginPageComponent {
           void this.router.navigateByUrl(returnUrl);
         },
         error: () => {
-          this.snackBar.open('Login failed. Check the demo credentials and try again.', 'Close', {
-            duration: 4000
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Login failed',
+            detail: 'Check the demo credentials and try again.',
+            life: 4000
           });
         }
       });

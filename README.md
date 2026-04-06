@@ -24,13 +24,12 @@ Current baseline includes:
 - project endpoints with explicit role-based permissions (`Admin` write, authenticated users read)
 - ticket endpoints with explicit role-based permissions (`Admin` delete, `Admin`/`Developer` create and edit, authenticated users read)
 - persisted ticket-to-developer assignments through a simple join table so one ticket can have multiple developers
-- Angular standalone shell with login, workspace, projects screen, project details, ticket create/edit flow, ticket details/comments, and an admin users screen
+- Angular standalone shell refreshed with **PrimeNG 18 + PrimeIcons**, a collapsible left aside, login, workspace, account page, projects screen, project details, ticket create/edit flow, ticket details/comments, and an admin users screen
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
 
 Deferred on purpose:
-- ticket filtering, pagination, and dedicated workflow endpoints
 - advanced workflow automation beyond the current project/ticket CRUD and comment timeline
 - CI/CD and deployment automation
 

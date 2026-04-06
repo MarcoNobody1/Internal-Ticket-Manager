@@ -23,13 +23,12 @@ Lo que ya existe:
 - base real de persistencia con creación automática del esquema local en Development
 - endpoints de proyectos con permisos explícitos por rol (`Admin` escribe, usuarios autenticados leen)
 - endpoints de tickets con permisos explícitos por rol (`Admin` borra, `Admin`/`Developer` crean y editan, usuarios autenticados leen)
-- shell Angular standalone con login funcional, workspace, pantalla de proyectos, flujo de tickets crear/editar, detalle con comentarios y pantalla admin de usuarios
+- shell Angular standalone renovado con **PrimeNG 18 + PrimeIcons**, aside colapsable a la izquierda, login funcional, workspace, cuenta, pantalla de proyectos, detalle de proyecto, flujo de tickets crear/editar, detalle con comentarios y pantalla admin de usuarios
 - gestión de dependencias frontend con Bun
 - infraestructura local con Docker Compose + SQL Server 2022
 - documentación para reproducir el entorno local
 
 Lo que sigue diferido a propósito:
-- filtros, paginación y endpoints dedicados de workflow para tickets
 - workflows de asignación más amplios más allá del campo actual de un solo usuario asignado
 - CI/CD y despliegue
 

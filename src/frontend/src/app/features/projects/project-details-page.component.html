@@ -1,18 +1,18 @@
 <div class="project-details-page">
   <div class="project-details-page__loading" *ngIf="isLoading">
-    <mat-spinner diameter="40"></mat-spinner>
+    <p-progressSpinner [style]="{ width: '40px', height: '40px' }" strokeWidth="6"></p-progressSpinner>
     <span>Loading project details...</span>
   </div>
 
   <div class="project-details-page__state project-details-page__state--error" *ngIf="!isLoading && loadErrorMessage">
     <span>{{ loadErrorMessage }}</span>
-    <a mat-button routerLink="/workspace/projects">Back to projects</a>
+    <a pButton text routerLink="/workspace/projects" icon="pi pi-arrow-left" label="Back to projects"></a>
   </div>
 
   <ng-container *ngIf="!isLoading && project">
-    <mat-card>
-      <mat-card-content>
-        <a mat-button routerLink="/workspace/projects">← Back to projects</a>
+    <p-card class="itm-surface-card">
+      <ng-template pTemplate="content">
+        <a pButton text routerLink="/workspace/projects" icon="pi pi-arrow-left" label="Back to projects"></a>
         <p class="project-details-page__eyebrow">Project details</p>
         <h1>{{ project.name }}</h1>
         <p class="project-details-page__description">{{ project.description || 'No description provided for this project yet.' }}</p>
@@ -22,21 +22,25 @@
           <span>Last updated {{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</span>
           <span>{{ project.openTickets.length }} open {{ project.openTickets.length === 1 ? 'ticket' : 'tickets' }}</span>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </ng-template>
+    </p-card>
 
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Open tickets</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
+    <p-card class="itm-surface-card">
+      <ng-template pTemplate="content">
+        <div class="itm-page-header">
+          <div class="itm-page-header__copy">
+            <p class="itm-page-eyebrow">Open tickets</p>
+            <h2 class="itm-page-title">Current delivery work</h2>
+          </div>
+        </div>
+
         <div class="project-details-page__state" *ngIf="project.openTickets.length === 0">
           No open tickets for this project right now.
         </div>
 
         <div class="project-details-page__tickets" *ngIf="project.openTickets.length > 0">
-          <mat-card class="project-details-page__ticket" *ngFor="let ticket of project.openTickets">
-            <mat-card-content>
+          <p-card class="project-details-page__ticket" *ngFor="let ticket of project.openTickets">
+            <ng-template pTemplate="content">
               <div class="project-details-page__ticket-header">
                 <div>
                   <h2>{{ ticket.title }}</h2>
@@ -44,23 +48,23 @@
                 </div>
 
                 <div class="project-details-page__ticket-actions">
-                  <a mat-flat-button color="primary" [routerLink]="['/workspace/tickets', ticket.id]">Open ticket</a>
+                  <a pButton [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open ticket"></a>
                 </div>
               </div>
 
               <div class="project-details-page__ticket-meta">
-                <mat-chip-set>
-                  <mat-chip>{{ getStatusLabel(ticket.status) }}</mat-chip>
-                  <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
-                </mat-chip-set>
+                <div class="project-details-page__ticket-tags">
+                  <p-tag [severity]="getStatusSeverity(ticket.status)" [value]="getStatusLabel(ticket.status)"></p-tag>
+                  <p-tag [severity]="getPrioritySeverity(ticket.priority)" [value]="getPriorityLabel(ticket.priority)"></p-tag>
+                </div>
 
                 <span>{{ getAssignedDeveloperNames(ticket.assignedDevelopers) }}</span>
                 <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
               </div>
-            </mat-card-content>
-          </mat-card>
+            </ng-template>
+          </p-card>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </ng-template>
+    </p-card>
   </ng-container>
 </div>

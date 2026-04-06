@@ -2,18 +2,19 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { Textarea } from 'primeng/inputtextarea';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectModule } from 'primeng/select';
+import { TagModule } from 'primeng/tag';
 import { finalize, forkJoin } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { getTicketPrioritySeverity, getTicketStatusSeverity } from '../../shared/ui/ui-severity.utils';
 import { Project } from '../projects/project.models';
 import { ProjectsService } from '../projects/projects.service';
 import { User } from '../users/user.models';
@@ -47,15 +48,15 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
-    MatButtonModule,
-    MatCardModule,
-    MatChipsModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatPaginatorModule,
-    MatProgressSpinnerModule,
-    MatSelectModule
+    ButtonModule,
+    CardModule,
+    InputTextModule,
+    Textarea,
+    MultiSelectModule,
+    PaginatorModule,
+    ProgressSpinnerModule,
+    SelectModule,
+    TagModule
   ],
   templateUrl: './tickets-page.component.html',
   styleUrls: ['./tickets-page.component.css']
@@ -67,8 +68,8 @@ export class TicketsPageComponent implements OnInit {
 
   readonly ticketTitleMaxLength = ticketTitleMaxLength;
   readonly ticketDescriptionMaxLength = ticketDescriptionMaxLength;
-  readonly statusOptions = ticketStatusOptions;
-  readonly priorityOptions = ticketPriorityOptions;
+  readonly statusOptions = [...ticketStatusOptions];
+  readonly priorityOptions = [...ticketPriorityOptions];
   readonly pageSizeOptions = [5, 10, 20];
 
   readonly ticketForm = this.formBuilder.nonNullable.group({
@@ -125,6 +126,9 @@ export class TicketsPageComponent implements OnInit {
   get isEditMode(): boolean {
     return this.editingTicketId !== null;
   }
+
+  getStatusSeverity = getTicketStatusSeverity;
+  getPrioritySeverity = getTicketPrioritySeverity;
 
   ngOnInit(): void {
     this.applyRouteFilters();
@@ -292,9 +296,9 @@ export class TicketsPageComponent implements OnInit {
     this.loadTicketsPage();
   }
 
-  onPageChange(event: PageEvent): void {
-    this.ticketPage.pageNumber = event.pageIndex + 1;
-    this.ticketPage.pageSize = event.pageSize;
+  onPageChange(event: PaginatorState): void {
+    this.ticketPage.pageNumber = (event.page ?? 0) + 1;
+    this.ticketPage.pageSize = event.rows ?? this.defaultPageSize;
     this.updateRouteFilters();
     this.loadTicketsPage();
   }

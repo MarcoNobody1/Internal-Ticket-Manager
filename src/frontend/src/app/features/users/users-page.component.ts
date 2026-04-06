@@ -2,15 +2,16 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
 import { finalize } from 'rxjs';
 
+import { getUserRoleSeverity } from '../../shared/ui/ui-severity.utils';
 import { SaveUserRequest, User, UserRole } from './user.models';
 import { UsersService } from './users.service';
 
@@ -27,13 +28,13 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatProgressSpinnerModule,
-    MatSelectModule,
-    MatTableModule
+    ButtonModule,
+    CardModule,
+    InputTextModule,
+    ProgressSpinnerModule,
+    SelectModule,
+    TableModule,
+    TagModule
   ],
   templateUrl: './users-page.component.html',
   styleUrls: ['./users-page.component.css']
@@ -161,6 +162,8 @@ export class UsersPageComponent implements OnInit {
   isDeleting(userId: string): boolean {
     return this.deletingUserId === userId;
   }
+
+  getRoleSeverity = getUserRoleSeverity;
 
   trackByUserId(_: number, user: User): string {
     return user.id;

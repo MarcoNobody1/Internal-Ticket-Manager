@@ -40,3 +40,9 @@
 .users-table__actions {
   white-space: nowrap;
 }
+
+@media (max-width: 640px) {
+  .users-table__actions {
+    white-space: normal;
+  }
+}

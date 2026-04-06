@@ -1,21 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TagModule } from 'primeng/tag';
 import { finalize, switchMap } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
-import { Ticket } from '../tickets/ticket.models';
+import { Ticket, getTicketPriorityLabel, getTicketStatusLabel } from '../tickets/ticket.models';
 import { TicketsService } from '../tickets/tickets.service';
 import { UsersService } from '../users/users.service';
+import { getTicketPrioritySeverity, getTicketStatusSeverity, getUserRoleSeverity } from '../../shared/ui/ui-severity.utils';
 
 @Component({
   selector: 'itm-account-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatCardModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [CommonModule, RouterLink, AvatarModule, ButtonModule, CardModule, ProgressSpinnerModule, TagModule],
   templateUrl: './account-page.component.html',
   styleUrls: ['./account-page.component.css']
 })
@@ -36,6 +38,15 @@ export class AccountPageComponent implements OnInit {
   get isDeveloper(): boolean {
     return this.session?.role === 'Developer';
   }
+
+  getRoleSeverity(role: string) {
+    return getUserRoleSeverity((role === 'Admin' ? 'Admin' : 'Developer'));
+  }
+
+  getTicketStatusSeverity = getTicketStatusSeverity;
+  getTicketPrioritySeverity = getTicketPrioritySeverity;
+  getTicketStatusLabel = getTicketStatusLabel;
+  getTicketPriorityLabel = getTicketPriorityLabel;
 
   ngOnInit(): void {
     if (!this.session || !this.isDeveloper) {

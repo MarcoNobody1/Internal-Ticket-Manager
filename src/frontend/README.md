@@ -8,8 +8,8 @@ This folder contains the real Angular workspace baseline for Internal Ticket Man
 - `src/app/app.config.ts` — root providers for router, HTTP client, interceptor, and animations
 - `src/app/app.routes.ts` — login/public and workspace/protected route configuration
 - `src/app/core/auth/` — auth service, guard, interceptor, and auth models
-- `src/app/features/login/` — Angular Material login page
-- `src/app/features/workspace/` — protected post-login demo area with logout
+- `src/app/features/login/` — PrimeNG-based login page
+- `src/app/features/workspace/` — protected shell with collapsible left navigation and responsive drawer
 - `proxy.conf.json` — local Angular proxy for `/api` calls to the backend
 - `src/app/core/`, `src/app/features/`, `src/app/shared/` — reserved structure for future cross-cutting, feature, and shared UI code
 
@@ -18,7 +18,7 @@ This folder contains the real Angular workspace baseline for Internal Ticket Man
 The frontend is intentionally modest:
 - standalone Angular app
 - router with public/protected auth flow
-- Angular Material login UI
+- PrimeNG 18 + PrimeIcons UI shell and feature screens
 - session-based JWT persistence for the current browser tab
 - bearer token interceptor and auth guard
 - protected workspace with projects, tickets, comments, and logout
@@ -28,16 +28,21 @@ The frontend is intentionally modest:
 
 ## Tooling Note
 
-This workspace now runs on Angular 18 + Angular Material 18, which is compatible with the current Node 22 development environment used in this repository.
+This workspace now runs on Angular 18 + PrimeNG 18, which is compatible with the current Node 22 development environment used in this repository.
 
 - The workspace keeps TypeScript on the Angular-supported range declared by Angular 18 tooling (`>=5.4 <5.6`).
 - `baseUrl` was intentionally removed from `tsconfig.json` because the app does not use path aliases and newer TypeScript versions mark that pattern as deprecated for future releases.
 - `rootDir` is explicitly set to `./src` in the root/app/spec tsconfig files to keep editor diagnostics and build output layout aligned.
 - Deprecated compatibility flags such as `downlevelIteration` and legacy `moduleResolution: node` were removed in favor of modern Angular 18 settings.
 
+## UI Stack Notes
+
+- PrimeNG is configured in `src/app/app.config.ts` with `providePrimeNG(...)` and the Aura preset from `@primeng/themes`.
+- PrimeIcons are loaded through `angular.json` so the standalone feature screens can use consistent iconography.
+- Angular Material may still exist in `package.json` temporarily, but the active user-facing shell and key screens are now PrimeNG-based.
+
 ## Local Auth Demo Notes
 
-- `ng add @angular/material` was applied to wire Material theme, fonts, and animations.
 - `ng serve` uses `proxy.conf.json`, so frontend code can call `/api/auth/login` directly during local development.
 - Demo credentials come from the backend database seeding path:
   - `admin.demo / AdminDemo123!`

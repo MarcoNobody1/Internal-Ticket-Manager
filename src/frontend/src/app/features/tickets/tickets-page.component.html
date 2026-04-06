@@ -1,165 +1,142 @@
 <div class="tickets-page">
-  <mat-card class="tickets-page__section-card">
-    <mat-card-header>
-      <mat-card-title>Tickets</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p class="tickets-page__intro">
-        Tickets stay readable for every signed-in user. Admins and developers can create or edit them, and only admins can delete them.
-      </p>
+  <p-card class="tickets-page__section-card itm-surface-card">
+    <ng-template pTemplate="content">
+      <div class="itm-page-header">
+        <div class="itm-page-header__copy">
+          <p class="itm-page-eyebrow">Tickets</p>
+          <h1 class="itm-page-title">Track work without leaving the main workspace flow</h1>
+          <p class="itm-page-description">
+            Tickets stay readable for every signed-in user. Admins and developers can create or edit them, and only admins can delete them.
+          </p>
+        </div>
+      </div>
 
       <div class="tickets-page__subtle-note">
-        <mat-icon>info</mat-icon>
-        <span>Use filters to narrow the ticket list without changing the current route or workspace flow.</span>
+        <i class="pi pi-info-circle"></i>
+        <span>Use filters to narrow the ticket list while keeping the existing route and pagination behavior intact.</span>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+  </p-card>
 
-  <mat-card class="tickets-page__section-card" *ngIf="canManageTickets; else ticketReadOnlyCard">
-    <mat-card-header>
-      <mat-card-title>{{ isEditMode ? 'Edit ticket' : 'Create ticket' }}</mat-card-title>
-      <mat-card-subtitle>Keep ticket updates focused and easy to review.</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-        <form class="tickets-form" [formGroup]="ticketForm" (ngSubmit)="submit()">
-          <mat-form-field appearance="outline">
-            <mat-label>Title</mat-label>
-            <input matInput formControlName="title" maxlength="200" />
-            <mat-hint align="end">{{ ticketForm.controls.title.value.length }}/{{ ticketTitleMaxLength }}</mat-hint>
-            <mat-error *ngIf="ticketForm.controls.title.hasError('required') || ticketForm.controls.title.hasError('requiredTrimmed')">
-              Title is required.
-            </mat-error>
-            <mat-error *ngIf="ticketForm.controls.title.hasError('maxlength')">Title must be 200 characters or fewer.</mat-error>
-          </mat-form-field>
+  <p-card class="tickets-page__section-card itm-surface-card" *ngIf="canManageTickets; else ticketReadOnlyCard">
+    <ng-template pTemplate="content">
+      <div class="itm-page-header">
+        <div class="itm-page-header__copy">
+          <p class="itm-page-eyebrow">{{ isEditMode ? 'Edit ticket' : 'Create ticket' }}</p>
+          <h2 class="itm-page-title">Keep updates focused and easy to review</h2>
+        </div>
+      </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Description</mat-label>
-            <textarea matInput formControlName="description" rows="4" maxlength="4000"></textarea>
-            <mat-hint align="end">{{ ticketForm.controls.description.value.length }}/{{ ticketDescriptionMaxLength }}</mat-hint>
-            <mat-error *ngIf="ticketForm.controls.description.hasError('maxlength')">
-              Description must be 4000 characters or fewer.
-            </mat-error>
-          </mat-form-field>
-
-          <div class="tickets-form__grid">
-            <mat-form-field appearance="outline">
-              <mat-label>Project</mat-label>
-              <mat-select formControlName="projectId">
-                <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
-              </mat-select>
-              <mat-error *ngIf="ticketForm.controls.projectId.hasError('required')">Project is required.</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Status</mat-label>
-              <mat-select formControlName="status">
-                <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Priority</mat-label>
-              <mat-select formControlName="priority">
-                <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Assigned developers</mat-label>
-              <mat-select formControlName="assignedDeveloperIds" multiple>
-                <mat-option *ngFor="let developer of developers; trackBy: trackByDeveloperId" [value]="developer.id">{{ developer.username }}</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <p class="tickets-page__state tickets-page__state--error" *ngIf="projects.length === 0">
-            Create a project first so new tickets can be assigned.
-          </p>
-          <p class="tickets-page__state tickets-page__state--error" *ngIf="developers.length === 0">
-            Add at least one developer account before assigning tickets.
-          </p>
-          <p class="tickets-page__state tickets-page__state--error" *ngIf="submitErrorMessage">{{ submitErrorMessage }}</p>
-
-          <div class="tickets-form__actions">
-            <button mat-flat-button color="primary" type="submit" [disabled]="isSubmitting || deletingTicketId !== null || projects.length === 0">
-              {{ isEditMode ? 'Save changes' : 'Create ticket' }}
-            </button>
-            <button mat-button type="button" *ngIf="isEditMode" (click)="cancelEdit()" [disabled]="isSubmitting || deletingTicketId !== null">
-              Cancel
-            </button>
-          </div>
-        </form>
-    </mat-card-content>
-  </mat-card>
-
-  <ng-template #ticketReadOnlyCard>
-    <mat-card class="tickets-page__section-card">
-      <mat-card-content>
-        <p class="tickets-page__read-only">You can review ticket history and comments here, but this account cannot change ticket records.</p>
-      </mat-card-content>
-    </mat-card>
-  </ng-template>
-
-  <mat-card class="tickets-page__section-card tickets-page__section-card--filters">
-    <mat-card-header>
-      <mat-card-title>Filters</mat-card-title>
-      <mat-card-subtitle>Refine the list without crowding the create or edit form.</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <form class="tickets-filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
-        <div class="tickets-form__grid tickets-form__grid--filters">
-          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
-            <mat-label>Status</mat-label>
-            <mat-select formControlName="status">
-              <mat-option [value]="null">All statuses</mat-option>
-              <mat-option *ngFor="let option of statusOptions" [value]="option.value">{{ option.label }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
-            <mat-label>Priority</mat-label>
-            <mat-select formControlName="priority">
-              <mat-option [value]="null">All priorities</mat-option>
-              <mat-option *ngFor="let option of priorityOptions" [value]="option.value">{{ option.label }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
-            <mat-label>Project</mat-label>
-            <mat-select formControlName="projectId">
-              <mat-option value="">All projects</mat-option>
-              <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="tickets-form-field tickets-form-field--filter">
-            <mat-label>Assigned user</mat-label>
-            <mat-select formControlName="assignedUserId">
-              <mat-option value="">Anyone</mat-option>
-              <mat-option *ngFor="let developer of developers; trackBy: trackByDeveloperId" [value]="developer.id">{{ developer.username }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <form class="tickets-form itm-form-grid" [formGroup]="ticketForm" (ngSubmit)="submit()">
+        <div class="itm-field">
+          <label for="ticket-title">Title</label>
+          <input id="ticket-title" pInputText formControlName="title" maxlength="200" placeholder="Unable to assign developer" />
+          <small>{{ ticketForm.controls.title.value.length }}/{{ ticketTitleMaxLength }}</small>
+          <small class="itm-field__error" *ngIf="ticketForm.controls.title.touched && (ticketForm.controls.title.hasError('required') || ticketForm.controls.title.hasError('requiredTrimmed'))">Title is required.</small>
+          <small class="itm-field__error" *ngIf="ticketForm.controls.title.hasError('maxlength')">Title must be 200 characters or fewer.</small>
         </div>
 
-        <div class="tickets-form__actions">
-          <button mat-flat-button color="primary" type="submit" [disabled]="isLoading">Apply filters</button>
-          <button mat-button type="button" (click)="clearFilters()" [disabled]="isLoading">Clear</button>
+        <div class="itm-field">
+          <label for="ticket-description">Description</label>
+          <textarea id="ticket-description" pInputTextarea formControlName="description" rows="4" maxlength="4000" placeholder="Describe the issue, context, and expected outcome."></textarea>
+          <small>{{ ticketForm.controls.description.value.length }}/{{ ticketDescriptionMaxLength }}</small>
+          <small class="itm-field__error" *ngIf="ticketForm.controls.description.hasError('maxlength')">Description must be 4000 characters or fewer.</small>
+        </div>
+
+        <div class="tickets-form__grid itm-form-grid itm-form-grid--columns">
+          <div class="itm-field">
+            <label for="ticket-project">Project</label>
+            <p-select inputId="ticket-project" formControlName="projectId" [options]="projects" optionLabel="name" optionValue="id" placeholder="Choose project"></p-select>
+            <small class="itm-field__error" *ngIf="ticketForm.controls.projectId.hasError('required') && ticketForm.controls.projectId.touched">Project is required.</small>
+          </div>
+
+          <div class="itm-field">
+            <label for="ticket-status">Status</label>
+            <p-select inputId="ticket-status" formControlName="status" [options]="statusOptions" optionLabel="label" optionValue="value"></p-select>
+          </div>
+
+          <div class="itm-field">
+            <label for="ticket-priority">Priority</label>
+            <p-select inputId="ticket-priority" formControlName="priority" [options]="priorityOptions" optionLabel="label" optionValue="value"></p-select>
+          </div>
+
+          <div class="itm-field">
+            <label for="ticket-assignees">Assigned developers</label>
+            <p-multiSelect inputId="ticket-assignees" formControlName="assignedDeveloperIds" [options]="developers" optionLabel="username" optionValue="id" defaultLabel="Select developers" display="chip"></p-multiSelect>
+          </div>
+        </div>
+
+        <p class="tickets-page__state tickets-page__state--error" *ngIf="projects.length === 0">Create a project first so new tickets can be assigned.</p>
+        <p class="tickets-page__state tickets-page__state--error" *ngIf="developers.length === 0">Add at least one developer account before assigning tickets.</p>
+        <p class="tickets-page__state tickets-page__state--error" *ngIf="submitErrorMessage">{{ submitErrorMessage }}</p>
+
+        <div class="itm-form-actions">
+          <button pButton type="submit" [disabled]="isSubmitting || deletingTicketId !== null || projects.length === 0" [label]="isEditMode ? 'Save changes' : 'Create ticket'" icon="pi pi-save"></button>
+          <button pButton type="button" text *ngIf="isEditMode" (click)="cancelEdit()" [disabled]="isSubmitting || deletingTicketId !== null" label="Cancel" icon="pi pi-times"></button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+  </p-card>
 
-  <mat-card class="tickets-page__section-card">
-    <mat-card-content>
+  <ng-template #ticketReadOnlyCard>
+    <p-card class="tickets-page__section-card itm-surface-card">
+      <ng-template pTemplate="content">
+        <p class="tickets-page__read-only">You can review ticket history and comments here, but this account cannot change ticket records.</p>
+      </ng-template>
+    </p-card>
+  </ng-template>
+
+  <p-card class="tickets-page__section-card tickets-page__section-card--filters itm-surface-card">
+    <ng-template pTemplate="content">
+      <div class="itm-page-header">
+        <div class="itm-page-header__copy">
+          <p class="itm-page-eyebrow">Filters</p>
+          <h2 class="itm-page-title">Refine the list without crowding the form</h2>
+        </div>
+      </div>
+
+      <form class="tickets-filters itm-form-grid" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+        <div class="tickets-form__grid tickets-form__grid--filters itm-form-grid itm-form-grid--columns">
+          <div class="itm-field tickets-form-field--filter">
+            <label for="filter-status">Status</label>
+            <p-select inputId="filter-status" formControlName="status" [options]="statusOptions" optionLabel="label" optionValue="value" placeholder="All statuses" [showClear]="true"></p-select>
+          </div>
+
+          <div class="itm-field tickets-form-field--filter">
+            <label for="filter-priority">Priority</label>
+            <p-select inputId="filter-priority" formControlName="priority" [options]="priorityOptions" optionLabel="label" optionValue="value" placeholder="All priorities" [showClear]="true"></p-select>
+          </div>
+
+          <div class="itm-field tickets-form-field--filter">
+            <label for="filter-project">Project</label>
+            <p-select inputId="filter-project" formControlName="projectId" [options]="projects" optionLabel="name" optionValue="id" placeholder="All projects" [showClear]="true"></p-select>
+          </div>
+
+          <div class="itm-field tickets-form-field--filter">
+            <label for="filter-assigned">Assigned user</label>
+            <p-select inputId="filter-assigned" formControlName="assignedUserId" [options]="developers" optionLabel="username" optionValue="id" placeholder="Anyone" [showClear]="true"></p-select>
+          </div>
+        </div>
+
+        <div class="itm-form-actions">
+          <button pButton type="submit" [disabled]="isLoading" label="Apply filters" icon="pi pi-filter"></button>
+          <button pButton type="button" text (click)="clearFilters()" [disabled]="isLoading" label="Clear" icon="pi pi-times"></button>
+        </div>
+      </form>
+    </ng-template>
+  </p-card>
+
+  <p-card class="tickets-page__section-card itm-surface-card">
+    <ng-template pTemplate="content">
       <div class="tickets-page__loading" *ngIf="isLoading">
-        <mat-spinner diameter="36"></mat-spinner>
+        <p-progressSpinner [style]="{ width: '36px', height: '36px' }" strokeWidth="6"></p-progressSpinner>
         <span>Loading tickets...</span>
       </div>
 
       <div *ngIf="!isLoading">
         <div class="tickets-page__state tickets-page__state--error" *ngIf="loadErrorMessage">
           <span>{{ loadErrorMessage }}</span>
-          <button mat-button type="button" (click)="loadData()">Retry</button>
+          <button pButton type="button" text icon="pi pi-refresh" label="Retry" (click)="loadData()"></button>
         </div>
 
         <div class="tickets-page__state" *ngIf="!loadErrorMessage && tickets.length === 0">
@@ -169,8 +146,8 @@
         </div>
 
         <div class="tickets-page__list" *ngIf="!loadErrorMessage && tickets.length > 0">
-          <mat-card class="tickets-page__item" *ngFor="let ticket of tickets; trackBy: trackByTicketId">
-            <mat-card-content>
+          <p-card class="tickets-page__item" *ngFor="let ticket of tickets; trackBy: trackByTicketId">
+            <ng-template pTemplate="content">
               <div class="tickets-page__item-header">
                 <div class="tickets-page__item-copy">
                   <h2>{{ ticket.title }}</h2>
@@ -178,21 +155,17 @@
                 </div>
 
                 <div class="tickets-page__item-actions">
-                  <button mat-flat-button color="primary" [routerLink]="['/workspace/tickets', ticket.id]">Open details</button>
-                  <button mat-button type="button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null">
-                    Edit
-                  </button>
-                  <button mat-button color="warn" type="button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null">
-                    Delete
-                  </button>
+                  <a pButton [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open details"></a>
+                  <button pButton text type="button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-pencil" label="Edit"></button>
+                  <button pButton text severity="danger" type="button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-trash" label="Delete"></button>
                 </div>
               </div>
 
               <div class="tickets-page__meta">
-                <mat-chip-set>
-                  <mat-chip>{{ getStatusLabel(ticket.status) }}</mat-chip>
-                  <mat-chip>{{ getPriorityLabel(ticket.priority) }}</mat-chip>
-                </mat-chip-set>
+                <div class="tickets-page__tag-row">
+                  <p-tag [severity]="getStatusSeverity(ticket.status)" [value]="getStatusLabel(ticket.status)"></p-tag>
+                  <p-tag [severity]="getPrioritySeverity(ticket.priority)" [value]="getPriorityLabel(ticket.priority)"></p-tag>
+                </div>
 
                 <div class="tickets-page__meta-details">
                   <a [routerLink]="['/workspace/projects', ticket.projectId]">{{ getProjectName(ticket.projectId) }}</a>
@@ -203,23 +176,17 @@
 
               <div class="tickets-page__assignees">
                 <span class="tickets-page__meta-label">Assigned developers</span>
-                <mat-chip-set>
-                  <mat-chip *ngFor="let developer of ticket.assignedDevelopers">{{ developer.username }}</mat-chip>
-                  <mat-chip *ngIf="ticket.assignedDevelopers.length === 0">Unassigned</mat-chip>
-                </mat-chip-set>
+                <div class="tickets-page__tag-row">
+                  <p-tag *ngFor="let developer of ticket.assignedDevelopers" severity="info" [value]="developer.username"></p-tag>
+                  <p-tag *ngIf="ticket.assignedDevelopers.length === 0" severity="secondary" value="Unassigned"></p-tag>
+                </div>
               </div>
-            </mat-card-content>
-          </mat-card>
+            </ng-template>
+          </p-card>
         </div>
 
-        <mat-paginator
-          *ngIf="!loadErrorMessage && ticketPage.totalCount > 0"
-          [length]="ticketPage.totalCount"
-          [pageIndex]="ticketPage.pageNumber - 1"
-          [pageSize]="ticketPage.pageSize"
-          [pageSizeOptions]="pageSizeOptions"
-          (page)="onPageChange($event)"></mat-paginator>
+        <p-paginator *ngIf="!loadErrorMessage && ticketPage.totalCount > 0" [totalRecords]="ticketPage.totalCount" [first]="(ticketPage.pageNumber - 1) * ticketPage.pageSize" [rows]="ticketPage.pageSize" [rowsPerPageOptions]="pageSizeOptions" (onPageChange)="onPageChange($event)"></p-paginator>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+  </p-card>
 </div>

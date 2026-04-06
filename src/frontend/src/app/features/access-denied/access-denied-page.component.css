@@ -1,6 +1,24 @@
+.access-denied-page {
+  text-align: center;
+}
+
+.access-denied-page__icon {
+  align-items: center;
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 999px;
+  color: #b91c1c;
+  display: inline-flex;
+  font-size: 1.5rem;
+  height: 4.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  width: 4.5rem;
+}
+
 .access-denied-page__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+  justify-content: center;
   margin-top: 1rem;
 }

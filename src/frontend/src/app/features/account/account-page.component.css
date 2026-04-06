@@ -3,10 +3,23 @@
   gap: 1.5rem;
 }
 
+.account-page__header,
+.account-page__identity {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.account-page__identity {
+  justify-content: flex-start;
+}
+
 .account-page__grid {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin-top: 1.5rem;
 }
 
 .account-page__label {
@@ -34,11 +47,9 @@
   max-width: 760px;
 }
 
-.account-page__session-note mat-icon {
+.account-page__session-note i {
   font-size: 1rem;
-  height: 1rem;
   margin-top: 0.2rem;
-  width: 1rem;
 }
 
 .account-page__state--error {
@@ -67,4 +78,19 @@
   justify-content: space-between;
   padding: 0.9rem 1rem;
   text-decoration: none;
+}
+
+.account-page__ticket-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .account-page__header,
+  .account-page__identity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

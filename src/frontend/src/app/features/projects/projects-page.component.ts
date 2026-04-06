@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTableModule } from '@angular/material/table';
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { InputTextModule } from 'primeng/inputtext';
+import { Textarea } from 'primeng/inputtextarea';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TableModule } from 'primeng/table';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
@@ -24,7 +24,7 @@ function requiredTrimmedValidator(control: AbstractControl<string>): ValidationE
 @Component({
   selector: 'itm-projects-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, CardModule, InputTextModule, Textarea, ProgressSpinnerModule, TableModule],
   templateUrl: './projects-page.component.html',
   styleUrls: ['./projects-page.component.css']
 })
@@ -63,6 +63,10 @@ export class ProjectsPageComponent implements OnInit {
 
   get isEditMode(): boolean {
     return this.editingProjectId !== null;
+  }
+
+  get formTitle(): string {
+    return this.isEditMode ? 'Edit project' : 'Create project';
   }
 
   ngOnInit(): void {

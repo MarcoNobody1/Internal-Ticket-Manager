@@ -1,12 +1,19 @@
 <section class="account-page" *ngIf="session as currentSession">
-  <mat-card>
-    <mat-card-header>
-      <mat-icon mat-card-avatar>account_circle</mat-icon>
-      <mat-card-subtitle>Account</mat-card-subtitle>
-      <mat-card-title>{{ currentSession.username }}</mat-card-title>
-    </mat-card-header>
+  <p-card class="itm-surface-card">
+    <ng-template pTemplate="content">
+      <div class="account-page__header">
+        <div class="account-page__identity">
+          <p-avatar [label]="currentSession.username.slice(0, 1).toUpperCase()" size="xlarge" shape="circle"></p-avatar>
 
-    <mat-card-content>
+          <div>
+            <p class="itm-page-eyebrow">Account</p>
+            <h1 class="itm-page-title">{{ currentSession.username }}</h1>
+          </div>
+        </div>
+
+        <p-tag [severity]="getRoleSeverity(currentSession.role)" [value]="currentSession.role"></p-tag>
+      </div>
+
       <div class="account-page__grid">
         <div>
           <span class="account-page__label">Role</span>
@@ -23,26 +30,31 @@
       </div>
 
       <div class="account-page__session-note">
-        <mat-icon>info</mat-icon>
+        <i class="pi pi-info-circle"></i>
         <p class="account-page__copy">
           Identity comes from the JWT-backed login, the frontend keeps it in session storage, and expired sessions are cleared automatically.
         </p>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+  </p-card>
 
-  <mat-card id="assigned-tickets">
-    <mat-card-header>
-      <mat-card-title>Assigned tickets</mat-card-title>
-      <mat-card-subtitle *ngIf="isDeveloper; else adminAssignedTicketsSubtitle">Direct links for the signed-in developer</mat-card-subtitle>
-      <ng-template #adminAssignedTicketsSubtitle>
-        <mat-card-subtitle>Admins do not have a developer assignment list in this demo.</mat-card-subtitle>
-      </ng-template>
-    </mat-card-header>
+  <p-card id="assigned-tickets" class="itm-surface-card">
+    <ng-template pTemplate="content">
+      <div class="itm-page-header">
+        <div class="itm-page-header__copy">
+          <p class="itm-page-eyebrow">Assigned tickets</p>
+          <h2 class="itm-page-title">Your current workload snapshot</h2>
+          <p class="itm-page-description" *ngIf="isDeveloper; else adminAssignedTicketsSubtitle">
+            Direct links for the signed-in developer so account and work context stay connected.
+          </p>
+          <ng-template #adminAssignedTicketsSubtitle>
+            <p class="itm-page-description">Admins can review identity and session details here, but they do not have a developer assignment list in this demo.</p>
+          </ng-template>
+        </div>
+      </div>
 
-    <mat-card-content>
       <div class="account-page__loading" *ngIf="isLoadingAssignedTickets">
-        <mat-spinner diameter="32"></mat-spinner>
+        <p-progressSpinner [style]="{ width: '32px', height: '32px' }" strokeWidth="6"></p-progressSpinner>
         <span>Loading assigned tickets...</span>
       </div>
 
@@ -52,8 +64,16 @@
         <ng-container *ngIf="isDeveloper; else adminAssignedTicketsState">
           <div class="account-page__ticket-list" *ngIf="assignedTickets.length > 0; else noAssignedTicketsState">
             <a class="account-page__ticket-link" *ngFor="let ticket of assignedTickets" [routerLink]="['/workspace/tickets', ticket.id]">
-              <span>{{ ticket.title }}</span>
-              <mat-icon>arrow_forward</mat-icon>
+              <div>
+                <strong>{{ ticket.title }}</strong>
+
+                <div class="account-page__ticket-tags">
+                  <p-tag [severity]="getTicketStatusSeverity(ticket.status)" [value]="getTicketStatusLabel(ticket.status)"></p-tag>
+                  <p-tag [severity]="getTicketPrioritySeverity(ticket.priority)" [value]="getTicketPriorityLabel(ticket.priority)"></p-tag>
+                </div>
+              </div>
+
+              <i class="pi pi-arrow-right"></i>
             </a>
           </div>
 
@@ -62,19 +82,18 @@
           </ng-template>
 
           <a
-            mat-flat-button
-            color="primary"
+            pButton
             *ngIf="assignedDeveloperId"
             [routerLink]="['/workspace/tickets']"
-            [queryParams]="{ assignedUserId: assignedDeveloperId }">
-            Open assigned tickets view
-          </a>
+            [queryParams]="{ assignedUserId: assignedDeveloperId }"
+            icon="pi pi-filter"
+            label="Open assigned tickets view"></a>
         </ng-container>
 
         <ng-template #adminAssignedTicketsState>
           <p class="account-page__state">This admin account can review identity and session data here. Assigned developer tickets are only shown for developer accounts.</p>
         </ng-template>
       </ng-container>
-    </mat-card-content>
-  </mat-card>
+    </ng-template>
+  </p-card>
 </section>
