@@ -1,76 +1,134 @@
 <ng-container *ngIf="session$ | async as session">
-  <mat-toolbar color="primary">
-    <span class="workspace-toolbar__brand">
-      <mat-icon>confirmation_number</mat-icon>
-      Internal Ticket Manager
-    </span>
-    <span class="workspace-toolbar__spacer"></span>
-    <a mat-button routerLink="/workspace/projects" routerLinkActive="workspace-toolbar__link--active">Projects</a>
-    <a mat-button routerLink="/workspace/tickets" routerLinkActive="workspace-toolbar__link--active">Tickets</a>
-    <a mat-button *ngIf="session.role === 'Admin'" routerLink="/workspace/users" routerLinkActive="workspace-toolbar__link--active">Users</a>
-    <button
-      mat-button
-      type="button"
-      [matMenuTriggerFor]="accountMenu"
-      class="workspace-toolbar__account-button"
-      aria-label="Open account menu">
-      <mat-icon>account_circle</mat-icon>
-      <span class="workspace-toolbar__session">{{ session.username }} · {{ session.role }}</span>
-    </button>
-    <button mat-button type="button" (click)="logout()">Logout</button>
-  </mat-toolbar>
+  <p-drawer [(visible)]="isMobileDrawerOpen" position="left" styleClass="workspace-shell__mobile-drawer">
+    <ng-template pTemplate="header">
+      <div class="workspace-shell__drawer-header">
+        <span>Navigation</span>
+      </div>
+    </ng-template>
 
-  <mat-menu #accountMenu="matMenu" xPosition="before">
-    <div class="workspace-account-menu__content">
-      <p class="workspace-account-menu__eyebrow">Signed in as</p>
-      <p class="workspace-account-menu__name">{{ session.username }}</p>
-      <p class="workspace-account-menu__role">Role: {{ session.role }}</p>
+    <div class="workspace-shell__drawer-content">
+      <a
+        *ngFor="let item of getVisibleNavItems(session.role)"
+        [routerLink]="item.route"
+        routerLinkActive="workspace-shell__nav-link--active"
+        class="workspace-shell__nav-link"
+        (click)="closeMobileDrawer()">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
     </div>
-    <mat-divider></mat-divider>
-    <button mat-menu-item routerLink="/workspace/account">
-      <mat-icon>manage_accounts</mat-icon>
-      <span>Open account</span>
-    </button>
-    <button mat-menu-item *ngIf="session.role === 'Developer'" routerLink="/workspace/account" fragment="assigned-tickets">
-      <mat-icon>assignment_ind</mat-icon>
-      <span>Assigned tickets</span>
-    </button>
-  </mat-menu>
+  </p-drawer>
 
-  <section class="workspace-page">
-    <mat-card class="workspace-page__hero">
-      <mat-card-content>
-        <p class="workspace-page__eyebrow">Protected Workspace</p>
-        <h1>Welcome, {{ session.username }}</h1>
-        <p>
-          The protected workspace now covers projects, tickets, and a small admin users area so the demo stays explainable while still showing
-          persisted auth management.
-        </p>
+  <div class="workspace-shell" [class.workspace-shell--collapsed]="isNavCollapsed">
+    <aside class="workspace-shell__aside itm-surface-card">
+      <div class="workspace-shell__aside-top">
+        <button
+          pButton
+          type="button"
+          severity="contrast"
+          text
+          [icon]="isNavCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
+          class="workspace-shell__collapse-button"
+          (click)="toggleNavCollapse()"
+          [attr.aria-label]="isNavCollapsed ? 'Expand navigation' : 'Collapse navigation'"></button>
 
-        <div class="workspace-page__identity-grid">
-          <div>
-            <span class="workspace-page__label">Username</span>
-            <strong>{{ session.username }}</strong>
+        <div class="workspace-shell__brand" *ngIf="!isNavCollapsed">
+          <div class="workspace-shell__brand-mark">
+            <i class="pi pi-ticket"></i>
           </div>
           <div>
-            <span class="workspace-page__label">Role</span>
-            <strong>{{ session.role }}</strong>
-          </div>
-          <div>
-            <span class="workspace-page__label">Session expires</span>
-            <strong>{{ session.expiresAtUtc | date: 'medium' }}</strong>
+            <strong>Internal Ticket Manager</strong>
+            <span>PrimeNG refresh</span>
           </div>
         </div>
+      </div>
 
-        <div class="workspace-page__session-note">
-          <mat-icon>info</mat-icon>
-          <span>
-            Account details, session storage notes, and assigned-ticket shortcuts stay available from the account menu in the top navigation.
-          </span>
-        </div>
-      </mat-card-content>
-    </mat-card>
+      <nav class="workspace-shell__nav">
+        <a
+          *ngFor="let item of getVisibleNavItems(session.role)"
+          [routerLink]="item.route"
+          routerLinkActive="workspace-shell__nav-link--active"
+          class="workspace-shell__nav-link"
+          [attr.aria-label]="item.label">
+          <i [class]="item.icon"></i>
+          <span *ngIf="!isNavCollapsed">{{ item.label }}</span>
+        </a>
+      </nav>
 
-    <router-outlet></router-outlet>
-  </section>
+      <div class="workspace-shell__aside-footer" *ngIf="!isNavCollapsed">
+        <p-card class="workspace-shell__identity-card">
+          <ng-template pTemplate="content">
+            <div class="workspace-shell__identity-header">
+              <p-avatar [label]="session.username.slice(0, 1).toUpperCase()" shape="circle"></p-avatar>
+              <div>
+                <strong>{{ session.username }}</strong>
+                <p>{{ session.expiresAtUtc | date: 'medium' }}</p>
+              </div>
+            </div>
+
+            <p-tag [severity]="getRoleSeverity(session.role)" [value]="session.role"></p-tag>
+          </ng-template>
+        </p-card>
+      </div>
+    </aside>
+
+    <div class="workspace-shell__content">
+      <p-toolbar styleClass="workspace-shell__toolbar itm-surface-card">
+        <ng-template pTemplate="start">
+          <div class="workspace-shell__toolbar-start">
+            <button pButton type="button" text icon="pi pi-bars" class="workspace-shell__mobile-menu-button" (click)="openMobileDrawer()"></button>
+            <div>
+              <p class="itm-page-eyebrow">Protected workspace</p>
+              <strong>Welcome back, {{ session.username }}</strong>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="end">
+          <div class="workspace-shell__toolbar-end">
+            <a pButton text routerLink="/workspace/account" icon="pi pi-user" label="Account"></a>
+            <button pButton type="button" severity="secondary" icon="pi pi-sign-out" label="Logout" (click)="logout()"></button>
+          </div>
+        </ng-template>
+      </p-toolbar>
+
+      <section class="workspace-page itm-page-grid">
+        <p-card class="workspace-page__hero itm-surface-card">
+          <ng-template pTemplate="content">
+            <div class="itm-page-header">
+              <div class="itm-page-header__copy">
+                <p class="itm-page-eyebrow">Protected workspace</p>
+                <h1 class="itm-page-title">Projects, tickets, and admin tasks in one clean flow</h1>
+                <p class="itm-page-description">
+                  The workspace keeps the navigation focused on the left aside, preserves the existing routes, and stays small enough to explain in an interview.
+                </p>
+              </div>
+
+              <div class="workspace-page__hero-tags">
+                <p-tag icon="pi pi-user" [value]="session.username"></p-tag>
+                <p-tag [severity]="getRoleSeverity(session.role)" icon="pi pi-shield" [value]="session.role"></p-tag>
+              </div>
+            </div>
+
+            <div class="workspace-page__identity-grid">
+              <div>
+                <span class="workspace-page__label">Session expires</span>
+                <strong>{{ session.expiresAtUtc | date: 'medium' }}</strong>
+              </div>
+              <div>
+                <span class="workspace-page__label">Navigation model</span>
+                <strong>Left rail + responsive drawer</strong>
+              </div>
+              <div>
+                <span class="workspace-page__label">UI stack</span>
+                <strong>Angular 18 + PrimeNG 18</strong>
+              </div>
+            </div>
+          </ng-template>
+        </p-card>
+
+        <router-outlet></router-outlet>
+      </section>
+    </div>
+  </div>
 </ng-container>
