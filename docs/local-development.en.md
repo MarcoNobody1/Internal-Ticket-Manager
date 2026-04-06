@@ -59,6 +59,8 @@ Expected result: Angular CLI version output.
 
 > Use **Angular CLI** for Angular-specific commands. Use **Bun** for package management.
 
+The frontend UI stack now uses **PrimeNG 18 + PrimeIcons**.
+
 ---
 
 ## 3. Install Docker Desktop if Needed
@@ -124,6 +126,8 @@ Install dependencies with Bun:
 ```powershell
 bun install
 ```
+
+This installs the Angular dependencies plus the PrimeNG/PrimeIcons UI stack used by the app shell and feature screens.
 
 Verify the Bun lockfile exists:
 
