@@ -86,16 +86,48 @@
     </p-card>
   </ng-template>
 
-  <p-card class="tickets-page__section-card tickets-page__section-card--filters itm-surface-card">
+  <p-card class="tickets-page__section-card itm-surface-card">
     <ng-template pTemplate="content">
-      <div class="itm-page-header">
+      <div class="itm-page-header tickets-page__list-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Filters</p>
-          <h2 class="itm-page-title">Refine the list without crowding the form</h2>
+          <p class="itm-page-eyebrow">Ticket list</p>
+          <h2 class="itm-page-title">Current delivery work</h2>
+          <p class="itm-page-description">Review the queue, open details, and refine the results only when you need extra focus.</p>
+        </div>
+
+        <div class="tickets-page__list-header-actions">
+          <button
+            pButton
+            type="button"
+            text
+            icon="pi pi-filter"
+            [label]="areFiltersVisible ? 'Ocultar filtros' : 'Filtros'"
+            (click)="toggleFilters()"></button>
+          <span class="tickets-page__active-filter-count" *ngIf="activeFilterCount > 0">{{ activeFilterCount }} activos</span>
         </div>
       </div>
 
-      <form class="tickets-filters itm-form-grid" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+      <form class="tickets-filters itm-form-grid" *ngIf="areFiltersVisible" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+        <div class="tickets-page__filters-summary" *ngIf="activeFilterSummary.length > 0">
+          <div class="tickets-page__tag-row">
+            <p-tag *ngFor="let filter of activeFilterSummary" severity="secondary" [value]="filter"></p-tag>
+          </div>
+
+          <div class="tickets-page__filters-actions">
+            <button pButton type="submit" [disabled]="isLoading" label="Apply filters" icon="pi pi-filter"></button>
+            <button pButton type="button" text (click)="clearFilters()" [disabled]="isLoading" label="Clear" icon="pi pi-times"></button>
+          </div>
+        </div>
+
+        <div class="tickets-page__filters-summary" *ngIf="activeFilterSummary.length === 0">
+          <span class="tickets-page__filters-empty">No active filters yet.</span>
+
+          <div class="tickets-page__filters-actions">
+            <button pButton type="submit" [disabled]="isLoading" label="Apply filters" icon="pi pi-filter"></button>
+            <button pButton type="button" text (click)="clearFilters()" [disabled]="isLoading" label="Clear" icon="pi pi-times"></button>
+          </div>
+        </div>
+
         <div class="tickets-form__grid tickets-form__grid--filters itm-form-grid itm-form-grid--columns">
           <div class="itm-field tickets-form-field--filter">
             <label for="filter-status">Status</label>
@@ -117,17 +149,8 @@
             <p-select inputId="filter-assigned" formControlName="assignedUserId" [options]="developers" optionLabel="username" optionValue="id" placeholder="Anyone" [showClear]="true"></p-select>
           </div>
         </div>
-
-        <div class="itm-form-actions">
-          <button pButton type="submit" [disabled]="isLoading" label="Apply filters" icon="pi pi-filter"></button>
-          <button pButton type="button" text (click)="clearFilters()" [disabled]="isLoading" label="Clear" icon="pi pi-times"></button>
-        </div>
       </form>
-    </ng-template>
-  </p-card>
 
-  <p-card class="tickets-page__section-card itm-surface-card">
-    <ng-template pTemplate="content">
       <div class="tickets-page__loading" *ngIf="isLoading">
         <p-progressSpinner [style]="{ width: '36px', height: '36px' }" strokeWidth="6"></p-progressSpinner>
         <span>Loading tickets...</span>
@@ -155,7 +178,7 @@
                 </div>
 
                 <div class="tickets-page__item-actions">
-                  <a pButton [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open details"></a>
+                  <a pButton class="itm-link-button" [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open details"></a>
                   <button pButton text type="button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-pencil" label="Edit"></button>
                   <button pButton text severity="danger" type="button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-trash" label="Delete"></button>
                 </div>

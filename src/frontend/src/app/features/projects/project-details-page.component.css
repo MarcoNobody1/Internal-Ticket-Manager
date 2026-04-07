@@ -1,6 +1,7 @@
 .project-details-page {
   display: grid;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .project-details-page__loading,
@@ -14,11 +15,11 @@
 }
 
 .project-details-page__state--error {
-  color: #b42318;
+  color: var(--itm-danger);
 }
 
 .project-details-page__eyebrow {
-  color: #4f46e5;
+  color: var(--itm-accent);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -38,7 +39,7 @@
 
 .project-details-page__meta,
 .project-details-page__ticket-meta {
-  color: #475467;
+  color: var(--itm-text-subtle);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -51,7 +52,7 @@
 }
 
 .project-details-page__ticket {
-  border-left: 4px solid #4f46e5;
+  border-left: 4px solid var(--itm-accent);
 }
 
 .project-details-page__ticket-tags {
@@ -67,8 +68,23 @@
   justify-content: space-between;
 }
 
+.project-details-page__ticket-header > :first-child {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.project-details-page__ticket-actions {
+  display: flex;
+  flex: 0 1 14rem;
+  justify-content: flex-end;
+}
+
 @media (max-width: 799px) {
   .project-details-page__ticket-header {
     flex-direction: column;
+  }
+
+  .project-details-page__ticket-actions {
+    justify-content: flex-start;
   }
 }

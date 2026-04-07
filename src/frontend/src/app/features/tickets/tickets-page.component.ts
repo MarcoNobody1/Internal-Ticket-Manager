@@ -104,6 +104,7 @@ export class TicketsPageComponent implements OnInit {
   loadErrorMessage = '';
   submitErrorMessage = '';
   editingTicketId: string | null = null;
+  areFiltersVisible = false;
 
   constructor(
     private readonly activatedRoute: ActivatedRoute,
@@ -125,6 +126,33 @@ export class TicketsPageComponent implements OnInit {
 
   get isEditMode(): boolean {
     return this.editingTicketId !== null;
+  }
+
+  get activeFilterSummary(): string[] {
+    const filters = this.filtersForm.getRawValue();
+    const summary: string[] = [];
+
+    if (filters.status !== null) {
+      summary.push(`Estado: ${this.getStatusLabel(filters.status)}`);
+    }
+
+    if (filters.priority !== null) {
+      summary.push(`Prioridad: ${this.getPriorityLabel(filters.priority)}`);
+    }
+
+    if (filters.projectId) {
+      summary.push(`Proyecto: ${this.getProjectName(filters.projectId)}`);
+    }
+
+    if (filters.assignedUserId) {
+      summary.push(`Asignado: ${this.getDeveloperName(filters.assignedUserId)}`);
+    }
+
+    return summary;
+  }
+
+  get activeFilterCount(): number {
+    return this.activeFilterSummary.length;
   }
 
   getStatusSeverity = getTicketStatusSeverity;
@@ -269,6 +297,10 @@ export class TicketsPageComponent implements OnInit {
     return getTicketPriorityLabel(priority);
   }
 
+  getDeveloperName(userId: string): string {
+    return this.developers.find((developer) => developer.id === userId)?.username ?? 'Unknown user';
+  }
+
   trackByTicketId(_: number, ticket: Ticket): string {
     return ticket.id;
   }
@@ -294,6 +326,10 @@ export class TicketsPageComponent implements OnInit {
     this.ticketPage.pageSize = this.defaultPageSize;
     this.updateRouteFilters();
     this.loadTicketsPage();
+  }
+
+  toggleFilters(): void {
+    this.areFiltersVisible = !this.areFiltersVisible;
   }
 
   onPageChange(event: PaginatorState): void {

@@ -66,7 +66,7 @@
         </div>
 
         <div class="projects-table itm-data-table" *ngIf="!loadErrorMessage && projects.length > 0">
-          <p-table [value]="projects" [tableStyle]="{ 'min-width': '52rem' }">
+          <p-table [value]="projects">
             <ng-template pTemplate="header">
               <tr>
                 <th>Name</th>
@@ -78,12 +78,12 @@
 
             <ng-template pTemplate="body" let-project>
               <tr>
-                <td>
+                <td data-label="Name">
                 <a [routerLink]="['/workspace/projects', project.id]">{{ project.name }}</a>
                 </td>
-                <td>{{ project.description || 'No description provided.' }}</td>
-                <td>{{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</td>
-                <td>
+                <td data-label="Description">{{ project.description || 'No description provided.' }}</td>
+                <td data-label="Last updated">{{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</td>
+                <td data-label="Actions">
                   <div class="projects-table__actions">
                     <a pButton text class="itm-link-button" [routerLink]="['/workspace/projects', project.id]" icon="pi pi-eye" label="View"></a>
                     <button pButton text type="button" *ngIf="canManageProjects" (click)="startEdit(project)" [disabled]="isSubmitting || deletingProjectId !== null" icon="pi pi-pencil" label="Edit"></button>

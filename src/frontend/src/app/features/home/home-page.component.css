@@ -3,15 +3,15 @@
 }
 
 .home-page__card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--itm-surface-strong);
+  border: 1px solid var(--itm-border);
   border-radius: 1rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   padding: 1.5rem;
 }
 
 .home-page__eyebrow {
-  color: #2563eb;
+  color: var(--itm-accent);
   font-size: 0.875rem;
   font-weight: 600;
   margin: 0 0 0.5rem;
