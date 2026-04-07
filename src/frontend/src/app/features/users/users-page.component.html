@@ -66,7 +66,7 @@
         <p class="users-page__state users-page__state--error" *ngIf="deleteErrorMessage">{{ deleteErrorMessage }}</p>
 
         <div class="users-table itm-data-table" *ngIf="!loadErrorMessage && users.length > 0">
-          <p-table [value]="users" [tableStyle]="{ 'min-width': '44rem' }">
+          <p-table [value]="users">
             <ng-template pTemplate="header">
               <tr>
                 <th>Username</th>
@@ -78,12 +78,14 @@
 
             <ng-template pTemplate="body" let-user>
               <tr>
-                <td>{{ user.username }}</td>
-                <td><p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag></td>
-                <td>{{ user.createdAtUtc | date: 'medium' }}</td>
-                <td class="users-table__actions">
-                  <button pButton text type="button" (click)="startEdit(user)" [disabled]="isDeleting(user.id)" icon="pi pi-pencil" label="Edit"></button>
-                  <button pButton text severity="danger" type="button" (click)="deleteUser(user)" [disabled]="isDeleting(user.id)" icon="pi pi-trash" [label]="isDeleting(user.id) ? 'Deleting...' : 'Delete'"></button>
+                <td data-label="Username">{{ user.username }}</td>
+                <td data-label="Role"><p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag></td>
+                <td data-label="Created">{{ user.createdAtUtc | date: 'medium' }}</td>
+                <td data-label="Actions">
+                  <div class="users-table__actions">
+                    <button pButton text type="button" (click)="startEdit(user)" [disabled]="isDeleting(user.id)" icon="pi pi-pencil" label="Edit"></button>
+                    <button pButton text severity="danger" type="button" (click)="deleteUser(user)" [disabled]="isDeleting(user.id)" icon="pi pi-trash" [label]="isDeleting(user.id) ? 'Deleting...' : 'Delete'"></button>
+                  </div>
                 </td>
               </tr>
             </ng-template>

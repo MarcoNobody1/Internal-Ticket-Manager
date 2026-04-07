@@ -6,7 +6,7 @@
   align-items: center;
   background: rgba(239, 68, 68, 0.12);
   border-radius: 999px;
-  color: #b91c1c;
+  color: var(--itm-danger);
   display: inline-flex;
   font-size: 1.5rem;
   height: 4.5rem;

@@ -1,11 +1,9 @@
 .workspace-shell {
   display: grid;
-  gap: 1.5rem;
   grid-template-columns: 18rem minmax(0, 1fr);
-  margin: 0 auto;
-  max-width: var(--itm-page-width);
   min-height: 100vh;
-  padding: 1.25rem;
+  overflow-x: clip;
+  width: 100%;
 }
 
 .workspace-shell--collapsed {
@@ -13,12 +11,21 @@
 }
 
 .workspace-shell__aside {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-rows: auto 1fr auto;
-  padding: 1rem;
+  height: 100vh;
+  left: 0;
   position: sticky;
-  top: 1.25rem;
+  top: 0;
+}
+
+.workspace-shell__aside-panel {
+  display: grid;
+  gap: 1rem;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  padding: 1rem 0.875rem;
+  background: var(--itm-shell-surface);
+  border-right: 1px solid var(--itm-border);
+  box-shadow: var(--itm-shell-shadow);
 }
 
 .workspace-shell__aside-top {
@@ -26,6 +33,10 @@
   display: flex;
   gap: 0.75rem;
   justify-content: space-between;
+}
+
+.workspace-shell--collapsed .workspace-shell__aside-top {
+  justify-content: center;
 }
 
 .workspace-shell__brand {
@@ -53,25 +64,26 @@
 
 .workspace-shell__nav {
   display: grid;
-  gap: 0.55rem;
+  align-content: start;
+  gap: 0.35rem;
 }
 
 .workspace-shell__nav-link {
   align-items: center;
-  border-radius: 16px;
-  color: #334155;
+  border-radius: 14px;
+  color: var(--itm-text-subtle);
   display: flex;
-  gap: 0.85rem;
-  min-height: 3rem;
-  padding: 0.8rem 0.95rem;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.6rem 0.8rem;
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .workspace-shell__nav-link:hover,
 .workspace-shell__nav-link--active {
-  background: rgba(79, 70, 229, 0.12);
-  color: #312e81;
+  background: var(--itm-nav-hover);
+  color: var(--itm-accent-strong);
   transform: translateY(-1px);
 }
 
@@ -84,6 +96,14 @@
   padding: 0;
 }
 
+.workspace-shell__identity-card {
+  border: 0;
+}
+
+.workspace-shell__aside-footer {
+  align-self: end;
+}
+
 .workspace-shell__identity-header {
   align-items: center;
   display: flex;
@@ -92,14 +112,32 @@
 }
 
 .workspace-shell__identity-header p {
+  border: 0;
   color: var(--itm-text-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   margin: 0.2rem 0 0;
+  padding: 0;
 }
 
-.workspace-shell__content {
+.workspace-shell__identity-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.workspace-shell__main {
+  min-width: 0;
+  padding: 1rem clamp(0.85rem, 2.4vw, 2rem) 2rem;
+}
+
+.workspace-shell__content-inner {
   display: grid;
   gap: 1rem;
+  margin: 0 auto;
+  max-width: var(--itm-page-width);
+  min-width: 0;
 }
 
 .workspace-shell__toolbar :where(.p-toolbar) {
@@ -117,36 +155,37 @@
   display: none;
 }
 
-.workspace-page {
-  padding-bottom: 1.25rem;
-}
-
-.workspace-page__hero {
-  background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(59, 130, 246, 0.08));
-}
-
-.workspace-page__hero-tags {
-  align-items: flex-start;
+.workspace-shell__drawer-header,
+.workspace-shell__drawer-brand {
+  align-items: center;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
+  gap: 0.85rem;
 }
 
-.workspace-page__identity-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  margin-top: 1.5rem;
+.workspace-shell__drawer-header {
+  justify-content: space-between;
+  width: 100%;
 }
 
-.workspace-page__label {
+.workspace-shell__drawer-brand span {
   color: var(--itm-text-muted);
   display: block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.35rem;
-  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.workspace-shell__drawer-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.workspace-shell__drawer-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.workspace-page {
+  min-width: 0;
+  padding-bottom: 1.25rem;
 }
 
 .workspace-shell__mobile-drawer .workspace-shell__nav-link {
@@ -163,18 +202,22 @@
     display: none;
   }
 
+  .workspace-shell__main {
+    padding-inline: 1rem;
+  }
+
   .workspace-shell__mobile-menu-button {
     display: inline-flex;
   }
 }
 
 @media (max-width: 768px) {
-  .workspace-shell {
-    padding: 0.85rem;
-  }
-
   .workspace-shell__toolbar-start,
   .workspace-shell__toolbar-end {
     flex-wrap: wrap;
+  }
+
+  .workspace-shell__main {
+    padding: 0.85rem;
   }
 }

@@ -1,12 +1,18 @@
 .login-page {
   align-items: center;
-  background:
-    radial-gradient(circle at top, rgba(99, 102, 241, 0.16), transparent 28%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
+}
+
+.login-page__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 32rem;
+  width: 100%;
 }
 
 .login-page__card {
@@ -39,7 +45,7 @@
 }
 
 .login-page__intro {
-  color: #4b5563;
+  color: var(--itm-text-soft);
   line-height: 1.6;
   margin: 0;
 }
@@ -59,7 +65,7 @@
 }
 
 .login-page__hint {
-  color: #4b5563;
+  color: var(--itm-text-soft);
   display: grid;
   gap: 0.75rem;
 }
@@ -70,8 +76,8 @@
 }
 
 .login-page__credentials > div {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--itm-surface-soft);
+  border: 1px solid var(--itm-border-strong);
   border-radius: 16px;
   display: grid;
   gap: 0.25rem;
@@ -79,7 +85,7 @@
 }
 
 .login-page__credential-label {
-  color: #4338ca;
+  color: var(--itm-link);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -87,8 +93,16 @@
 }
 
 @media (max-width: 640px) {
+  .login-page {
+    padding: 1rem;
+  }
+
   .login-page__hero {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .login-page__toolbar {
+    justify-content: stretch;
   }
 }

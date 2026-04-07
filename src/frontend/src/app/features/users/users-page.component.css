@@ -1,6 +1,7 @@
 .users-page {
   display: grid;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .users-page__intro {
@@ -26,10 +27,11 @@
 }
 
 .users-page__state--error {
-  color: #b3261e;
+  color: var(--itm-danger);
 }
 
 .users-table {
+  min-width: 0;
   overflow-x: auto;
 }
 
@@ -38,11 +40,52 @@
 }
 
 .users-table__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .users-table :where(thead) {
+    display: none;
+  }
+
+  .users-table :where(tbody, tr, td) {
+    display: block;
+    width: 100%;
+  }
+
+  .users-table tr {
+    border-bottom: 1px solid var(--itm-border);
+    padding: 0.75rem 0;
+  }
+
+  .users-table tr:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .users-table td {
+    border: 0;
+    padding: 0.5rem 0;
+  }
+
+  .users-table td::before {
+    color: var(--itm-text-muted);
+    content: attr(data-label);
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
 }
 
 @media (max-width: 640px) {
   .users-table__actions {
+    flex-direction: column;
     white-space: normal;
   }
 }

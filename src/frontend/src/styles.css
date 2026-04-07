@@ -5,12 +5,53 @@ html {
 
 :root {
   color-scheme: light;
+  --itm-body-background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  --itm-body-glow-light:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%);
+  --itm-body-glow-dark:
+    radial-gradient(circle at top left, rgba(79, 70, 229, 0.22), transparent 30%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.16), transparent 26%);
   --itm-surface: rgba(255, 255, 255, 0.82);
   --itm-surface-strong: #ffffff;
+  --itm-surface-soft: #f8fafc;
   --itm-border: rgba(148, 163, 184, 0.24);
+  --itm-border-strong: rgba(148, 163, 184, 0.38);
   --itm-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --itm-shell-surface: rgba(255, 255, 255, 0.9);
+  --itm-shell-shadow: 12px 0 28px rgba(15, 23, 42, 0.08);
+  --itm-text-color: #1f2937;
   --itm-text-muted: #64748b;
+  --itm-text-subtle: #475569;
+  --itm-text-soft: #4b5563;
+  --itm-link: #4338ca;
+  --itm-accent: #4f46e5;
+  --itm-accent-strong: #312e81;
+  --itm-nav-hover: rgba(79, 70, 229, 0.12);
+  --itm-danger: #b42318;
   --itm-page-width: 1280px;
+}
+
+:root.app-dark {
+  color-scheme: dark;
+  --itm-body-background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  --itm-surface: rgba(15, 23, 42, 0.82);
+  --itm-surface-strong: #111827;
+  --itm-surface-soft: #172033;
+  --itm-border: rgba(148, 163, 184, 0.22);
+  --itm-border-strong: rgba(148, 163, 184, 0.34);
+  --itm-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
+  --itm-shell-surface: rgba(15, 23, 42, 0.94);
+  --itm-shell-shadow: 12px 0 28px rgba(2, 6, 23, 0.24);
+  --itm-text-color: #e5eefb;
+  --itm-text-muted: #94a3b8;
+  --itm-text-subtle: #cbd5e1;
+  --itm-text-soft: #d1d5db;
+  --itm-link: #a5b4fc;
+  --itm-accent: #a5b4fc;
+  --itm-accent-strong: #c7d2fe;
+  --itm-nav-hover: rgba(129, 140, 248, 0.18);
+  --itm-danger: #fca5a5;
 }
 
 *,
@@ -20,14 +61,41 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at top left, rgba(99, 102, 241, 0.14), transparent 28%),
-    radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 24%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-  color: #1f2937;
+  background: var(--itm-body-background);
+  color: var(--itm-text-color);
   font-family: Inter, Roboto, "Helvetica Neue", sans-serif;
   margin: 0;
   min-height: 100%;
+  position: relative;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body::before,
+body::after {
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+
+body::before {
+  background: var(--itm-body-glow-light);
+  opacity: 1;
+}
+
+body::after {
+  background: var(--itm-body-glow-dark);
+  opacity: 0;
+}
+
+:root.app-dark body::before {
+  opacity: 0;
+}
+
+:root.app-dark body::after {
+  opacity: 1;
 }
 
 body,
@@ -60,7 +128,7 @@ a {
 }
 
 .itm-page-eyebrow {
-  color: #4f46e5;
+  color: var(--itm-accent);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -87,6 +155,7 @@ a {
   border: 1px solid var(--itm-border);
   border-radius: 24px;
   box-shadow: var(--itm-shadow);
+  transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
 }
 
 .itm-state,
@@ -105,7 +174,7 @@ a {
 }
 
 .itm-state--error {
-  color: #b42318;
+  color: var(--itm-danger);
 }
 
 .itm-form-grid {
@@ -123,7 +192,7 @@ a {
 }
 
 .itm-field label {
-  color: #334155;
+  color: var(--itm-text-subtle);
   font-size: 0.92rem;
   font-weight: 600;
 }
@@ -133,7 +202,7 @@ a {
 }
 
 .itm-field__error {
-  color: #b42318;
+  color: var(--itm-danger);
 }
 
 .itm-field .p-inputtext,
@@ -155,6 +224,33 @@ a {
 
 .itm-link-button {
   text-decoration: none;
+}
+
+a.p-button,
+a.p-button:hover,
+.itm-link-button:hover {
+  text-decoration: none;
+}
+
+.p-button.p-button-text:not(:disabled):hover,
+.p-button.p-button-outlined:not(:disabled):hover,
+.p-button.p-button-link:not(:disabled):hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.p-button,
+.p-inputtext,
+.p-inputtextarea,
+.p-select,
+.p-multiselect,
+.p-toolbar,
+.p-card,
+.p-drawer,
+.p-tag,
+.p-panel,
+.p-paginator,
+.p-datatable {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 @media (max-width: 768px) {

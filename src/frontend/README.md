@@ -6,10 +6,11 @@ This folder contains the real Angular workspace baseline for Internal Ticket Man
 
 - `src/main.ts` — Angular bootstrap entry
 - `src/app/app.config.ts` — root providers for router, HTTP client, interceptor, and animations
+- `src/app/core/theme/` — local theme preference service for PrimeNG light/dark mode
 - `src/app/app.routes.ts` — login/public and workspace/protected route configuration
 - `src/app/core/auth/` — auth service, guard, interceptor, and auth models
 - `src/app/features/login/` — PrimeNG-based login page
-- `src/app/features/workspace/` — protected shell with collapsible left navigation and responsive drawer
+- `src/app/features/workspace/` — protected shell with fixed left rail, responsive drawer, and toolbar actions
 - `proxy.conf.json` — local Angular proxy for `/api` calls to the backend
 - `src/app/core/`, `src/app/features/`, `src/app/shared/` — reserved structure for future cross-cutting, feature, and shared UI code
 
@@ -19,7 +20,9 @@ The frontend is intentionally modest:
 - standalone Angular app
 - router with public/protected auth flow
 - PrimeNG 18 + PrimeIcons UI shell and feature screens
+- PrimeNG Aura configured with a class-based light/dark theme switcher (`.app-dark`)
 - session-based JWT persistence for the current browser tab
+- local theme preference persisted in `localStorage`
 - bearer token interceptor and auth guard
 - protected workspace with projects, tickets, comments, and logout
 - role-aware projects UI (admin write actions only)
@@ -38,6 +41,7 @@ This workspace now runs on Angular 18 + PrimeNG 18, which is compatible with the
 ## UI Stack Notes
 
 - PrimeNG is configured in `src/app/app.config.ts` with `providePrimeNG(...)` and the Aura preset from `@primeng/themes`.
+- Dark mode is enabled through PrimeNG's `darkModeSelector` option, and the app toggles the `.app-dark` class on the root element instead of relying on ad-hoc CSS overrides.
 - PrimeIcons are loaded through `angular.json` so the standalone feature screens can use consistent iconography.
 - Angular Material may still exist in `package.json` temporarily, but the active user-facing shell and key screens are now PrimeNG-based.
 

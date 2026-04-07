@@ -2,133 +2,124 @@
   <p-drawer [(visible)]="isMobileDrawerOpen" position="left" styleClass="workspace-shell__mobile-drawer">
     <ng-template pTemplate="header">
       <div class="workspace-shell__drawer-header">
-        <span>Navigation</span>
-      </div>
-    </ng-template>
-
-    <div class="workspace-shell__drawer-content">
-      <a
-        *ngFor="let item of getVisibleNavItems(session.role)"
-        [routerLink]="item.route"
-        routerLinkActive="workspace-shell__nav-link--active"
-        class="workspace-shell__nav-link"
-        (click)="closeMobileDrawer()">
-        <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
-      </a>
-    </div>
-  </p-drawer>
-
-  <div class="workspace-shell" [class.workspace-shell--collapsed]="isNavCollapsed">
-    <aside class="workspace-shell__aside itm-surface-card">
-      <div class="workspace-shell__aside-top">
-        <button
-          pButton
-          type="button"
-          severity="contrast"
-          text
-          [icon]="isNavCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
-          class="workspace-shell__collapse-button"
-          (click)="toggleNavCollapse()"
-          [attr.aria-label]="isNavCollapsed ? 'Expand navigation' : 'Collapse navigation'"></button>
-
-        <div class="workspace-shell__brand" *ngIf="!isNavCollapsed">
+        <div class="workspace-shell__drawer-brand">
           <div class="workspace-shell__brand-mark">
             <i class="pi pi-ticket"></i>
           </div>
+
           <div>
             <strong>Internal Ticket Manager</strong>
-            <span>PrimeNG refresh</span>
+            <span>Workspace navigation</span>
           </div>
         </div>
-      </div>
 
-      <nav class="workspace-shell__nav">
+        <itm-theme-toggle [showLabel]="false" [text]="true" [rounded]="true"></itm-theme-toggle>
+      </div>
+    </ng-template>
+
+      <div class="workspace-shell__drawer-content">
+        <nav class="workspace-shell__nav">
         <a
           *ngFor="let item of getVisibleNavItems(session.role)"
           [routerLink]="item.route"
           routerLinkActive="workspace-shell__nav-link--active"
           class="workspace-shell__nav-link"
-          [attr.aria-label]="item.label">
+          (click)="closeMobileDrawer()">
           <i [class]="item.icon"></i>
-          <span *ngIf="!isNavCollapsed">{{ item.label }}</span>
+          <span>{{ item.label }}</span>
         </a>
       </nav>
 
-      <div class="workspace-shell__aside-footer" *ngIf="!isNavCollapsed">
-        <p-card class="workspace-shell__identity-card">
-          <ng-template pTemplate="content">
-            <div class="workspace-shell__identity-header">
-              <p-avatar [label]="session.username.slice(0, 1).toUpperCase()" shape="circle"></p-avatar>
-              <div>
-                <strong>{{ session.username }}</strong>
-                <p>{{ session.expiresAtUtc | date: 'medium' }}</p>
-              </div>
-            </div>
+      <div class="workspace-shell__drawer-actions">
+        <a pButton routerLink="/workspace/account" icon="pi pi-user" label="Mi Cuenta" severity="secondary" (click)="closeMobileDrawer()"></a>
+        <button pButton type="button" icon="pi pi-sign-out" label="Logout" severity="contrast" (click)="logout()"></button>
+      </div>
+    </div>
+  </p-drawer>
 
-            <p-tag [severity]="getRoleSeverity(session.role)" [value]="session.role"></p-tag>
-          </ng-template>
-        </p-card>
+  <div class="workspace-shell" [class.workspace-shell--collapsed]="isNavCollapsed">
+    <aside class="workspace-shell__aside">
+      <div class="workspace-shell__aside-panel">
+        <div class="workspace-shell__aside-top">
+          <button
+            pButton
+            type="button"
+            severity="contrast"
+            text
+            [icon]="isNavCollapsed ? 'pi pi-angle-double-right' : 'pi pi-angle-double-left'"
+            class="workspace-shell__collapse-button"
+            (click)="toggleNavCollapse()"
+            [attr.aria-label]="isNavCollapsed ? 'Expand navigation' : 'Collapse navigation'"></button>
+
+          <div class="workspace-shell__brand" *ngIf="!isNavCollapsed">
+            <div class="workspace-shell__brand-mark">
+              <i class="pi pi-ticket"></i>
+            </div>
+            <div>
+              <strong>Internal Ticket Manager</strong>
+              <span>PrimeNG workspace shell</span>
+            </div>
+          </div>
+        </div>
+
+        <nav class="workspace-shell__nav">
+          <a
+            *ngFor="let item of getVisibleNavItems(session.role)"
+            [routerLink]="item.route"
+            routerLinkActive="workspace-shell__nav-link--active"
+            class="workspace-shell__nav-link"
+            [attr.aria-label]="item.label">
+            <i [class]="item.icon"></i>
+            <span *ngIf="!isNavCollapsed">{{ item.label }}</span>
+          </a>
+        </nav>
+
+        <div class="workspace-shell__aside-footer" *ngIf="!isNavCollapsed">
+          <p-card class="workspace-shell__identity-card itm-surface-card">
+            <ng-template pTemplate="content">
+              <div class="workspace-shell__identity-header">
+                <p-avatar [label]="session.username.slice(0, 1).toUpperCase()" shape="circle"></p-avatar>
+                <div>
+                  <strong>{{ session.username }}</strong>
+                  <p>{{ session.expiresAtUtc | date: 'medium' }}</p>
+                </div>
+              </div>
+
+              <div class="workspace-shell__identity-actions">
+                <p-tag [severity]="getRoleSeverity(session.role)" [value]="session.role"></p-tag>
+                <a pButton text routerLink="/workspace/account" icon="pi pi-user" label="Mi Cuenta"></a>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
       </div>
     </aside>
 
-    <div class="workspace-shell__content">
-      <p-toolbar styleClass="workspace-shell__toolbar itm-surface-card">
-        <ng-template pTemplate="start">
-          <div class="workspace-shell__toolbar-start">
-            <button pButton type="button" text icon="pi pi-bars" class="workspace-shell__mobile-menu-button" (click)="openMobileDrawer()"></button>
-            <div>
-              <p class="itm-page-eyebrow">Protected workspace</p>
-              <strong>Welcome back, {{ session.username }}</strong>
-            </div>
-          </div>
-        </ng-template>
-
-        <ng-template pTemplate="end">
-          <div class="workspace-shell__toolbar-end">
-            <a pButton text routerLink="/workspace/account" icon="pi pi-user" label="Account"></a>
-            <button pButton type="button" severity="secondary" icon="pi pi-sign-out" label="Logout" (click)="logout()"></button>
-          </div>
-        </ng-template>
-      </p-toolbar>
-
-      <section class="workspace-page itm-page-grid">
-        <p-card class="workspace-page__hero itm-surface-card">
-          <ng-template pTemplate="content">
-            <div class="itm-page-header">
-              <div class="itm-page-header__copy">
+    <div class="workspace-shell__main">
+      <div class="workspace-shell__content-inner">
+        <p-toolbar styleClass="workspace-shell__toolbar itm-surface-card">
+          <ng-template pTemplate="start">
+            <div class="workspace-shell__toolbar-start">
+              <button pButton type="button" text icon="pi pi-bars" class="workspace-shell__mobile-menu-button" (click)="openMobileDrawer()"></button>
+              <div>
                 <p class="itm-page-eyebrow">Protected workspace</p>
-                <h1 class="itm-page-title">Projects, tickets, and admin tasks in one clean flow</h1>
-                <p class="itm-page-description">
-                  The workspace keeps the navigation focused on the left aside, preserves the existing routes, and stays small enough to explain in an interview.
-                </p>
-              </div>
-
-              <div class="workspace-page__hero-tags">
-                <p-tag icon="pi pi-user" [value]="session.username"></p-tag>
-                <p-tag [severity]="getRoleSeverity(session.role)" icon="pi pi-shield" [value]="session.role"></p-tag>
-              </div>
-            </div>
-
-            <div class="workspace-page__identity-grid">
-              <div>
-                <span class="workspace-page__label">Session expires</span>
-                <strong>{{ session.expiresAtUtc | date: 'medium' }}</strong>
-              </div>
-              <div>
-                <span class="workspace-page__label">Navigation model</span>
-                <strong>Left rail + responsive drawer</strong>
-              </div>
-              <div>
-                <span class="workspace-page__label">UI stack</span>
-                <strong>Angular 18 + PrimeNG 18</strong>
+                <strong>Welcome back, {{ session.username }}</strong>
               </div>
             </div>
           </ng-template>
-        </p-card>
 
-        <router-outlet></router-outlet>
-      </section>
+          <ng-template pTemplate="end">
+            <div class="workspace-shell__toolbar-end">
+              <itm-theme-toggle [showLabel]="false" [rounded]="true"></itm-theme-toggle>
+              <button pButton type="button" severity="secondary" icon="pi pi-sign-out" label="Logout" (click)="logout()"></button>
+            </div>
+          </ng-template>
+        </p-toolbar>
+
+        <section class="workspace-page itm-page-grid">
+          <router-outlet></router-outlet>
+        </section>
+      </div>
     </div>
   </div>
 </ng-container>
