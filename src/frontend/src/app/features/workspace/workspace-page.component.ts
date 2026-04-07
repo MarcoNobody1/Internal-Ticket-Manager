@@ -11,6 +11,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { getUserRoleSeverity } from '../../shared/ui/ui-severity.utils';
+import { ThemeToggleComponent } from '../../shared/ui/theme-toggle.component';
 
 interface WorkspaceNavItem {
   label: string;
@@ -33,7 +34,8 @@ interface WorkspaceNavItem {
     DividerModule,
     DrawerModule,
     TagModule,
-    ToolbarModule
+    ToolbarModule,
+    ThemeToggleComponent
   ],
   templateUrl: './workspace-page.component.html',
   styleUrls: ['./workspace-page.component.css']
@@ -43,7 +45,6 @@ export class WorkspacePageComponent {
   readonly navItems: WorkspaceNavItem[] = [
     { label: 'Projects', route: '/workspace/projects', icon: 'pi pi-briefcase' },
     { label: 'Tickets', route: '/workspace/tickets', icon: 'pi pi-ticket' },
-    { label: 'Account', route: '/workspace/account', icon: 'pi pi-user' },
     { label: 'Users', route: '/workspace/users', icon: 'pi pi-users', adminOnly: true }
   ];
 

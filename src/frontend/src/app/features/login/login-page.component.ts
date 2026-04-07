@@ -12,6 +12,7 @@ import { finalize } from 'rxjs';
 
 import { AuthRedirectReason } from '../../core/auth/auth.models';
 import { AuthService } from '../../core/auth/auth.service';
+import { ThemeToggleComponent } from '../../shared/ui/theme-toggle.component';
 
 @Component({
   selector: 'itm-login-page',
@@ -23,7 +24,8 @@ import { AuthService } from '../../core/auth/auth.service';
     CardModule,
     DividerModule,
     InputTextModule,
-    MessageModule
+    MessageModule,
+    ThemeToggleComponent
   ],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
