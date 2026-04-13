@@ -19,9 +19,10 @@
 
 .ticket-details-page__eyebrow {
   color: var(--itm-accent);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: var(--itm-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   margin: 1rem 0 0.5rem;
   text-transform: uppercase;
 }
@@ -40,6 +41,8 @@
 }
 
 .ticket-details-page__header h1 {
+  letter-spacing: -0.05em;
+  line-height: 0.96;
   margin: 0 0 0.5rem;
 }
 
@@ -50,6 +53,8 @@
 .ticket-details-page__meta {
   color: var(--itm-text-subtle);
   display: flex;
+  font-family: var(--itm-font-mono);
+  font-size: 0.76rem;
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
@@ -72,13 +77,16 @@
 }
 
 .ticket-comments-list__item {
-  border-left: 4px solid var(--itm-accent);
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  box-shadow: inset 2px 0 0 rgba(0, 255, 255, 0.35);
 }
 
 .ticket-comments-list__header {
   align-items: center;
   color: var(--itm-text-subtle);
   display: flex;
+  font-family: var(--itm-font-mono);
+  font-size: 0.76rem;
   gap: 1rem;
   justify-content: space-between;
   margin-bottom: 0.75rem;

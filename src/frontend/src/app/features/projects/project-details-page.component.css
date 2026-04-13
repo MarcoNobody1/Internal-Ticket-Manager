@@ -20,9 +20,10 @@
 
 .project-details-page__eyebrow {
   color: var(--itm-accent);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-family: var(--itm-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   margin: 1rem 0 0.5rem;
   text-transform: uppercase;
 }
@@ -46,13 +47,20 @@
   margin-top: 1rem;
 }
 
+.project-details-page__meta-item,
+.project-details-page__ticket-meta span {
+  font-family: var(--itm-font-mono);
+  font-size: 0.76rem;
+}
+
 .project-details-page__tickets {
   display: grid;
   gap: 1rem;
 }
 
 .project-details-page__ticket {
-  border-left: 4px solid var(--itm-accent);
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  box-shadow: inset 2px 0 0 rgba(0, 255, 255, 0.35);
 }
 
 .project-details-page__ticket-tags {

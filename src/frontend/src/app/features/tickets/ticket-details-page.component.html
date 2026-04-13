@@ -13,7 +13,7 @@
     <p-card class="itm-surface-card">
       <ng-template pTemplate="content">
         <a pButton text routerLink="/workspace/tickets" icon="pi pi-arrow-left" label="Back to tickets"></a>
-        <p class="ticket-details-page__eyebrow">Ticket details</p>
+        <p class="ticket-details-page__eyebrow">Ticket details // inspect</p>
         <div class="ticket-details-page__header">
           <div>
             <h1>{{ ticket.title }}</h1>
@@ -27,10 +27,10 @@
         </div>
 
         <div class="ticket-details-page__meta">
-          <span>Created by {{ ticket.createdByUsername }}</span>
+          <span class="ticket-details-page__meta-item">Created by {{ ticket.createdByUsername }}</span>
           <a [routerLink]="['/workspace/projects', ticket.projectId]">Open project</a>
-          <span>{{ getAssignedDeveloperNames(ticket) }}</span>
-          <span>Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
+          <span class="ticket-details-page__meta-item">{{ getAssignedDeveloperNames(ticket) }}</span>
+          <span class="ticket-details-page__meta-item">Last updated {{ ticket.updatedAtUtc | date: 'medium' }}</span>
         </div>
       </ng-template>
     </p-card>

@@ -4,6 +4,10 @@
   min-width: 0;
 }
 
+.users-page :where(.p-card, .p-card-body, .p-card-content) {
+  min-width: 0;
+}
+
 .users-page__intro {
   margin-bottom: 1rem;
 }
@@ -39,14 +43,26 @@
   width: 100%;
 }
 
+.users-table td:nth-child(1),
+.users-table td:nth-child(3),
+.users-table td:nth-child(4) {
+  font-family: var(--itm-font-mono);
+  font-size: 0.78rem;
+}
+
 .users-table__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  max-width: 100%;
   white-space: nowrap;
 }
 
 @media (max-width: 900px) {
+  .users-page {
+    gap: 1rem;
+  }
+
   .users-table :where(thead) {
     display: none;
   }
@@ -69,6 +85,7 @@
   .users-table td {
     border: 0;
     padding: 0.5rem 0;
+    word-break: break-word;
   }
 
   .users-table td::before {
@@ -84,8 +101,18 @@
 }
 
 @media (max-width: 640px) {
+  .users-page {
+    gap: 0.85rem;
+  }
+
   .users-table__actions {
+    align-items: stretch;
     flex-direction: column;
     white-space: normal;
+  }
+
+  .users-table__actions :where(.p-button, a.p-button) {
+    justify-content: center;
+    width: 100%;
   }
 }

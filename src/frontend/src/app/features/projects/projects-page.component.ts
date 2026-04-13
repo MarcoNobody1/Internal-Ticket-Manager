@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -46,6 +46,7 @@ export class ProjectsPageComponent implements OnInit {
   loadErrorMessage = '';
   submitErrorMessage = '';
   editingProjectId: string | null = null;
+  projectsTableStacked = typeof window !== 'undefined' ? window.innerWidth <= 1100 : false;
 
   constructor(
     private readonly authService: AuthService,
@@ -71,6 +72,11 @@ export class ProjectsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProjects();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.projectsTableStacked = window.innerWidth <= 1100;
   }
 
   loadProjects(): void {

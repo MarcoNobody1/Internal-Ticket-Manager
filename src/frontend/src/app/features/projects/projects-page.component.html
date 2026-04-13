@@ -1,9 +1,9 @@
 <div class="projects-page">
-  <p-card class="itm-surface-card">
+  <p-card class="itm-surface-card itm-responsive-card">
     <ng-template pTemplate="content">
       <div class="itm-page-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Projects</p>
+          <p class="itm-page-eyebrow">Projects // shared context</p>
           <h1 class="itm-page-title">Shared project context for the whole workspace</h1>
           <p class="itm-page-description">Projects stay readable for every signed-in user. Only admins can create, edit, or delete them.</p>
         </div>
@@ -41,11 +41,11 @@
     </ng-template>
   </p-card>
 
-  <p-card class="itm-surface-card">
+  <p-card class="itm-surface-card itm-responsive-card">
     <ng-template pTemplate="content">
       <div class="itm-page-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Existing projects</p>
+          <p class="itm-page-eyebrow">Existing projects // registry</p>
           <h2 class="itm-page-title">Current portfolio</h2>
         </div>
       </div>
@@ -81,13 +81,15 @@
                 <td data-label="Name">
                 <a [routerLink]="['/workspace/projects', project.id]">{{ project.name }}</a>
                 </td>
-                <td data-label="Description">{{ project.description || 'No description provided.' }}</td>
+                <td data-label="Description" class="projects-table__description-cell" [title]="project.description || 'No description provided.'">
+                  {{ project.description || 'No description provided.' }}
+                </td>
                 <td data-label="Last updated">{{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</td>
                 <td data-label="Actions">
-                  <div class="projects-table__actions">
-                    <a pButton text class="itm-link-button" [routerLink]="['/workspace/projects', project.id]" icon="pi pi-eye" label="View"></a>
-                    <button pButton text type="button" *ngIf="canManageProjects" (click)="startEdit(project)" [disabled]="isSubmitting || deletingProjectId !== null" icon="pi pi-pencil" label="Edit"></button>
-                    <button pButton text severity="danger" type="button" *ngIf="canManageProjects" (click)="deleteProject(project)" [disabled]="isSubmitting || deletingProjectId !== null" icon="pi pi-trash" label="Delete"></button>
+                  <div class="projects-table__actions" [class.projects-table__actions--stacked]="projectsTableStacked">
+                    <a pButton text size="small" class="itm-link-button itm-action-button" [routerLink]="['/workspace/projects', project.id]" icon="pi pi-eye" label="View"></a>
+                    <button pButton text size="small" type="button" class="itm-action-button" *ngIf="canManageProjects" (click)="startEdit(project)" [disabled]="isSubmitting || deletingProjectId !== null" icon="pi pi-pencil" label="Edit"></button>
+                    <button pButton text size="small" severity="danger" type="button" class="itm-action-button" *ngIf="canManageProjects" (click)="deleteProject(project)" [disabled]="isSubmitting || deletingProjectId !== null" icon="pi pi-trash" label="Delete"></button>
                   </div>
                 </td>
               </tr>

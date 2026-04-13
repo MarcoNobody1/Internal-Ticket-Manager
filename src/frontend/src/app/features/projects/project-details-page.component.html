@@ -13,14 +13,14 @@
     <p-card class="itm-surface-card">
       <ng-template pTemplate="content">
         <a pButton text routerLink="/workspace/projects" icon="pi pi-arrow-left" label="Back to projects"></a>
-        <p class="project-details-page__eyebrow">Project details</p>
+        <p class="project-details-page__eyebrow">Project details // inspect</p>
         <h1>{{ project.name }}</h1>
         <p class="project-details-page__description">{{ project.description || 'No description provided for this project yet.' }}</p>
 
         <div class="project-details-page__meta">
-          <span>Created {{ project.createdAtUtc | date: 'medium' }}</span>
-          <span>Last updated {{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</span>
-          <span>{{ project.openTickets.length }} open {{ project.openTickets.length === 1 ? 'ticket' : 'tickets' }}</span>
+          <span class="project-details-page__meta-item">Created {{ project.createdAtUtc | date: 'medium' }}</span>
+          <span class="project-details-page__meta-item">Last updated {{ (project.updatedAtUtc || project.createdAtUtc) | date: 'medium' }}</span>
+          <span class="project-details-page__meta-item">{{ project.openTickets.length }} open {{ project.openTickets.length === 1 ? 'ticket' : 'tickets' }}</span>
         </div>
       </ng-template>
     </p-card>

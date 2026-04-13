@@ -3,7 +3,7 @@
     <ng-template pTemplate="content">
       <div class="itm-page-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Tickets</p>
+          <p class="itm-page-eyebrow">Tickets // execution flow</p>
           <h1 class="itm-page-title">Track work without leaving the main workspace flow</h1>
           <p class="itm-page-description">
             Tickets stay readable for every signed-in user. Admins and developers can create or edit them, and only admins can delete them.
@@ -90,7 +90,7 @@
     <ng-template pTemplate="content">
       <div class="itm-page-header tickets-page__list-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Ticket list</p>
+          <p class="itm-page-eyebrow">Ticket list // live queue</p>
           <h2 class="itm-page-title">Current delivery work</h2>
           <p class="itm-page-description">Review the queue, open details, and refine the results only when you need extra focus.</p>
         </div>
@@ -103,7 +103,7 @@
             icon="pi pi-filter"
             [label]="areFiltersVisible ? 'Ocultar filtros' : 'Filtros'"
             (click)="toggleFilters()"></button>
-          <span class="tickets-page__active-filter-count" *ngIf="activeFilterCount > 0">{{ activeFilterCount }} activos</span>
+          <span class="tickets-page__active-filter-count" *ngIf="activeFilterCount > 0">{{ activeFilterCount }} active</span>
         </div>
       </div>
 
@@ -170,19 +170,20 @@
 
         <div class="tickets-page__list" *ngIf="!loadErrorMessage && tickets.length > 0">
           <p-card class="tickets-page__item" *ngFor="let ticket of tickets; trackBy: trackByTicketId">
-            <ng-template pTemplate="content">
-              <div class="tickets-page__item-header">
-                <div class="tickets-page__item-copy">
-                  <h2>{{ ticket.title }}</h2>
-                  <p class="tickets-page__item-description">{{ ticket.description || 'No description provided.' }}</p>
-                </div>
+             <ng-template pTemplate="content">
+               <div class="tickets-page__item-header">
+                 <div class="tickets-page__item-copy">
+                   <p class="tickets-page__item-overline">Ticket</p>
+                   <h2>{{ ticket.title }}</h2>
+                   <p class="tickets-page__item-description">{{ ticket.description || 'No description provided.' }}</p>
+                 </div>
 
-                <div class="tickets-page__item-actions">
-                  <a pButton class="itm-link-button" [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open details"></a>
-                  <button pButton text type="button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-pencil" label="Edit"></button>
-                  <button pButton text severity="danger" type="button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-trash" label="Delete"></button>
-                </div>
-              </div>
+                 <div class="tickets-page__item-actions">
+                   <a pButton class="itm-link-button itm-action-button" [routerLink]="['/workspace/tickets', ticket.id]" icon="pi pi-arrow-right" label="Open details"></a>
+                   <button pButton text type="button" class="itm-action-button" *ngIf="canManageTickets" (click)="startEdit(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-pencil" label="Edit"></button>
+                   <button pButton text severity="danger" type="button" class="itm-action-button" *ngIf="isAdmin" (click)="deleteTicket(ticket)" [disabled]="isSubmitting || deletingTicketId !== null" icon="pi pi-trash" label="Delete"></button>
+                 </div>
+               </div>
 
               <div class="tickets-page__meta">
                 <div class="tickets-page__tag-row">

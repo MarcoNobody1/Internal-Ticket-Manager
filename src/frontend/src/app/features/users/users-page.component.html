@@ -1,9 +1,9 @@
 <div class="users-page">
-  <p-card class="itm-surface-card">
+  <p-card class="itm-surface-card itm-responsive-card">
     <ng-template pTemplate="content">
       <div class="itm-page-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Users</p>
+          <p class="itm-page-eyebrow">Users // access control</p>
           <h1 class="itm-page-title">Keep access management small and explicit</h1>
           <p class="itm-page-description">Admins can manage persisted users here without adding account self-service or heavier workflow layers.</p>
         </div>
@@ -41,11 +41,11 @@
     </ng-template>
   </p-card>
 
-  <p-card class="itm-surface-card">
+  <p-card class="itm-surface-card itm-responsive-card">
     <ng-template pTemplate="content">
       <div class="itm-page-header">
         <div class="itm-page-header__copy">
-          <p class="itm-page-eyebrow">Existing users</p>
+          <p class="itm-page-eyebrow">Existing users // registry</p>
           <h2 class="itm-page-title">Current access list</h2>
         </div>
       </div>
@@ -83,8 +83,8 @@
                 <td data-label="Created">{{ user.createdAtUtc | date: 'medium' }}</td>
                 <td data-label="Actions">
                   <div class="users-table__actions">
-                    <button pButton text type="button" (click)="startEdit(user)" [disabled]="isDeleting(user.id)" icon="pi pi-pencil" label="Edit"></button>
-                    <button pButton text severity="danger" type="button" (click)="deleteUser(user)" [disabled]="isDeleting(user.id)" icon="pi pi-trash" [label]="isDeleting(user.id) ? 'Deleting...' : 'Delete'"></button>
+                    <button pButton text size="small" type="button" class="itm-action-button" (click)="startEdit(user)" [disabled]="isDeleting(user.id)" icon="pi pi-pencil" label="Edit"></button>
+                    <button pButton text size="small" severity="danger" type="button" class="itm-action-button" (click)="deleteUser(user)" [disabled]="isDeleting(user.id)" icon="pi pi-trash" [label]="isDeleting(user.id) ? 'Deleting...' : 'Delete'"></button>
                   </div>
                 </td>
               </tr>
