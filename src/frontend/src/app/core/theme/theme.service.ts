@@ -10,7 +10,7 @@ export const THEME_DARK_CLASS = 'app-dark';
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
 
-  readonly activeTheme = signal<ThemePreference>('light');
+  readonly activeTheme = signal<ThemePreference>('dark');
   readonly isDark = computed(() => this.activeTheme() === 'dark');
 
   constructor() {
@@ -48,6 +48,6 @@ export class ThemeService {
   private readStoredTheme(): ThemePreference {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
 
-    return storedTheme === 'dark' ? 'dark' : 'light';
+    return storedTheme === 'light' ? 'light' : 'dark';
   }
 }

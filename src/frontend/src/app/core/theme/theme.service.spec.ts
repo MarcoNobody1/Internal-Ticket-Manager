@@ -20,10 +20,10 @@ describe('ThemeService', () => {
     document.documentElement.style.colorScheme = 'light';
   });
 
-  it('defaults to light mode and keeps the dark selector disabled', () => {
-    expect(themeService.activeTheme()).toBe('light');
-    expect(document.documentElement.classList.contains(THEME_DARK_CLASS)).toBeFalse();
-    expect(document.documentElement.style.colorScheme).toBe('light');
+  it('defaults to dark mode and enables the dark selector', () => {
+    expect(themeService.activeTheme()).toBe('dark');
+    expect(document.documentElement.classList.contains(THEME_DARK_CLASS)).toBeTrue();
+    expect(document.documentElement.style.colorScheme).toBe('dark');
   });
 
   it('restores the stored dark preference during startup', () => {
@@ -41,8 +41,8 @@ describe('ThemeService', () => {
   it('persists and applies the toggled theme', () => {
     themeService.toggleTheme();
 
-    expect(themeService.activeTheme()).toBe('dark');
-    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
-    expect(document.documentElement.classList.contains(THEME_DARK_CLASS)).toBeTrue();
+    expect(themeService.activeTheme()).toBe('light');
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+    expect(document.documentElement.classList.contains(THEME_DARK_CLASS)).toBeFalse();
   });
 });
