@@ -11,22 +11,18 @@
         </div>
 
         <div>
-          <p class="itm-page-eyebrow">Internal operations</p>
+          <p class="itm-page-eyebrow">Internal operations // auth</p>
           <h1>Sign in to the workspace</h1>
           <p class="login-page__intro">
-            This flow stays intentionally simple: JWT login, session storage for the current browser tab, and a clean role-based workspace.
+            JWT auth, role-aware routing, and session-only persistence — kept intentionally small so the foundation stays easy to explain and defend.
           </p>
         </div>
       </div>
 
-      <p-message *ngIf="noticeMessage" severity="info" styleClass="login-page__message">
-        <ng-template pTemplate>
-          <div class="login-page__inline-message">
-            <i class="pi pi-info-circle"></i>
-            <span>{{ noticeMessage }}</span>
-          </div>
-        </ng-template>
-      </p-message>
+      <div class="login-page__message" *ngIf="noticeMessage">
+        <i class="pi pi-info-circle"></i>
+        <span>{{ noticeMessage }}</span>
+      </div>
 
       <form [formGroup]="loginForm" (ngSubmit)="submit()" class="login-page__form itm-form-grid">
         <div class="itm-field">
@@ -51,7 +47,11 @@
       <p-divider></p-divider>
 
       <div class="login-page__hint">
-        <strong>Demo users</strong>
+        <div class="login-page__hint-header">
+          <strong>Demo operators</strong>
+          <span>seeded credentials</span>
+        </div>
+
         <div class="login-page__credentials">
           <div>
             <span class="login-page__credential-label">Admin</span>

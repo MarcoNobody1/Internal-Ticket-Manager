@@ -1,11 +1,15 @@
 .access-denied-page {
+  max-width: 42rem;
+  margin: 0 auto;
   text-align: center;
 }
 
 .access-denied-page__icon {
   align-items: center;
-  background: rgba(239, 68, 68, 0.12);
-  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  box-shadow: var(--itm-shadow-brutal);
   color: var(--itm-danger);
   display: inline-flex;
   font-size: 1.5rem;
@@ -13,6 +17,18 @@
   justify-content: center;
   margin-bottom: 1rem;
   width: 4.5rem;
+}
+
+.access-denied-page__copy {
+  color: var(--itm-text-soft);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 34rem;
+}
+
+.access-denied-page__copy strong {
+  font-family: var(--itm-font-mono);
+  font-size: 0.84rem;
 }
 
 .access-denied-page__actions {

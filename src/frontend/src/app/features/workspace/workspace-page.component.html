@@ -57,10 +57,12 @@
             </div>
             <div>
               <strong>Internal Ticket Manager</strong>
-              <span>PrimeNG workspace shell</span>
+              <span>Command center // PrimeNG shell</span>
             </div>
           </div>
         </div>
+
+        <p class="workspace-shell__nav-label" *ngIf="!isNavCollapsed">Navigation</p>
 
         <nav class="workspace-shell__nav">
           <a
@@ -72,11 +74,22 @@
             <i [class]="item.icon"></i>
             <span *ngIf="!isNavCollapsed">{{ item.label }}</span>
           </a>
+
+          <a
+            *ngIf="isNavCollapsed"
+            routerLink="/workspace/account"
+            routerLinkActive="workspace-shell__nav-link--active"
+            class="workspace-shell__nav-link"
+            aria-label="Mi Cuenta">
+            <i class="pi pi-user"></i>
+          </a>
         </nav>
 
-        <div class="workspace-shell__aside-footer" *ngIf="!isNavCollapsed">
-          <p-card class="workspace-shell__identity-card itm-surface-card">
+        <div class="workspace-shell__aside-footer">
+          <p-card class="workspace-shell__identity-card itm-surface-card" *ngIf="!isNavCollapsed">
             <ng-template pTemplate="content">
+              <p class="workspace-shell__identity-eyebrow">Session operator</p>
+
               <div class="workspace-shell__identity-header">
                 <p-avatar [label]="session.username.slice(0, 1).toUpperCase()" shape="circle"></p-avatar>
                 <div>
@@ -99,13 +112,13 @@
       <div class="workspace-shell__content-inner">
         <p-toolbar styleClass="workspace-shell__toolbar itm-surface-card">
           <ng-template pTemplate="start">
-            <div class="workspace-shell__toolbar-start">
-              <button pButton type="button" text icon="pi pi-bars" class="workspace-shell__mobile-menu-button" (click)="openMobileDrawer()"></button>
-              <div>
-                <p class="itm-page-eyebrow">Protected workspace</p>
-                <strong>Welcome back, {{ session.username }}</strong>
+              <div class="workspace-shell__toolbar-start">
+                <button pButton type="button" text icon="pi pi-bars" class="workspace-shell__mobile-menu-button" (click)="openMobileDrawer()"></button>
+                <div>
+                  <p class="itm-page-eyebrow">Protected workspace // live</p>
+                  <strong>Welcome back, {{ session.username }}</strong>
+                </div>
               </div>
-            </div>
           </ng-template>
 
           <ng-template pTemplate="end">

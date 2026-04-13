@@ -14,10 +14,10 @@ describe('HomePageComponent', () => {
     fixture.detectChanges();
   });
 
-  it('renders the neutral home baseline copy', () => {
+  it('renders the workspace overview copy', () => {
     const element: HTMLElement = fixture.nativeElement;
 
     expect(element.querySelector('h2')?.textContent).toContain('Frontend shell is in place');
-    expect(element.textContent).toContain('Runtime baseline ready');
+    expect(element.textContent).toContain('Workspace overview // status');
   });
 });
