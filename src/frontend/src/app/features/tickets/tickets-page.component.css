@@ -4,6 +4,10 @@
   min-width: 0;
 }
 
+.tickets-page :where(.p-card, .p-card-body, .p-card-content) {
+  min-width: 0;
+}
+
 .tickets-page__intro {
   margin: 0;
 }
@@ -35,8 +39,9 @@
 }
 
 .tickets-form-field--filter {
-  background: var(--itm-surface-soft);
-  border-radius: 16px;
+  background: var(--itm-surface-softest);
+  border: 1px solid var(--itm-border);
+  border-radius: 8px;
   padding: 0.85rem;
 }
 
@@ -53,11 +58,16 @@
 
 .tickets-page__subtle-note {
   align-items: center;
+  background: rgba(0, 255, 255, 0.04);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  border-radius: 8px;
   color: var(--itm-text-muted);
   display: flex;
-  font-size: 0.92rem;
+  font-family: var(--itm-font-mono);
+  font-size: 0.8rem;
   gap: 0.65rem;
   margin-top: 1rem;
+  padding: 0.8rem 0.95rem;
 }
 
 .tickets-page__subtle-note i {
@@ -100,7 +110,10 @@
 .tickets-page__active-filter-count,
 .tickets-page__filters-empty {
   color: var(--itm-text-muted);
-  font-size: 0.9rem;
+  font-family: var(--itm-font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .tickets-page__filters-summary {
@@ -118,10 +131,22 @@
 }
 
 .tickets-page__item {
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--itm-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.tickets-page__item-overline {
+  color: var(--itm-accent);
+  font-family: var(--itm-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
 }
 
 .tickets-page__item h2 {
+  line-height: 0.98;
+  letter-spacing: -0.04em;
   margin: 0 0 0.5rem;
 }
 
@@ -172,20 +197,23 @@
 .tickets-page__meta-details {
   color: var(--itm-text-subtle);
   display: flex;
+  font-family: var(--itm-font-mono);
+  font-size: 0.76rem;
   flex-wrap: wrap;
   gap: 0.75rem 1rem;
 }
 
 .tickets-page__meta-label {
   color: var(--itm-text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-family: var(--itm-font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .tickets-page__assignees {
-  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  border-top: 1px solid var(--itm-border);
   display: grid;
   gap: 0.65rem;
   margin-top: 1rem;
