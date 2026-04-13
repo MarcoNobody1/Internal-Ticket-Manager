@@ -15,15 +15,15 @@
       </div>
 
       <div class="account-page__grid">
-        <div>
+        <div class="account-page__meta-block">
           <span class="account-page__label">Role</span>
           <strong>{{ currentSession.role }}</strong>
         </div>
-        <div>
+        <div class="account-page__meta-block">
           <span class="account-page__label">Session storage</span>
           <strong>Browser session only</strong>
         </div>
-        <div>
+        <div class="account-page__meta-block">
           <span class="account-page__label">Session expires</span>
           <strong>{{ currentSession.expiresAtUtc | date: 'medium' }}</strong>
         </div>
@@ -73,7 +73,7 @@
                 </div>
               </div>
 
-              <i class="pi pi-arrow-right"></i>
+              <i class="pi pi-arrow-right account-page__ticket-arrow"></i>
             </a>
           </div>
 

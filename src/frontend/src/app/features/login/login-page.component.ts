@@ -7,7 +7,6 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
 import { finalize } from 'rxjs';
 
 import { AuthRedirectReason } from '../../core/auth/auth.models';
@@ -24,7 +23,6 @@ import { ThemeToggleComponent } from '../../shared/ui/theme-toggle.component';
     CardModule,
     DividerModule,
     InputTextModule,
-    MessageModule,
     ThemeToggleComponent
   ],
   templateUrl: './login-page.component.html',

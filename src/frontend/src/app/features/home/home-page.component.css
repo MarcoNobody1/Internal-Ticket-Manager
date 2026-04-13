@@ -3,22 +3,22 @@
 }
 
 .home-page__card {
-  background: var(--itm-surface-strong);
-  border: 1px solid var(--itm-border);
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
   padding: 1.5rem;
 }
 
 .home-page__eyebrow {
   color: var(--itm-accent);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-family: var(--itm-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
   margin: 0 0 0.5rem;
   text-transform: uppercase;
 }
 
 .home-page__card h2 {
+  letter-spacing: -0.05em;
+  line-height: 0.96;
   margin: 0 0 1rem;
 }
 
@@ -28,6 +28,9 @@
 }
 
 .home-page__card ul {
+  color: var(--itm-text-subtle);
+  font-family: var(--itm-font-mono);
+  font-size: 0.82rem;
   margin: 0;
   padding-left: 1.25rem;
 }
