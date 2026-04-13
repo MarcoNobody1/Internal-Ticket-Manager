@@ -24,7 +24,7 @@ Current baseline includes:
 - project endpoints with explicit role-based permissions (`Admin` write, authenticated users read)
 - ticket endpoints with explicit role-based permissions (`Admin` delete, `Admin`/`Developer` create and edit, authenticated users read)
 - persisted ticket-to-developer assignments through a simple join table so one ticket can have multiple developers
-- Angular standalone shell refreshed with **PrimeNG 18 + PrimeIcons**, a collapsible left aside, login, workspace, account page, projects screen, project details, ticket create/edit flow, ticket details/comments, and an admin users screen
+- Angular standalone shell refreshed with **PrimeNG 18 + PrimeIcons**, a collapsible left aside, login, workspace, account page, projects screen, project details, ticket create/edit flow, ticket details/comments, an admin users screen, and a darker Composio-inspired command-center visual system
 - Bun-based frontend dependency management
 - Docker Compose local SQL Server 2022 infrastructure
 - reproducible local setup documentation
@@ -208,6 +208,11 @@ Frontend auth UX notes:
 - Developer accounts get an account page with direct links to their assigned tickets.
 - Expired sessions are cleared automatically and 401 redirects bring the user back to `/login` with a friendly message.
 - 403 responses now redirect to `/workspace/access-denied` instead of failing silently.
+
+Frontend UI direction notes:
+- The current visual system follows `docs/UI/UI-guide.md` as the explicit reference.
+- The app now leans into a nocturnal command-center feel: near-black surfaces, faint white containment borders, restrained cyan/cobalt signal accents, and monospace metadata in high-signal UI moments.
+- The refresh intentionally relies on PrimeNG composition plus shared CSS tokens instead of custom widget complexity.
 
 #### Visual Studio Code launch workflow
 
